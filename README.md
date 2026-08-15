@@ -30,6 +30,9 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   (7, 14, 21 jours...).
 - **Français et anglais**, avec repli automatique sur le français si la
   langue de l'appareil n'est ni l'un ni l'autre.
+- Icône d'application personnalisée (flamme sur fond violet, générée dans
+  `assets/icon/`) appliquée à Android/iOS/web via `flutter_launcher_icons`
+  — plus l'icône Flutter par défaut.
 
 ## Stack technique
 
@@ -133,6 +136,17 @@ lib/
   généré par `flutter create`, non compilé en APK/IPA faute de SDK Android
   dans cet environnement de développement — build web fait à titre
   d'aperçu visuel uniquement).
+
+## Régénérer l'icône de l'app
+
+Remplacer `assets/icon/icon.png` (icône pleine, 1024×1024) et
+`assets/icon/icon_foreground.png` (calque transparent pour l'icône
+adaptative Android, motif centré dans les 66% du canevas pour éviter le
+rognage), puis :
+
+```bash
+dart run flutter_launcher_icons
+```
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 
