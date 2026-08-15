@@ -24,6 +24,10 @@ class Habit {
   /// `null` = pas de rappel programmé.
   final int? reminderMinutes;
 
+  /// Notes de journal par jour (`yyyy-MM-dd` -> texte), optionnelles :
+  /// réflexion libre sur pourquoi un jour a été réussi/manqué.
+  final Map<String, String> notes;
+
   const Habit({
     required this.id,
     required this.name,
@@ -34,6 +38,7 @@ class Habit {
     this.completedDates = const {},
     this.frozenDates = const {},
     this.reminderMinutes,
+    this.notes = const {},
   });
 
   static String dateKey(DateTime day) {
@@ -49,6 +54,8 @@ class Habit {
   bool isCompletedOn(DateTime day) => completedDates.contains(dateKey(day));
 
   bool isFrozenOn(DateTime day) => frozenDates.contains(dateKey(day));
+
+  String? noteOn(DateTime day) => notes[dateKey(day)];
 
   /// Un jour "protège" la série s'il a été fait ou geler.
   bool _isStreakSafeOn(DateTime day) => isCompletedOn(day) || isFrozenOn(day);
@@ -110,6 +117,30 @@ class Habit {
       completedDates: completedDates,
       frozenDates: frozenDates,
       reminderMinutes: reminderMinutes,
+      notes: notes,
+    );
+  }
+
+  /// Fixe (ou retire, avec `null`/vide) la note de journal d'un jour donné.
+  Habit withNote(DateTime day, String? note) {
+    final updated = Map<String, String>.from(notes);
+    final key = dateKey(day);
+    if (note == null || note.trim().isEmpty) {
+      updated.remove(key);
+    } else {
+      updated[key] = note.trim();
+    }
+    return Habit(
+      id: id,
+      name: name,
+      emoji: emoji,
+      colorValue: colorValue,
+      createdAt: createdAt,
+      activeWeekdays: activeWeekdays,
+      completedDates: completedDates,
+      frozenDates: frozenDates,
+      reminderMinutes: reminderMinutes,
+      notes: updated,
     );
   }
 
@@ -192,6 +223,8 @@ class Habit {
       activeWeekdays: activeWeekdays ?? this.activeWeekdays,
       completedDates: completedDates ?? this.completedDates,
       frozenDates: frozenDates ?? this.frozenDates,
+      reminderMinutes: reminderMinutes,
+      notes: notes,
     );
   }
 
@@ -212,6 +245,8 @@ class Habit {
           .map((e) => e as String)
           .toSet(),
       reminderMinutes: json['reminderMinutes'] as int?,
+      notes: (json['notes'] as Map<String, dynamic>? ?? {})
+          .map((key, value) => MapEntry(key, value as String)),
     );
   }
 
@@ -226,6 +261,7 @@ class Habit {
       'completedDates': completedDates.toList(),
       'frozenDates': frozenDates.toList(),
       'reminderMinutes': reminderMinutes,
+      'notes': notes,
     };
   }
 }

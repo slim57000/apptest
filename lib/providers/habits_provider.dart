@@ -89,4 +89,10 @@ class HabitsProvider extends ChangeNotifier {
     await _storage.saveHabits(_habits);
     if (updated != null) await _notifications.scheduleReminders(updated!);
   }
+
+  Future<void> setNote(String id, DateTime day, String? note) async {
+    _habits = _habits.map((h) => h.id == id ? h.withNote(day, note) : h).toList();
+    notifyListeners();
+    await _storage.saveHabits(_habits);
+  }
 }

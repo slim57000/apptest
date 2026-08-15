@@ -41,13 +41,17 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final habitsProvider = context.watch<HabitsProvider>();
     final premium = context.watch<PremiumProvider>();
-    final habit = habitsProvider.habits.where((h) => h.id == widget.habitId).firstOrNull;
+    final habit = habitsProvider.habits
+        .where((h) => h.id == widget.habitId)
+        .firstOrNull;
 
     if (habit == null) {
       return Scaffold(body: Center(child: Text(l10n.habitNotFound)));
     }
 
-    if (habit.currentStreak > _lastSeenStreak && habit.currentStreak > 0 && habit.currentStreak % 7 == 0) {
+    if (habit.currentStreak > _lastSeenStreak &&
+        habit.currentStreak > 0 &&
+        habit.currentStreak % 7 == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _confetti.play());
     }
     _lastSeenStreak = habit.currentStreak;
@@ -92,8 +96,14 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 onPressed: habit.isActiveOn(DateTime.now())
                     ? () => context.read<HabitsProvider>().toggleToday(habit.id)
                     : null,
-                icon: Icon(habit.isCompletedToday ? Icons.check_circle : Icons.radio_button_unchecked),
-                label: Text(habit.isCompletedToday ? l10n.doneToday : l10n.markDone),
+                icon: Icon(
+                  habit.isCompletedToday
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
+                ),
+                label: Text(
+                  habit.isCompletedToday ? l10n.doneToday : l10n.markDone,
+                ),
               ),
               if (premium.isPremium && habit.canFreezeYesterday) ...[
                 const SizedBox(height: 12),
@@ -101,13 +111,17 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
               ],
               const SizedBox(height: 16),
               _ReminderTile(habit: habit),
+              const SizedBox(height: 16),
+              _JournalTile(habit: habit),
               const SizedBox(height: 32),
               if (premium.isPremium)
                 _PremiumStats(habit: habit)
               else
-                _StatsUpsell(onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const PaywallScreen()),
-                    )),
+                _StatsUpsell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                  ),
+                ),
             ],
           ),
           ConfettiWidget(
@@ -129,7 +143,10 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
         title: Text(l10n.deleteHabitTitle),
         content: Text(l10n.deleteHabitContent(habit.name)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(context, true),
@@ -190,7 +207,11 @@ class _ReminderTile extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.notifications_outlined),
-        title: Text(time == null ? l10n.reminderNone : l10n.reminderAt(time.format(context))),
+        title: Text(
+          time == null
+              ? l10n.reminderNone
+              : l10n.reminderAt(time.format(context)),
+        ),
         trailing: time == null
             ? TextButton(
                 onPressed: () => _pickTime(context),
@@ -199,7 +220,8 @@ class _ReminderTile extends StatelessWidget {
             : IconButton(
                 icon: const Icon(Icons.close),
                 tooltip: l10n.removeReminder,
-                onPressed: () => context.read<HabitsProvider>().setReminder(habit.id, null),
+                onPressed: () =>
+                    context.read<HabitsProvider>().setReminder(habit.id, null),
               ),
         onTap: () => _pickTime(context),
       ),
@@ -213,7 +235,82 @@ class _ReminderTile extends StatelessWidget {
         : TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
     final picked = await showTimePicker(context: context, initialTime: initial);
     if (picked != null && context.mounted) {
-      await context.read<HabitsProvider>().setReminder(habit.id, picked.hour * 60 + picked.minute);
+      await context.read<HabitsProvider>().setReminder(
+        habit.id,
+        picked.hour * 60 + picked.minute,
+      );
+    }
+  }
+}
+
+class _JournalTile extends StatelessWidget {
+  final Habit habit;
+
+  const _JournalTile({required this.habit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final note = habit.noteOn(DateTime.now());
+
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.edit_note),
+        title: Text(l10n.journalTitle),
+        subtitle: note == null
+            ? null
+            : Text(note, maxLines: 2, overflow: TextOverflow.ellipsis),
+        trailing: note == null
+            ? TextButton(
+                onPressed: () => _editNote(context),
+                child: Text(l10n.journalEmpty),
+              )
+            : IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => context.read<HabitsProvider>().setNote(
+                  habit.id,
+                  DateTime.now(),
+                  null,
+                ),
+              ),
+        onTap: () => _editNote(context),
+      ),
+    );
+  }
+
+  Future<void> _editNote(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(
+      text: habit.noteOn(DateTime.now()) ?? '',
+    );
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.journalTitle),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: 4,
+          decoration: InputDecoration(hintText: l10n.journalHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    if (result != null && context.mounted) {
+      await context.read<HabitsProvider>().setNote(
+        habit.id,
+        DateTime.now(),
+        result,
+      );
     }
   }
 }
@@ -233,20 +330,32 @@ class _PremiumStats extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatTile(label: l10n.bestStreak, value: '${habit.longestStreak} j'),
+              child: _StatTile(
+                label: l10n.bestStreak,
+                value: '${habit.longestStreak} j',
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _StatTile(label: l10n.completionRate30, value: '${(rate30 * 100).round()}%'),
+              child: _StatTile(
+                label: l10n.completionRate30,
+                value: '${(rate30 * 100).round()}%',
+              ),
             ),
           ],
         ),
         const SizedBox(height: 24),
-        Text(l10n.weeklyCompletionTitle, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.weeklyCompletionTitle,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 12),
         SizedBox(height: 160, child: _WeekChart(habit: habit)),
         const SizedBox(height: 24),
-        Text(l10n.activityHeatmapTitle, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.activityHeatmapTitle,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 12),
         HabitHeatmap(habit: habit),
       ],
@@ -263,7 +372,8 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
+      color: Theme.of(context).colorScheme.primaryContainer
+          .withValues(alpha: 0.4),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -298,10 +408,16 @@ class _WeekChart extends StatelessWidget {
     final today = DateTime.now();
     final color = Color(habit.colorValue);
     final bars = List.generate(7, (i) {
-      final day = DateTime(today.year, today.month, today.day).subtract(Duration(days: 6 - i));
+      final day = DateTime(
+        today.year,
+        today.month,
+        today.day,
+      ).subtract(Duration(days: 6 - i));
       final done = habit.isCompletedOn(day);
       final frozen = !done && habit.isFrozenOn(day);
-      final barColor = done ? color : (frozen ? Colors.lightBlue : color.withValues(alpha: 0.15));
+      final barColor = done
+          ? color
+          : (frozen ? Colors.lightBlue : color.withValues(alpha: 0.15));
       return BarChartGroupData(
         x: day.weekday,
         barRods: [
@@ -322,9 +438,15 @@ class _WeekChart extends StatelessWidget {
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -355,7 +477,10 @@ class _StatsUpsell extends StatelessWidget {
           children: [
             const Icon(Icons.bar_chart, size: 36, color: Colors.amber),
             const SizedBox(height: 12),
-            Text(l10n.premiumStatsTitle, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.premiumStatsTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             Text(l10n.premiumStatsDesc, textAlign: TextAlign.center),
             const SizedBox(height: 16),

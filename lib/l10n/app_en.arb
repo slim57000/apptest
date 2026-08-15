@@ -94,5 +94,10 @@
   "templateTidyDesk": "Tidy your desk",
   "templateNoScreenEvening": "No screens after 9pm",
   "templateReadBeforeBed": "Read before bed",
-  "templatePrepTomorrow": "Prep tomorrow's things"
+  "templatePrepTomorrow": "Prep tomorrow's things",
+
+  "journalTitle": "Today's note",
+  "journalHint": "How did today go?",
+  "journalEmpty": "Add a note",
+  "save": "Save"
 }

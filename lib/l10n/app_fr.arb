@@ -270,5 +270,17 @@
   "templateReadBeforeBed": "Lire avant de dormir",
   "@templateReadBeforeBed": {},
   "templatePrepTomorrow": "Préparer ses affaires du lendemain",
-  "@templatePrepTomorrow": {}
+  "@templatePrepTomorrow": {},
+
+  "journalTitle": "Note du jour",
+  "@journalTitle": {},
+
+  "journalHint": "Comment ça s'est passé aujourd'hui ?",
+  "@journalHint": {},
+
+  "journalEmpty": "Ajouter une note",
+  "@journalEmpty": {},
+
+  "save": "Enregistrer",
+  "@save": {}
 }
