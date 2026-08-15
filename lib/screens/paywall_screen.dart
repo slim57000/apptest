@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/premium_provider.dart';
 import '../services/purchase_service.dart';
 
@@ -12,10 +13,11 @@ class PaywallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final premium = context.watch<PremiumProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Habitude+ Premium')),
+      appBar: AppBar(title: Text(l10n.paywallTitle)),
       body: premium.loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -24,16 +26,12 @@ class PaywallScreen extends StatelessWidget {
                 const Icon(Icons.workspace_premium, size: 56, color: Colors.amber),
                 const SizedBox(height: 12),
                 Text(
-                  premium.isPremium ? 'Vous êtes Premium' : 'Passez Premium',
+                  premium.isPremium ? l10n.youArePremium : l10n.goPremium,
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Habitudes illimitées, statistiques avancées (meilleure "
-                  "série, taux de complétion) et graphiques.",
-                  textAlign: TextAlign.center,
-                ),
+                Text(l10n.paywallDescription, textAlign: TextAlign.center),
                 const SizedBox(height: 24),
                 if (premium.isPremium) const _ActivePremiumCard(),
                 if (!premium.storeAvailable) const _StoreUnavailableCard(),
@@ -52,7 +50,7 @@ class PaywallScreen extends StatelessWidget {
                 Center(
                   child: TextButton(
                     onPressed: premium.purchasePending ? null : () => premium.restore(),
-                    child: const Text('Restaurer mes achats'),
+                    child: Text(l10n.restorePurchases),
                   ),
                 ),
               ],
@@ -70,13 +68,14 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isYearly = product.id == SubscriptionProductIds.yearly;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: Icon(isYearly ? Icons.calendar_month : Icons.event_repeat),
-        title: Text(isYearly ? 'Abonnement annuel' : 'Abonnement mensuel'),
+        title: Text(isYearly ? l10n.yearlyPlan : l10n.monthlyPlan),
         subtitle: Text(product.description),
         trailing: pending
             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
@@ -91,16 +90,14 @@ class _ActivePremiumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       color: Colors.amber.withValues(alpha: 0.15),
       margin: const EdgeInsets.only(bottom: 16),
-      child: const ListTile(
-        leading: Icon(Icons.check_circle, color: Colors.green),
-        title: Text('Abonnement actif'),
-        subtitle: Text(
-          "Gérez ou annulez votre abonnement depuis les réglages de "
-          "l'App Store / Google Play de votre téléphone.",
-        ),
+      child: ListTile(
+        leading: const Icon(Icons.check_circle, color: Colors.green),
+        title: Text(l10n.activeSubscription),
+        subtitle: Text(l10n.manageSubscriptionHint),
       ),
     );
   }
@@ -111,16 +108,13 @@ class _StoreUnavailableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       color: Colors.orange.withValues(alpha: 0.15),
       margin: const EdgeInsets.only(bottom: 16),
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          "Le magasin d'applications n'est pas disponible sur cet appareil "
-          "(simulateur, ou app installée hors Play Store / App Store). "
-          "Testez sur un appareil réel connecté à un compte de test.",
-        ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(l10n.storeUnavailable),
       ),
     );
   }

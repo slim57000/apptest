@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/habit.dart';
 
 class HabitCard extends StatelessWidget {
@@ -17,6 +18,7 @@ class HabitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final color = Color(habit.colorValue);
     final done = habit.isCompletedToday;
     final active = habit.isActiveOn(DateTime.now());
@@ -48,12 +50,12 @@ class HabitCard extends StatelessWidget {
                     ),
                     if (habit.currentStreak > 0)
                       Text(
-                        '🔥 ${habit.currentStreak} jour(s) de suite',
+                        l10n.streakDays(habit.currentStreak),
                         style: Theme.of(context).textTheme.bodySmall,
                       )
                     else
                       Text(
-                        active ? "Pas encore commencé" : 'Pas prévu aujourd\'hui',
+                        active ? l10n.notStartedYet : l10n.notScheduledToday,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                   ],

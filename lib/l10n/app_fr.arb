@@ -1,0 +1,187 @@
+{
+  "@@locale": "fr",
+
+  "appTitle": "Habitude+",
+  "@appTitle": {},
+
+  "subscriptionTooltip": "Abonnement",
+  "@subscriptionTooltip": {},
+
+  "newHabit": "Nouvelle habitude",
+  "@newHabit": {},
+
+  "emptyStateTitle": "Aucune habitude pour l'instant",
+  "@emptyStateTitle": {},
+
+  "emptyStateSubtitle": "Ajoutez votre première habitude à suivre au quotidien.",
+  "@emptyStateSubtitle": {},
+
+  "createHabit": "Créer une habitude",
+  "@createHabit": {},
+
+  "streakDays": "{count, plural, one{🔥 {count} jour de suite} other{🔥 {count} jours de suite}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "notStartedYet": "Pas encore commencé",
+  "@notStartedYet": {},
+
+  "notScheduledToday": "Pas prévu aujourd'hui",
+  "@notScheduledToday": {},
+
+  "habitNameLabel": "Nom de l'habitude",
+  "@habitNameLabel": {},
+
+  "habitNameHint": "Ex. Boire de l'eau",
+  "@habitNameHint": {},
+
+  "iconLabel": "Icône",
+  "@iconLabel": {},
+
+  "colorLabel": "Couleur",
+  "@colorLabel": {},
+
+  "activeDaysLabel": "Jours actifs",
+  "@activeDaysLabel": {},
+
+  "activeDaysHint": "Aucun jour sélectionné = tous les jours.",
+  "@activeDaysHint": {},
+
+  "weekdayMon": "L",
+  "@weekdayMon": {},
+  "weekdayTue": "M",
+  "@weekdayTue": {},
+  "weekdayWed": "M",
+  "@weekdayWed": {},
+  "weekdayThu": "J",
+  "@weekdayThu": {},
+  "weekdayFri": "V",
+  "@weekdayFri": {},
+  "weekdaySat": "S",
+  "@weekdaySat": {},
+  "weekdaySun": "D",
+  "@weekdaySun": {},
+
+  "createButton": "Créer",
+  "@createButton": {},
+
+  "habitNotFound": "Habitude introuvable.",
+  "@habitNotFound": {},
+
+  "markDone": "Marquer comme fait",
+  "@markDone": {},
+
+  "doneToday": "Fait aujourd'hui",
+  "@doneToday": {},
+
+  "deleteHabitTitle": "Supprimer cette habitude ?",
+  "@deleteHabitTitle": {},
+
+  "deleteHabitContent": "\"{name}\" et tout son historique seront supprimés.",
+  "@deleteHabitContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "cancel": "Annuler",
+  "@cancel": {},
+
+  "delete": "Supprimer",
+  "@delete": {},
+
+  "bestStreak": "Meilleure série",
+  "@bestStreak": {},
+
+  "completionRate30": "Taux (30 j)",
+  "@completionRate30": {},
+
+  "weeklyCompletionTitle": "Complétion sur 7 jours",
+  "@weeklyCompletionTitle": {},
+
+  "premiumStatsTitle": "Statistiques Premium",
+  "@premiumStatsTitle": {},
+
+  "premiumStatsDesc": "Débloquez la meilleure série, le taux de complétion et le graphique hebdomadaire.",
+  "@premiumStatsDesc": {},
+
+  "viewSubscription": "Voir l'abonnement",
+  "@viewSubscription": {},
+
+  "paywallTitle": "Habitude+ Premium",
+  "@paywallTitle": {},
+
+  "youArePremium": "Vous êtes Premium",
+  "@youArePremium": {},
+
+  "goPremium": "Passez Premium",
+  "@goPremium": {},
+
+  "paywallDescription": "Habitudes illimitées, statistiques avancées (meilleure série, taux de complétion) et graphiques.",
+  "@paywallDescription": {},
+
+  "monthlyPlan": "Abonnement mensuel",
+  "@monthlyPlan": {},
+
+  "yearlyPlan": "Abonnement annuel",
+  "@yearlyPlan": {},
+
+  "activeSubscription": "Abonnement actif",
+  "@activeSubscription": {},
+
+  "manageSubscriptionHint": "Gérez ou annulez votre abonnement depuis les réglages de l'App Store / Google Play de votre téléphone.",
+  "@manageSubscriptionHint": {},
+
+  "storeUnavailable": "Le magasin d'applications n'est pas disponible sur cet appareil (simulateur, ou app installée hors Play Store / App Store). Testez sur un appareil réel connecté à un compte de test.",
+  "@storeUnavailable": {},
+
+  "restorePurchases": "Restaurer mes achats",
+  "@restorePurchases": {},
+
+  "settingsTitle": "Réglages",
+  "@settingsTitle": {},
+
+  "premiumSubscriptionLabel": "Abonnement Premium",
+  "@premiumSubscriptionLabel": {},
+
+  "statusActive": "Actif",
+  "@statusActive": {},
+
+  "statusFree": "Version gratuite",
+  "@statusFree": {},
+
+  "activeHabitsLabel": "Habitudes actives",
+  "@activeHabitsLabel": {},
+
+  "activeHabitsCountPremium": "{count, plural, one{{count} habitude} other{{count} habitudes}}",
+  "@activeHabitsCountPremium": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "activeHabitsCountFree": "{count} / {limit} habitude(s) (version gratuite)",
+  "@activeHabitsCountFree": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
+    }
+  },
+
+  "aboutTitle": "À propos",
+
+  "streakFreezeBannerTitle": "Vous avez manqué hier",
+  "@streakFreezeBannerTitle": {},
+
+  "streakFreezeBannerAction": "Geler ce jour ❄️",
+  "@streakFreezeBannerAction": {},
+
+  "streakFreezeAppliedMessage": "Série protégée grâce au gel !",
+  "@streakFreezeAppliedMessage": {},
+
+  "frozenDay": "Gelé",
+  "@frozenDay": {}
+}

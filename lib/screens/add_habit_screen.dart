@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/habits_provider.dart';
 import '../theme.dart';
 
@@ -17,8 +18,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   int _color = habitColorPalette.first;
   final Set<int> _weekdays = {};
 
-  static const _weekdayLabels = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-
   @override
   void initState() {
     super.initState();
@@ -33,22 +32,33 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final weekdayLabels = [
+      l10n.weekdayMon,
+      l10n.weekdayTue,
+      l10n.weekdayWed,
+      l10n.weekdayThu,
+      l10n.weekdayFri,
+      l10n.weekdaySat,
+      l10n.weekdaySun,
+    ];
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouvelle habitude')),
+      appBar: AppBar(title: Text(l10n.newHabit)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
             controller: _nameController,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Nom de l\'habitude',
-              hintText: 'Ex. Boire de l\'eau',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.habitNameLabel,
+              hintText: l10n.habitNameHint,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 24),
-          Text('Icône', style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.iconLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -63,7 +73,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             }).toList(),
           ),
           const SizedBox(height: 24),
-          Text('Couleur', style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.colorLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
             spacing: 10,
@@ -80,12 +90,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             }).toList(),
           ),
           const SizedBox(height: 24),
-          Text('Jours actifs', style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 4),
-          Text(
-            'Aucun jour sélectionné = tous les jours.',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -93,7 +100,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               final weekday = index + 1;
               final selected = _weekdays.contains(weekday);
               return FilterChip(
-                label: Text(_weekdayLabels[index]),
+                label: Text(weekdayLabels[index]),
                 selected: selected,
                 onSelected: (value) => setState(() {
                   if (value) {
@@ -108,9 +115,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           const SizedBox(height: 32),
           FilledButton(
             onPressed: _nameController.text.trim().isEmpty ? null : _save,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text('Créer'),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(l10n.createButton),
             ),
           ),
         ],

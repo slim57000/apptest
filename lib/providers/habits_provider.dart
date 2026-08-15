@@ -57,4 +57,10 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _storage.saveHabits(_habits);
   }
+
+  Future<void> freezeYesterday(String id) async {
+    _habits = _habits.map((h) => h.id == id ? h.freezeYesterday() : h).toList();
+    notifyListeners();
+    await _storage.saveHabits(_habits);
+  }
 }

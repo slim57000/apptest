@@ -46,3 +46,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Generated localization code (regenerated automatically via `generate: true`
+# in pubspec.yaml / `flutter gen-l10n`; source of truth is lib/l10n/*.arb)
+/lib/l10n/app_localizations*.dart

@@ -15,6 +15,11 @@ class Habit {
   /// Dates complétées, au format `yyyy-MM-dd`.
   final Set<String> completedDates;
 
+  /// Dates "gelées" (fonctionnalité Premium) : un jour manqué qui ne casse
+  /// pas la série, sans compter comme réellement fait dans le taux de
+  /// complétion.
+  final Set<String> frozenDates;
+
   const Habit({
     required this.id,
     required this.name,
@@ -23,6 +28,7 @@ class Habit {
     required this.createdAt,
     this.activeWeekdays = const {},
     this.completedDates = const {},
+    this.frozenDates = const {},
   });
 
   static String dateKey(DateTime day) {
@@ -37,6 +43,11 @@ class Habit {
 
   bool isCompletedOn(DateTime day) => completedDates.contains(dateKey(day));
 
+  bool isFrozenOn(DateTime day) => frozenDates.contains(dateKey(day));
+
+  /// Un jour "protège" la série s'il a été fait ou geler.
+  bool _isStreakSafeOn(DateTime day) => isCompletedOn(day) || isFrozenOn(day);
+
   bool get isCompletedToday => isCompletedOn(DateTime.now());
 
   Habit toggled(DateTime day) {
@@ -50,18 +61,47 @@ class Habit {
 
   DateTime get _createdDay => DateTime(createdAt.year, createdAt.month, createdAt.day);
 
-  /// Nombre de jours actifs consécutifs complétés, en remontant depuis
-  /// aujourd'hui. Aujourd'hui non complété ne casse pas la série (l'
-  /// utilisateur a jusqu'à la fin de la journée), mais ne compte pas non
+  static DateTime _today() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  /// Le jour manqué le plus récent pouvant être gelé (hier, s'il était actif
+  /// et non complété). Fonctionnalité Premium avec un délai de recharge de
+  /// 7 jours entre deux gels pour rester une exception, pas un contournement.
+  bool get canFreezeYesterday {
+    final yesterday = _today().subtract(const Duration(days: 1));
+    if (yesterday.isBefore(_createdDay)) return false;
+    if (!isActiveOn(yesterday)) return false;
+    if (isCompletedOn(yesterday) || isFrozenOn(yesterday)) return false;
+
+    final cooldownStart = yesterday.subtract(const Duration(days: 6));
+    for (final key in frozenDates) {
+      final frozenDay = DateTime.parse(key);
+      if (!frozenDay.isBefore(cooldownStart) && !frozenDay.isAfter(yesterday)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Habit freezeYesterday() {
+    final yesterday = _today().subtract(const Duration(days: 1));
+    final updated = Set<String>.from(frozenDates)..add(dateKey(yesterday));
+    return copyWith(frozenDates: updated);
+  }
+
+  /// Nombre de jours actifs consécutifs complétés (ou gelés), en remontant
+  /// depuis aujourd'hui. Aujourd'hui non complété ne casse pas la série
+  /// (l'utilisateur a jusqu'à la fin de la journée), mais ne compte pas non
   /// plus tant qu'il n'est pas coché.
   int get currentStreak {
     int streak = 0;
-    DateTime cursor = DateTime.now();
-    cursor = DateTime(cursor.year, cursor.month, cursor.day);
+    DateTime cursor = _today();
     bool isFirstDay = true;
     while (!cursor.isBefore(_createdDay)) {
       if (isActiveOn(cursor)) {
-        if (isCompletedOn(cursor)) {
+        if (_isStreakSafeOn(cursor)) {
           streak++;
         } else if (!isFirstDay) {
           break;
@@ -73,16 +113,16 @@ class Habit {
     return streak;
   }
 
-  /// Plus longue série de jours actifs complétés depuis la création.
+  /// Plus longue série de jours actifs complétés (ou gelés) depuis la
+  /// création.
   int get longestStreak {
     int longest = 0;
     int running = 0;
     DateTime cursor = _createdDay;
-    final today = DateTime.now();
-    final endDay = DateTime(today.year, today.month, today.day);
+    final endDay = _today();
     while (!cursor.isAfter(endDay)) {
       if (isActiveOn(cursor)) {
-        if (isCompletedOn(cursor)) {
+        if (_isStreakSafeOn(cursor)) {
           running++;
           if (running > longest) longest = running;
         } else {
@@ -95,10 +135,10 @@ class Habit {
   }
 
   /// Taux de complétion sur les [days] derniers jours (parmi les jours
-  /// actifs uniquement).
+  /// actifs uniquement). Les jours gelés ne comptent pas comme faits : ce
+  /// taux reflète l'adhésion réelle, pas la série protégée.
   double completionRate(int days) {
-    final today = DateTime.now();
-    final todayDay = DateTime(today.year, today.month, today.day);
+    final todayDay = _today();
     int activeCount = 0;
     int doneCount = 0;
     for (int i = 0; i < days; i++) {
@@ -119,6 +159,7 @@ class Habit {
     int? colorValue,
     Set<int>? activeWeekdays,
     Set<String>? completedDates,
+    Set<String>? frozenDates,
   }) {
     return Habit(
       id: id,
@@ -128,6 +169,7 @@ class Habit {
       createdAt: createdAt,
       activeWeekdays: activeWeekdays ?? this.activeWeekdays,
       completedDates: completedDates ?? this.completedDates,
+      frozenDates: frozenDates ?? this.frozenDates,
     );
   }
 
@@ -144,6 +186,9 @@ class Habit {
       completedDates: (json['completedDates'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toSet(),
+      frozenDates: (json['frozenDates'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toSet(),
     );
   }
 
@@ -156,6 +201,7 @@ class Habit {
       'createdAt': createdAt.toIso8601String(),
       'activeWeekdays': activeWeekdays.toList(),
       'completedDates': completedDates.toList(),
+      'frozenDates': frozenDates.toList(),
     };
   }
 }

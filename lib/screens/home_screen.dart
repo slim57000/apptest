@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
 import '../widgets/habit_card.dart';
@@ -15,20 +16,21 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final habitsProvider = context.watch<HabitsProvider>();
     final premium = context.watch<PremiumProvider>();
     final habits = habitsProvider.habits;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Habitude+'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: Icon(
               Icons.workspace_premium,
               color: premium.isPremium ? Colors.amber : null,
             ),
-            tooltip: 'Abonnement',
+            tooltip: l10n.subscriptionTooltip,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const PaywallScreen()),
             ),
@@ -63,7 +65,7 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addHabit(context),
         icon: const Icon(Icons.add),
-        label: const Text('Nouvelle habitude'),
+        label: Text(l10n.newHabit),
       ),
     );
   }
@@ -86,6 +88,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -94,17 +97,14 @@ class _EmptyState extends StatelessWidget {
           children: [
             const Text('✨', style: TextStyle(fontSize: 56)),
             const SizedBox(height: 16),
-            Text('Aucune habitude pour l\'instant', style: Theme.of(context).textTheme.titleLarge),
+            Text(l10n.emptyStateTitle, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
-            const Text(
-              "Ajoutez votre première habitude à suivre au quotidien.",
-              textAlign: TextAlign.center,
-            ),
+            Text(l10n.emptyStateSubtitle, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: onAdd,
               icon: const Icon(Icons.add),
-              label: const Text('Créer une habitude'),
+              label: Text(l10n.createHabit),
             ),
           ],
         ),
