@@ -35,6 +35,7 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - Icône d'application personnalisée (flamme sur fond violet, générée dans
   `assets/icon/`) appliquée à Android/iOS/web via `flutter_launcher_icons`
   — plus l'icône Flutter par défaut.
+- **Mode sombre** automatique (suit le thème du système, `lib/theme.dart`).
 
 ## Stack technique
 

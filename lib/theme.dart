@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static ThemeData light() {
-    final base = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6C5CE7)),
-      useMaterial3: true,
-    );
+  static ThemeData light() => _themeFrom(
+        ColorScheme.fromSeed(seedColor: const Color(0xFF6C5CE7)),
+      );
+
+  static ThemeData dark() => _themeFrom(
+        ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6C5CE7),
+          brightness: Brightness.dark,
+        ),
+      );
+
+  static ThemeData _themeFrom(ColorScheme colorScheme) {
+    final base = ThemeData(colorScheme: colorScheme, useMaterial3: true);
     return base.copyWith(
       textTheme: GoogleFonts.poppinsTextTheme(base.textTheme),
       scaffoldBackgroundColor: base.colorScheme.surface,
