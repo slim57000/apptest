@@ -8,12 +8,22 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 
 ## Fonctionnalités
 
-- Créer des habitudes (nom, emoji, couleur, jours actifs dans la semaine).
+- Créer des habitudes (nom, emoji, couleur, jours actifs dans la semaine),
+  ou partir d'un **modèle prêt à l'emploi** (14 habitudes réparties en 4
+  packs thématiques) pour éviter la page blanche du premier lancement —
+  voir `lib/models/habit_template.dart` / `lib/screens/templates_screen.dart`.
 - Cocher chaque jour ses habitudes, avec calcul automatique du streak
   (série de jours consécutifs).
 - **Rappel quotidien** optionnel par habitude (notification locale à une
   heure choisie, uniquement les jours actifs) — voir
   `lib/services/notification_service.dart`.
+- **Note de journal** optionnelle par jour (réflexion libre sur pourquoi
+  une habitude a été tenue/manquée).
+- **Jardin virtuel** sur l'accueil qui grandit avec la régularité globale
+  (toutes habitudes confondues) et se fane si rien n'a été fait depuis
+  hier — voir `lib/widgets/garden_card.dart`.
+- **Carte de série partageable** (image générée, façon Stories) pour
+  partager sa série sur les réseaux — voir `lib/screens/share_card_screen.dart`.
 - Version gratuite : jusqu'à **3 habitudes actives**.
 - Version **Premium** (abonnement mensuel/annuel ou achat à vie, via achat
   in-app natif Play Store / App Store) :
@@ -22,12 +32,18 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
     jours, graphique de complétion sur 7 jours, et une grille d'activité
     façon "GitHub contributions" sur les 12 dernières semaines
     (`lib/widgets/habit_heatmap.dart`).
+  - **Récap hebdo cross-habitudes** : vue d'ensemble de la semaine plutôt
+    que de naviguer habitude par habitude (`lib/screens/recap_screen.dart`).
   - **Gel de série** (streak freeze) : si un jour actif a été manqué hier,
     un utilisateur Premium peut le "geler" pour ne pas casser sa série
     (façon Duolingo). Limité à un gel tous les 7 jours par habitude pour
     rester une roue de secours, pas un contournement — voir
     `Habit.canFreezeYesterday` / `Habit.freezeYesterday()` dans
     `lib/models/habit.dart`.
+  - **Suivi automatique des pas** (Health Connect / Apple Health) : coche
+    automatiquement une habitude si l'objectif de pas du jour est atteint
+    — voir la section dédiée plus bas (nécessite un vrai appareil pour
+    être testée).
 - Petite animation confettis quand une habitude atteint un palier de streak
   (7, 14, 21 jours...).
 - **Français et anglais**, avec repli automatique sur le français si la
@@ -45,6 +61,13 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - `in_app_purchase` pour l'abonnement Premium — achats natifs Play Store /
   App Store, aucun serveur de paiement à héberger. Voir
   `lib/services/purchase_service.dart` et `lib/providers/premium_provider.dart`.
+  Une restauration silencieuse des achats est tentée à chaque lancement
+  (en plus du bouton manuel "Restaurer mes achats" du paywall), pour
+  resynchroniser le statut Premium après réinstallation/changement
+  d'appareil sans action de l'utilisateur.
+- `health` pour le suivi automatique des pas (Health Connect / Apple
+  Health) — voir `lib/services/health_service.dart`.
+- `share_plus` + `path_provider` pour la carte de série partageable.
 - Localisation via le système standard Flutter (`flutter_localizations` +
   `flutter gen-l10n`) : fichiers source dans `lib/l10n/*.arb`, le code
   généré (`app_localizations*.dart`) n'est pas versionné (régénéré
@@ -139,6 +162,22 @@ lib/
   généré par `flutter create`, non compilé en APK/IPA faute de SDK Android
   dans cet environnement de développement — build web fait à titre
   d'aperçu visuel uniquement).
+- **Suivi automatique des pas (Health Connect / Apple Health) : à tester
+  en priorité sur un vrai appareil avant de shipper.** C'est la seule
+  fonctionnalité qui touche à des permissions/capacités natives que cet
+  environnement ne peut pas exécuter ni vérifier :
+  - **Android** : nécessite l'app **Health Connect** installée sur
+    l'appareil (préinstallée sur Android 14+, sinon à télécharger sur le
+    Play Store). Les permissions Health Connect
+    (`android.permission.health.READ_STEPS`) et le queries/activity-alias
+    requis sont déjà dans `AndroidManifest.xml`.
+  - **iOS** : `NSHealthShareUsageDescription` est dans `Info.plist`, mais
+    la capacité **HealthKit** doit encore être activée manuellement dans
+    Xcode (onglet Signing & Capabilities → + Capability → HealthKit) —
+    étape qui ne peut pas être faite en dehors de Xcode/un Mac.
+  - Objectif fixe de 5000 pas/jour pour la v1 (`stepsGoalForAutoComplete`
+    dans `lib/services/health_service.dart`), non configurable par
+    l'utilisateur.
 
 ## Régénérer l'icône de l'app
 

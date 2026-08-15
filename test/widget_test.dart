@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:habit_tracker/app.dart';
 import 'package:habit_tracker/providers/habits_provider.dart';
 import 'package:habit_tracker/providers/premium_provider.dart';
+import 'package:habit_tracker/services/health_service.dart';
 import 'package:habit_tracker/services/notification_service.dart';
 import 'package:habit_tracker/services/purchase_service.dart';
 import 'package:habit_tracker/services/storage_service.dart';
@@ -18,10 +19,12 @@ void main() {
         providers: [
           Provider(create: (_) => StorageService()),
           Provider(create: (_) => NotificationService()),
+          Provider(create: (_) => HealthService()),
           ChangeNotifierProvider(
             create: (context) => HabitsProvider(
               context.read<StorageService>(),
               context.read<NotificationService>(),
+              context.read<HealthService>(),
             ),
           ),
           ChangeNotifierProvider(create: (_) => PremiumProvider(PurchaseService())),

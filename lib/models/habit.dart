@@ -28,6 +28,11 @@ class Habit {
   /// réflexion libre sur pourquoi un jour a été réussi/manqué.
   final Map<String, String> notes;
 
+  /// Complétion automatique (Premium) via Health Connect / Apple Health :
+  /// si le nombre de pas du jour dépasse [stepsGoalForAutoComplete],
+  /// l'habitude est cochée automatiquement.
+  final bool autoTrackSteps;
+
   const Habit({
     required this.id,
     required this.name,
@@ -38,6 +43,7 @@ class Habit {
     this.completedDates = const {},
     this.frozenDates = const {},
     this.reminderMinutes,
+    this.autoTrackSteps = false,
     this.notes = const {},
   });
 
@@ -68,6 +74,16 @@ class Habit {
     if (!updated.remove(key)) {
       updated.add(key);
     }
+    return copyWith(completedDates: updated);
+  }
+
+  /// Marque [day] comme fait si ce n'est pas déjà le cas ; ne le décoche
+  /// jamais (contrairement à [toggled]). Utilisé par la complétion
+  /// automatique via Health Connect / Apple Health, où appeler la
+  /// synchronisation plusieurs fois ne doit jamais annuler une complétion.
+  Habit completeOn(DateTime day) {
+    if (isCompletedOn(day)) return this;
+    final updated = Set<String>.from(completedDates)..add(dateKey(day));
     return copyWith(completedDates: updated);
   }
 
@@ -117,6 +133,7 @@ class Habit {
       completedDates: completedDates,
       frozenDates: frozenDates,
       reminderMinutes: reminderMinutes,
+      autoTrackSteps: autoTrackSteps,
       notes: notes,
     );
   }
@@ -140,7 +157,25 @@ class Habit {
       completedDates: completedDates,
       frozenDates: frozenDates,
       reminderMinutes: reminderMinutes,
+      autoTrackSteps: autoTrackSteps,
       notes: updated,
+    );
+  }
+
+  /// Active/désactive la complétion automatique via les pas de santé.
+  Habit withAutoTrackSteps(bool value) {
+    return Habit(
+      id: id,
+      name: name,
+      emoji: emoji,
+      colorValue: colorValue,
+      createdAt: createdAt,
+      activeWeekdays: activeWeekdays,
+      completedDates: completedDates,
+      frozenDates: frozenDates,
+      reminderMinutes: reminderMinutes,
+      autoTrackSteps: value,
+      notes: notes,
     );
   }
 
@@ -224,6 +259,7 @@ class Habit {
       completedDates: completedDates ?? this.completedDates,
       frozenDates: frozenDates ?? this.frozenDates,
       reminderMinutes: reminderMinutes,
+      autoTrackSteps: autoTrackSteps,
       notes: notes,
     );
   }
@@ -245,6 +281,7 @@ class Habit {
           .map((e) => e as String)
           .toSet(),
       reminderMinutes: json['reminderMinutes'] as int?,
+      autoTrackSteps: json['autoTrackSteps'] as bool? ?? false,
       notes: (json['notes'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(key, value as String)),
     );
@@ -261,6 +298,7 @@ class Habit {
       'completedDates': completedDates.toList(),
       'frozenDates': frozenDates.toList(),
       'reminderMinutes': reminderMinutes,
+      'autoTrackSteps': autoTrackSteps,
       'notes': notes,
     };
   }

@@ -116,5 +116,9 @@
   "gardenNeedsWater": "Your garden is thirsty! Complete a habit today 💧",
 
   "gardenCompletionsCount": "{count, plural, one{{count} habit completed in total} other{{count} habits completed in total}}",
-  "gardenProgressToNext": "{remaining, plural, one{{remaining} more to reach the next level} other{{remaining} more to reach the next level}}"
+  "gardenProgressToNext": "{remaining, plural, one{{remaining} more to reach the next level} other{{remaining} more to reach the next level}}",
+
+  "autoTrackStepsLabel": "Automatic step tracking",
+  "autoTrackStepsHint": "Automatically mark this habit done when you reach {goal} steps in a day (Health Connect on Android, Apple Health on iOS).",
+  "autoTrackStepsPermissionDenied": "Health permission denied or unavailable."
 }

@@ -41,6 +41,9 @@ dependencies:
   share_plus: ^13.3.0
   path_provider: ^2.1.6
 
+  # Suivi automatique des pas via Health Connect (Android) / Apple Health (iOS)
+  health: ^13.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

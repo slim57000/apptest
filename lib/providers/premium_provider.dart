@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +51,14 @@ class PremiumProvider extends ChangeNotifier {
     );
     _loading = false;
     notifyListeners();
+
+    // Restauration silencieuse au lancement (nouvel appareil, réinstall,
+    // stockage local effacé...) : sans spinner ni carte d'erreur, l'échec
+    // est invisible pour l'utilisateur qui n'a rien demandé explicitement.
+    // Le bouton "Restaurer mes achats" du paywall reste le chemin manuel.
+    if (_purchaseService.isAvailable) {
+      unawaited(_purchaseService.restorePurchases().catchError((_) {}));
+    }
   }
 
   Future<void> buy(ProductDetails product) async {

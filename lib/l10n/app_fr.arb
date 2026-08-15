@@ -325,5 +325,18 @@
     "placeholders": {
       "remaining": { "type": "int" }
     }
-  }
+  },
+
+  "autoTrackStepsLabel": "Suivi automatique des pas",
+  "@autoTrackStepsLabel": {},
+
+  "autoTrackStepsHint": "Coche automatiquement cette habitude si vous atteignez {goal} pas dans la journée (Health Connect sur Android, Apple Health sur iOS).",
+  "@autoTrackStepsHint": {
+    "placeholders": {
+      "goal": { "type": "int" }
+    }
+  },
+
+  "autoTrackStepsPermissionDenied": "Autorisation santé refusée ou indisponible.",
+  "@autoTrackStepsPermissionDenied": {}
 }

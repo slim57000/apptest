@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'l10n/app_localizations.dart';
+import 'providers/habits_provider.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
@@ -27,7 +29,43 @@ class HabitudeApp extends StatelessWidget {
         }
         return const Locale('fr');
       },
-      home: const HomeScreen(),
+      home: const _HealthSyncGate(child: HomeScreen()),
     );
   }
+}
+
+/// Resynchronise les pas de santé (Health Connect / Apple Health) au retour
+/// au premier plan, en plus du sync fait à l'ouverture -- utile si
+/// l'utilisateur marche puis revient dans l'app plus tard dans la journée.
+class _HealthSyncGate extends StatefulWidget {
+  final Widget child;
+
+  const _HealthSyncGate({required this.child});
+
+  @override
+  State<_HealthSyncGate> createState() => _HealthSyncGateState();
+}
+
+class _HealthSyncGateState extends State<_HealthSyncGate> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<HabitsProvider>().syncHealthSteps();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

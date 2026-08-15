@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/habit.dart';
+import '../services/health_service.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
 
@@ -10,11 +11,12 @@ class HabitsProvider extends ChangeNotifier {
 
   final StorageService _storage;
   final NotificationService _notifications;
+  final HealthService _health;
 
   List<Habit> _habits = [];
   bool _loading = true;
 
-  HabitsProvider(this._storage, this._notifications) {
+  HabitsProvider(this._storage, this._notifications, this._health) {
     _load();
   }
 
@@ -33,6 +35,7 @@ class HabitsProvider extends ChangeNotifier {
         await _notifications.scheduleReminders(habit);
       }
     }
+    await syncHealthSteps();
   }
 
   bool canAddHabit(bool isPremium) => isPremium || _habits.length < freeHabitLimit;
@@ -92,6 +95,40 @@ class HabitsProvider extends ChangeNotifier {
 
   Future<void> setNote(String id, DateTime day, String? note) async {
     _habits = _habits.map((h) => h.id == id ? h.withNote(day, note) : h).toList();
+    notifyListeners();
+    await _storage.saveHabits(_habits);
+  }
+
+  /// Active/désactive la complétion automatique via les pas de santé pour
+  /// une habitude. À l'activation, demande l'autorisation Health Connect /
+  /// Apple Health puis tente une synchronisation immédiate.
+  Future<bool> setAutoTrackSteps(String id, bool value) async {
+    if (value) {
+      final granted = await _health.requestStepsAuthorization();
+      if (!granted) return false;
+    }
+    _habits = _habits.map((h) => h.id == id ? h.withAutoTrackSteps(value) : h).toList();
+    notifyListeners();
+    await _storage.saveHabits(_habits);
+    if (value) await syncHealthSteps();
+    return true;
+  }
+
+  /// Coche automatiquement les habitudes suivies via la santé si l'objectif
+  /// de pas du jour est atteint. Idempotent (n'annule jamais une
+  /// complétion) et sans effet pour les habitudes sans suivi automatique.
+  Future<void> syncHealthSteps() async {
+    final tracked = _habits.where(
+      (h) => h.autoTrackSteps && h.isActiveOn(DateTime.now()) && !h.isCompletedToday,
+    );
+    if (tracked.isEmpty) return;
+
+    final steps = await _health.stepsToday();
+    if (steps < stepsGoalForAutoComplete) return;
+
+    _habits = _habits
+        .map((h) => h.autoTrackSteps ? h.completeOn(DateTime.now()) : h)
+        .toList();
     notifyListeners();
     await _storage.saveHabits(_habits);
   }

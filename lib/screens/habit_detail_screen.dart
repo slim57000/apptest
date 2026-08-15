@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../models/habit.dart';
 import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
+import '../services/health_service.dart';
 import '../widgets/habit_heatmap.dart';
 import 'paywall_screen.dart';
 import 'share_card_screen.dart';
@@ -113,6 +114,10 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
               _ReminderTile(habit: habit),
               const SizedBox(height: 16),
               _JournalTile(habit: habit),
+              if (premium.isPremium) ...[
+                const SizedBox(height: 16),
+                _HealthTrackingTile(habit: habit),
+              ],
               const SizedBox(height: 32),
               if (premium.isPremium)
                 _PremiumStats(habit: habit)
@@ -312,6 +317,33 @@ class _JournalTile extends StatelessWidget {
         result,
       );
     }
+  }
+}
+
+class _HealthTrackingTile extends StatelessWidget {
+  final Habit habit;
+
+  const _HealthTrackingTile({required this.habit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      child: SwitchListTile(
+        secondary: const Icon(Icons.directions_walk),
+        title: Text(l10n.autoTrackStepsLabel),
+        subtitle: Text(l10n.autoTrackStepsHint(stepsGoalForAutoComplete)),
+        value: habit.autoTrackSteps,
+        onChanged: (value) async {
+          final ok = await context.read<HabitsProvider>().setAutoTrackSteps(habit.id, value);
+          if (!ok && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.autoTrackStepsPermissionDenied)),
+            );
+          }
+        },
+      ),
+    );
   }
 }
 
