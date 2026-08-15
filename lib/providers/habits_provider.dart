@@ -4,6 +4,7 @@ import '../models/habit.dart';
 import '../services/health_service.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
+import '../services/widget_service.dart';
 
 class HabitsProvider extends ChangeNotifier {
   /// Nombre d'habitudes actives autorisées en version gratuite.
@@ -12,16 +13,22 @@ class HabitsProvider extends ChangeNotifier {
   final StorageService _storage;
   final NotificationService _notifications;
   final HealthService _health;
+  final WidgetService _widget;
 
   List<Habit> _habits = [];
   bool _loading = true;
 
-  HabitsProvider(this._storage, this._notifications, this._health) {
+  HabitsProvider(this._storage, this._notifications, this._health, this._widget) {
     _load();
   }
 
   bool get loading => _loading;
   List<Habit> get habits => List.unmodifiable(_habits);
+
+  Future<void> _persist() async {
+    await _storage.saveHabits(_habits);
+    await _widget.updateHabits(_habits);
+  }
 
   Future<void> _load() async {
     _habits = await _storage.loadHabits();
@@ -35,6 +42,7 @@ class HabitsProvider extends ChangeNotifier {
         await _notifications.scheduleReminders(habit);
       }
     }
+    await _widget.updateHabits(_habits);
     await syncHealthSteps();
   }
 
@@ -58,27 +66,27 @@ class HabitsProvider extends ChangeNotifier {
     );
     _habits = [..._habits, habit];
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
     await _notifications.scheduleReminders(habit);
   }
 
   Future<void> deleteHabit(String id) async {
     _habits = _habits.where((h) => h.id != id).toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
     await _notifications.cancelReminders(id);
   }
 
   Future<void> toggleToday(String id) async {
     _habits = _habits.map((h) => h.id == id ? h.toggled(DateTime.now()) : h).toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
   }
 
   Future<void> freezeYesterday(String id) async {
     _habits = _habits.map((h) => h.id == id ? h.freezeYesterday() : h).toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
   }
 
   Future<void> setReminder(String id, int? reminderMinutes) async {
@@ -89,14 +97,14 @@ class HabitsProvider extends ChangeNotifier {
       return updated!;
     }).toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
     if (updated != null) await _notifications.scheduleReminders(updated!);
   }
 
   Future<void> setNote(String id, DateTime day, String? note) async {
     _habits = _habits.map((h) => h.id == id ? h.withNote(day, note) : h).toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
   }
 
   /// Active/désactive la complétion automatique via les pas de santé pour
@@ -109,7 +117,7 @@ class HabitsProvider extends ChangeNotifier {
     }
     _habits = _habits.map((h) => h.id == id ? h.withAutoTrackSteps(value) : h).toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
     if (value) await syncHealthSteps();
     return true;
   }
@@ -130,6 +138,6 @@ class HabitsProvider extends ChangeNotifier {
         .map((h) => h.autoTrackSteps ? h.completeOn(DateTime.now()) : h)
         .toList();
     notifyListeners();
-    await _storage.saveHabits(_habits);
+    await _persist();
   }
 }

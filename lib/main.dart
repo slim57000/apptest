@@ -8,6 +8,7 @@ import 'services/health_service.dart';
 import 'services/notification_service.dart';
 import 'services/purchase_service.dart';
 import 'services/storage_service.dart';
+import 'services/widget_service.dart';
 
 void main() {
   runApp(
@@ -16,11 +17,13 @@ void main() {
         Provider(create: (_) => StorageService()),
         Provider(create: (_) => NotificationService()),
         Provider(create: (_) => HealthService()),
+        Provider(create: (_) => WidgetService()),
         ChangeNotifierProvider(
           create: (context) => HabitsProvider(
             context.read<StorageService>(),
             context.read<NotificationService>(),
             context.read<HealthService>(),
+            context.read<WidgetService>(),
           ),
         ),
         ChangeNotifierProvider(

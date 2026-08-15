@@ -52,6 +52,8 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   `assets/icon/`) appliquée à Android/iOS/web via `flutter_launcher_icons`
   — plus l'icône Flutter par défaut.
 - **Mode sombre** automatique (suit le thème du système, `lib/theme.dart`).
+- **Widget écran d'accueil Android** (lecture seule) — voir la section
+  dédiée plus bas.
 
 ## Stack technique
 
@@ -196,12 +198,35 @@ canevas pour éviter le rognage), puis :
 dart run flutter_launcher_icons
 ```
 
+## Widget écran d'accueil (Android, lecture seule — à tester sur appareil)
+
+Affiche jusqu'à 4 habitudes du jour + le compteur "faites/prévues" ; un tap
+ouvre l'app (pas de coche directement depuis le widget en v1). Implémenté
+avec uniquement des APIs Android standard (`SharedPreferences` +
+`AppWidgetManager` + un `MethodChannel` maison) plutôt qu'un package tiers,
+pour rester vérifiable sans dépendre de détails internes non documentés.
+
+- `lib/services/widget_service.dart` : sérialise les habitudes du jour et
+  les envoie côté natif à chaque changement (`HabitsProvider._persist()`).
+- `android/app/src/main/kotlin/.../MainActivity.kt` : reçoit les données via
+  le `MethodChannel` et les écrit dans les `SharedPreferences` du widget.
+- `android/app/src/main/kotlin/.../HabitWidgetProvider.kt` : lit ces
+  données et met à jour l'affichage (`RemoteViews`).
+- `android/app/src/main/res/{layout,xml,drawable}/` : mise en page,
+  métadonnées du widget (taille, période de rafraîchissement) et fond
+  dégradé.
+
+**Comme le suivi santé, c'est du code natif que cet environnement ne peut
+pas compiler ni exécuter (pas de SDK Android ici) : à vérifier en priorité
+sur un appareil réel** — ajouter le widget à l'écran d'accueil, cocher une
+habitude dans l'app et confirmer que le widget se met à jour. Pas d'
+équivalent iOS (nécessiterait une extension WidgetKit créée depuis Xcode,
+impossible à scaffolder par édition de fichiers seule).
+
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 
-- Widget écran d'accueil (nécessite du code natif Android/iOS, pas
-  implémenté ici).
-- Défis/groupes entre amis (accountability sociale) — nécessiterait un
-  backend, ce qui casse volontairement l'approche "aucun backend" de la
-  v1.
 - Rappels intelligents (relance si toujours pas fait à une heure donnée,
   pas juste un rappel statique).
+- Interaction directe depuis le widget (cocher sans ouvrir l'app) —
+  nécessiterait un `RemoteViewsService`/callback en tâche de fond, plus
+  complexe que la version lecture-seule actuelle.

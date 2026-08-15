@@ -9,6 +9,7 @@ import 'package:habit_tracker/services/health_service.dart';
 import 'package:habit_tracker/services/notification_service.dart';
 import 'package:habit_tracker/services/purchase_service.dart';
 import 'package:habit_tracker/services/storage_service.dart';
+import 'package:habit_tracker/services/widget_service.dart';
 
 void main() {
   testWidgets('Affiche l\'état vide au premier lancement', (WidgetTester tester) async {
@@ -20,11 +21,13 @@ void main() {
           Provider(create: (_) => StorageService()),
           Provider(create: (_) => NotificationService()),
           Provider(create: (_) => HealthService()),
+          Provider(create: (_) => WidgetService()),
           ChangeNotifierProvider(
             create: (context) => HabitsProvider(
               context.read<StorageService>(),
               context.read<NotificationService>(),
               context.read<HealthService>(),
+              context.read<WidgetService>(),
             ),
           ),
           ChangeNotifierProvider(create: (_) => PremiumProvider(PurchaseService())),
