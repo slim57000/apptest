@@ -139,10 +139,16 @@ lib/
 
 ## Régénérer l'icône de l'app
 
-Remplacer `assets/icon/icon.png` (icône pleine, 1024×1024) et
-`assets/icon/icon_foreground.png` (calque transparent pour l'icône
-adaptative Android, motif centré dans les 66% du canevas pour éviter le
-rognage), puis :
+L'icône actuelle est le glyphe couleur 🔥 de la police Noto Color Emoji
+(Google, licence SIL Open Font License) sur un fond dégradé violet — choix
+volontairement littéral pour rester immédiatement reconnaissable comme
+"flamme/série" à toutes les tailles, plutôt qu'une forme dessinée à la main
+plus stylisée mais ambiguë en petit format.
+
+Pour remplacer par un autre visuel : remplacer `assets/icon/icon.png`
+(icône pleine, 1024×1024) et `assets/icon/icon_foreground.png` (calque
+transparent pour l'icône adaptative Android, motif centré dans les 66% du
+canevas pour éviter le rognage), puis :
 
 ```bash
 dart run flutter_launcher_icons
