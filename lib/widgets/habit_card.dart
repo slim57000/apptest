@@ -1,0 +1,76 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import '../models/habit.dart';
+
+class HabitCard extends StatelessWidget {
+  final Habit habit;
+  final VoidCallback onToggle;
+  final VoidCallback onTap;
+
+  const HabitCard({
+    super.key,
+    required this.habit,
+    required this.onToggle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Color(habit.colorValue);
+    final done = habit.isCompletedToday;
+    final active = habit.isActiveOn(DateTime.now());
+
+    return Card(
+      color: color.withValues(alpha: done ? 0.16 : 0.08),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: color.withValues(alpha: 0.2),
+                child: Text(habit.emoji, style: const TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      habit.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    if (habit.currentStreak > 0)
+                      Text(
+                        '🔥 ${habit.currentStreak} jour(s) de suite',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      )
+                    else
+                      Text(
+                        active ? "Pas encore commencé" : 'Pas prévu aujourd\'hui',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                  ],
+                ),
+              ),
+              IconButton(
+                iconSize: 32,
+                onPressed: active ? onToggle : null,
+                icon: Icon(
+                  done ? Icons.check_circle : Icons.radio_button_unchecked,
+                  color: done ? color : Theme.of(context).disabledColor,
+                ),
+              ).animate(target: done ? 1 : 0).scaleXY(begin: 1, end: 1.15, curve: Curves.easeOutBack),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
