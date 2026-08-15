@@ -66,5 +66,9 @@
   "removeReminder": "Remove reminder",
   "lifetimePlan": "Lifetime access",
   "lifetimeActive": "Lifetime access active",
-  "activityHeatmapTitle": "Activity (last 12 weeks)"
+  "activityHeatmapTitle": "Activity (last 12 weeks)",
+  "shareStreakTitle": "Share my streak",
+  "shareAction": "Share",
+  "shareCardDaysLabel": "day streak",
+  "shareCardBranding": "Habitude+"
 }

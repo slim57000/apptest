@@ -9,6 +9,7 @@ import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
 import '../widgets/habit_heatmap.dart';
 import 'paywall_screen.dart';
+import 'share_card_screen.dart';
 
 class HabitDetailScreen extends StatefulWidget {
   final String habitId;
@@ -55,6 +56,13 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       appBar: AppBar(
         title: Text(habit.name),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.ios_share),
+            tooltip: l10n.shareStreakTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => ShareCardScreen(habit: habit)),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => _confirmDelete(context, habit),

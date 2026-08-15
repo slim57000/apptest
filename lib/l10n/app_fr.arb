@@ -211,5 +211,17 @@
   "@lifetimeActive": {},
 
   "activityHeatmapTitle": "Activité (12 dernières semaines)",
-  "@activityHeatmapTitle": {}
+  "@activityHeatmapTitle": {},
+
+  "shareStreakTitle": "Partager ma série",
+  "@shareStreakTitle": {},
+
+  "shareAction": "Partager",
+  "@shareAction": {},
+
+  "shareCardDaysLabel": "jours de suite",
+  "@shareCardDaysLabel": {},
+
+  "shareCardBranding": "Habitude+",
+  "@shareCardBranding": {}
 }
