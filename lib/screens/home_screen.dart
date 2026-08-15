@@ -9,6 +9,7 @@ import '../widgets/habit_card.dart';
 import 'add_habit_screen.dart';
 import 'habit_detail_screen.dart';
 import 'paywall_screen.dart';
+import 'recap_screen.dart';
 import 'settings_screen.dart';
 import 'templates_screen.dart';
 
@@ -31,6 +32,15 @@ class HomeScreen extends StatelessWidget {
             tooltip: l10n.chooseTemplate,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const TemplatesScreen()),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.insights),
+            tooltip: l10n.recapTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => premium.isPremium ? const RecapScreen() : const PaywallScreen(),
+              ),
             ),
           ),
           IconButton(

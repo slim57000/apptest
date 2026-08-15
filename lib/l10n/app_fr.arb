@@ -282,5 +282,20 @@
   "@journalEmpty": {},
 
   "save": "Enregistrer",
-  "@save": {}
+  "@save": {},
+
+  "recapTitle": "Récap de la semaine",
+  "@recapTitle": {},
+
+  "recapOverallRate": "Complétion globale (7 jours)",
+  "@recapOverallRate": {},
+
+  "recapBestHabit": "Meilleure série en cours",
+  "@recapBestHabit": {},
+
+  "recapNoHabits": "Ajoutez des habitudes pour voir votre récap.",
+  "@recapNoHabits": {},
+
+  "recapPerHabit": "Détail par habitude",
+  "@recapPerHabit": {}
 }
