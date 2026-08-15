@@ -223,5 +223,52 @@
   "@shareCardDaysLabel": {},
 
   "shareCardBranding": "Habitude+",
-  "@shareCardBranding": {}
+  "@shareCardBranding": {},
+
+  "chooseTemplate": "Choisir un modèle",
+  "@chooseTemplate": {},
+
+  "templatesTitle": "Modèles d'habitudes",
+  "@templatesTitle": {},
+
+  "habitAdded": "Habitude ajoutée !",
+  "@habitAdded": {},
+
+  "templatePackMorning": "Routine du matin",
+  "@templatePackMorning": {},
+  "templatePackWellness": "Bien-être",
+  "@templatePackWellness": {},
+  "templatePackProductivity": "Productivité",
+  "@templatePackProductivity": {},
+  "templatePackScreenFree": "Soirée sans écran",
+  "@templatePackScreenFree": {},
+
+  "templateDrinkWater": "Boire un verre d'eau",
+  "@templateDrinkWater": {},
+  "templateMakeBed": "Faire son lit",
+  "@templateMakeBed": {},
+  "templateMeditate": "Méditer 5 minutes",
+  "@templateMeditate": {},
+  "templateStretch": "S'étirer",
+  "@templateStretch": {},
+  "templateSleepEarly": "Dormir avant 23h",
+  "@templateSleepEarly": {},
+  "templateWalk": "Marcher 30 minutes",
+  "@templateWalk": {},
+  "templateGratitudeJournal": "Journal de gratitude",
+  "@templateGratitudeJournal": {},
+  "templateRead": "Lire 20 minutes",
+  "@templateRead": {},
+  "templateNoSocialMorning": "Pas de réseaux sociaux avant midi",
+  "@templateNoSocialMorning": {},
+  "templatePlanDay": "Planifier sa journée",
+  "@templatePlanDay": {},
+  "templateTidyDesk": "Ranger son bureau",
+  "@templateTidyDesk": {},
+  "templateNoScreenEvening": "Pas d'écran après 21h",
+  "@templateNoScreenEvening": {},
+  "templateReadBeforeBed": "Lire avant de dormir",
+  "@templateReadBeforeBed": {},
+  "templatePrepTomorrow": "Préparer ses affaires du lendemain",
+  "@templatePrepTomorrow": {}
 }

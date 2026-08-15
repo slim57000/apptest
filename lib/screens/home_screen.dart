@@ -10,6 +10,7 @@ import 'add_habit_screen.dart';
 import 'habit_detail_screen.dart';
 import 'paywall_screen.dart';
 import 'settings_screen.dart';
+import 'templates_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,6 +26,13 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.auto_awesome),
+            tooltip: l10n.chooseTemplate,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const TemplatesScreen()),
+            ),
+          ),
           IconButton(
             icon: Icon(
               Icons.workspace_premium,
@@ -105,6 +113,14 @@ class _EmptyState extends StatelessWidget {
               onPressed: onAdd,
               icon: const Icon(Icons.add),
               label: Text(l10n.createHabit),
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const TemplatesScreen()),
+              ),
+              icon: const Icon(Icons.auto_awesome),
+              label: Text(l10n.chooseTemplate),
             ),
           ],
         ),

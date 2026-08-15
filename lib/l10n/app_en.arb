@@ -70,5 +70,29 @@
   "shareStreakTitle": "Share my streak",
   "shareAction": "Share",
   "shareCardDaysLabel": "day streak",
-  "shareCardBranding": "Habitude+"
+  "shareCardBranding": "Habitude+",
+
+  "chooseTemplate": "Choose a template",
+  "templatesTitle": "Habit templates",
+  "habitAdded": "Habit added!",
+
+  "templatePackMorning": "Morning routine",
+  "templatePackWellness": "Wellness",
+  "templatePackProductivity": "Productivity",
+  "templatePackScreenFree": "Screen-free evening",
+
+  "templateDrinkWater": "Drink a glass of water",
+  "templateMakeBed": "Make your bed",
+  "templateMeditate": "Meditate 5 minutes",
+  "templateStretch": "Stretch",
+  "templateSleepEarly": "Sleep before 11pm",
+  "templateWalk": "Walk 30 minutes",
+  "templateGratitudeJournal": "Gratitude journal",
+  "templateRead": "Read 20 minutes",
+  "templateNoSocialMorning": "No social media before noon",
+  "templatePlanDay": "Plan your day",
+  "templateTidyDesk": "Tidy your desk",
+  "templateNoScreenEvening": "No screens after 9pm",
+  "templateReadBeforeBed": "Read before bed",
+  "templatePrepTomorrow": "Prep tomorrow's things"
 }
