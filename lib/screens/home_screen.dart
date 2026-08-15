@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
+import '../widgets/garden_card.dart';
 import '../widgets/habit_card.dart';
 import 'add_habit_screen.dart';
 import 'habit_detail_screen.dart';
@@ -67,17 +68,18 @@ class HomeScreen extends StatelessWidget {
               ? _EmptyState(onAdd: () => _addHabit(context))
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: habits.length,
+                  itemCount: habits.length + 1,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    final habit = habits[index];
+                    if (index == 0) return GardenCard(habits: habits);
+                    final habit = habits[index - 1];
                     return HabitCard(
                       habit: habit,
                       onToggle: () => habitsProvider.toggleToday(habit.id),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: habit.id)),
                       ),
-                    ).animate().fadeIn(delay: (40 * index).ms).slideY(begin: 0.08, end: 0);
+                    ).animate().fadeIn(delay: (40 * (index - 1)).ms).slideY(begin: 0.08, end: 0);
                   },
                 ),
       floatingActionButton: FloatingActionButton.extended(

@@ -297,5 +297,33 @@
   "@recapNoHabits": {},
 
   "recapPerHabit": "Détail par habitude",
-  "@recapPerHabit": {}
+  "@recapPerHabit": {},
+
+  "gardenLevelSeed": "Graine",
+  "@gardenLevelSeed": {},
+  "gardenLevelSprout": "Pousse",
+  "@gardenLevelSprout": {},
+  "gardenLevelPlant": "Petite plante",
+  "@gardenLevelPlant": {},
+  "gardenLevelTree": "Arbre",
+  "@gardenLevelTree": {},
+  "gardenLevelBloom": "Jardin en fleurs",
+  "@gardenLevelBloom": {},
+
+  "gardenNeedsWater": "Ton jardin a soif ! Complète une habitude aujourd'hui 💧",
+  "@gardenNeedsWater": {},
+
+  "gardenCompletionsCount": "{count, plural, one{{count} habitude complétée au total} other{{count} habitudes complétées au total}}",
+  "@gardenCompletionsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "gardenProgressToNext": "{remaining, plural, one{Encore {remaining} pour passer au niveau suivant} other{Encore {remaining} pour passer au niveau suivant}}",
+  "@gardenProgressToNext": {
+    "placeholders": {
+      "remaining": { "type": "int" }
+    }
+  }
 }

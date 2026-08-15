@@ -105,5 +105,16 @@
   "recapOverallRate": "Overall completion (7 days)",
   "recapBestHabit": "Best active streak",
   "recapNoHabits": "Add habits to see your recap.",
-  "recapPerHabit": "Per-habit breakdown"
+  "recapPerHabit": "Per-habit breakdown",
+
+  "gardenLevelSeed": "Seed",
+  "gardenLevelSprout": "Sprout",
+  "gardenLevelPlant": "Small plant",
+  "gardenLevelTree": "Tree",
+  "gardenLevelBloom": "Blooming garden",
+
+  "gardenNeedsWater": "Your garden is thirsty! Complete a habit today 💧",
+
+  "gardenCompletionsCount": "{count, plural, one{{count} habit completed in total} other{{count} habits completed in total}}",
+  "gardenProgressToNext": "{remaining, plural, one{{remaining} more to reach the next level} other{{remaining} more to reach the next level}}"
 }
