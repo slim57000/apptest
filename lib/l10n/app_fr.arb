@@ -208,5 +208,8 @@
   "@lifetimePlan": {},
 
   "lifetimeActive": "Accès à vie actif",
-  "@lifetimeActive": {}
+  "@lifetimeActive": {},
+
+  "activityHeatmapTitle": "Activité (12 dernières semaines)",
+  "@activityHeatmapTitle": {}
 }

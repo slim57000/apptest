@@ -65,5 +65,6 @@
   "addReminder": "Add a reminder",
   "removeReminder": "Remove reminder",
   "lifetimePlan": "Lifetime access",
-  "lifetimeActive": "Lifetime access active"
+  "lifetimeActive": "Lifetime access active",
+  "activityHeatmapTitle": "Activity (last 12 weeks)"
 }

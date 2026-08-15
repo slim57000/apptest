@@ -19,7 +19,9 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   in-app natif Play Store / App Store) :
   - Habitudes illimitées.
   - Statistiques avancées : meilleure série, taux de complétion sur 30
-    jours, graphique de complétion sur 7 jours.
+    jours, graphique de complétion sur 7 jours, et une grille d'activité
+    façon "GitHub contributions" sur les 12 dernières semaines
+    (`lib/widgets/habit_heatmap.dart`).
   - **Gel de série** (streak freeze) : si un jour actif a été manqué hier,
     un utilisateur Premium peut le "geler" pour ne pas casser sa série
     (façon Duolingo). Limité à un gel tous les 7 jours par habitude pour
@@ -156,8 +158,10 @@ dart run flutter_launcher_icons
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 
-- Vue calendrier "heatmap" par habitude (façon GitHub contributions).
-- Widget écran d'accueil.
-- Défis/groupes entre amis (accountability sociale).
+- Widget écran d'accueil (nécessite du code natif Android/iOS, pas
+  implémenté ici).
+- Défis/groupes entre amis (accountability sociale) — nécessiterait un
+  backend, ce qui casse volontairement l'approche "aucun backend" de la
+  v1.
 - Rappels intelligents (relance si toujours pas fait à une heure donnée,
   pas juste un rappel statique).

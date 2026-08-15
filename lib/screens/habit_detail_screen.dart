@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../models/habit.dart';
 import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
+import '../widgets/habit_heatmap.dart';
 import 'paywall_screen.dart';
 
 class HabitDetailScreen extends StatefulWidget {
@@ -236,6 +237,10 @@ class _PremiumStats extends StatelessWidget {
         Text(l10n.weeklyCompletionTitle, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 12),
         SizedBox(height: 160, child: _WeekChart(habit: habit)),
+        const SizedBox(height: 24),
+        Text(l10n.activityHeatmapTitle, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 12),
+        HabitHeatmap(habit: habit),
       ],
     );
   }
