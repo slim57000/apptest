@@ -17,6 +17,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   String _emoji = habitEmojiChoices.first;
   int _color = habitColorPalette.first;
   final Set<int> _weekdays = {};
+  TimeOfDay? _reminderTime;
 
   @override
   void initState() {
@@ -112,7 +113,25 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               );
             }),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
+          Text(l10n.reminderLabel, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.notifications_outlined),
+            title: Text(
+              _reminderTime == null ? l10n.reminderNone : l10n.reminderAt(_reminderTime!.format(context)),
+            ),
+            trailing: _reminderTime == null
+                ? TextButton(onPressed: _pickReminderTime, child: Text(l10n.addReminder))
+                : IconButton(
+                    icon: const Icon(Icons.close),
+                    tooltip: l10n.removeReminder,
+                    onPressed: () => setState(() => _reminderTime = null),
+                  ),
+            onTap: _pickReminderTime,
+          ),
+          const SizedBox(height: 24),
           FilledButton(
             onPressed: _nameController.text.trim().isEmpty ? null : _save,
             child: Padding(
@@ -125,6 +144,14 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     );
   }
 
+  Future<void> _pickReminderTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _reminderTime ?? const TimeOfDay(hour: 8, minute: 0),
+    );
+    if (picked != null) setState(() => _reminderTime = picked);
+  }
+
   Future<void> _save() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
@@ -133,6 +160,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           emoji: _emoji,
           colorValue: _color,
           activeWeekdays: _weekdays,
+          reminderMinutes: _reminderTime == null
+              ? null
+              : _reminderTime!.hour * 60 + _reminderTime!.minute,
         );
     if (mounted) Navigator.of(context).pop();
   }

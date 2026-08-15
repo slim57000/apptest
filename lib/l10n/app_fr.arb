@@ -183,5 +183,30 @@
   "@streakFreezeAppliedMessage": {},
 
   "frozenDay": "Gelé",
-  "@frozenDay": {}
+  "@frozenDay": {},
+
+  "reminderLabel": "Rappel",
+  "@reminderLabel": {},
+
+  "reminderNone": "Aucun rappel",
+  "@reminderNone": {},
+
+  "reminderAt": "Rappel à {time}",
+  "@reminderAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+
+  "addReminder": "Ajouter un rappel",
+  "@addReminder": {},
+
+  "removeReminder": "Retirer le rappel",
+  "@removeReminder": {},
+
+  "lifetimePlan": "Accès à vie",
+  "@lifetimePlan": {},
+
+  "lifetimeActive": "Accès à vie actif",
+  "@lifetimeActive": {}
 }

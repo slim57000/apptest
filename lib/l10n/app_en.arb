@@ -58,5 +58,12 @@
   "streakFreezeBannerTitle": "You missed yesterday",
   "streakFreezeBannerAction": "Freeze this day ❄️",
   "streakFreezeAppliedMessage": "Streak protected with a freeze!",
-  "frozenDay": "Frozen"
+  "frozenDay": "Frozen",
+  "reminderLabel": "Reminder",
+  "reminderNone": "No reminder",
+  "reminderAt": "Reminder at {time}",
+  "addReminder": "Add a reminder",
+  "removeReminder": "Remove reminder",
+  "lifetimePlan": "Lifetime access",
+  "lifetimeActive": "Lifetime access active"
 }

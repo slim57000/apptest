@@ -11,9 +11,12 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - Créer des habitudes (nom, emoji, couleur, jours actifs dans la semaine).
 - Cocher chaque jour ses habitudes, avec calcul automatique du streak
   (série de jours consécutifs).
+- **Rappel quotidien** optionnel par habitude (notification locale à une
+  heure choisie, uniquement les jours actifs) — voir
+  `lib/services/notification_service.dart`.
 - Version gratuite : jusqu'à **3 habitudes actives**.
-- Version **Premium** (abonnement mensuel ou annuel, via achat in-app natif
-  Play Store / App Store) :
+- Version **Premium** (abonnement mensuel/annuel ou achat à vie, via achat
+  in-app natif Play Store / App Store) :
   - Habitudes illimitées.
   - Statistiques avancées : meilleure série, taux de complétion sur 30
     jours, graphique de complétion sur 7 jours.
@@ -40,6 +43,8 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   `flutter gen-l10n`) : fichiers source dans `lib/l10n/*.arb`, le code
   généré (`app_localizations*.dart`) n'est pas versionné (régénéré
   automatiquement grâce à `generate: true` dans `pubspec.yaml`).
+- `flutter_local_notifications` + `timezone` pour les rappels quotidiens
+  locaux (aucun serveur de push).
 - Design : `google_fonts` (typographie), `flutter_animate`
   (micro-animations), `fl_chart` (graphique de complétion), `confetti`
   (célébration de streak).
@@ -63,21 +68,35 @@ automatique au prochain build.
 
 ## Configurer l'abonnement Premium (Play Store / App Store)
 
-Le code de l'abonnement est prêt, mais les **produits d'abonnement doivent
-être créés côté store** avant de pouvoir tester un achat réel :
+Le code est prêt pour 3 produits Premium, mais ils doivent être **créés
+côté store** avant de pouvoir tester un achat réel. Prix conseillés
+(fourchette basse du marché des habit trackers, à ajuster librement — le
+code affiche simplement `product.price` tel que configuré côté store) :
+
+| Produit | ID | Type | Prix conseillé |
+|---|---|---|---|
+| Mensuel | `habitude_premium_mensuel` | Abonnement | 3,99 € |
+| Annuel | `habitude_premium_annuel` | Abonnement | 24,99 € (~2,08 €/mois) |
+| À vie | `habitude_premium_a_vie` | Achat unique (non-consommable) | 39,99 € |
 
 - **Google Play Console** (priorité actuelle) → votre application →
-  Monétisation → Produits → Abonnements → créer deux abonnements avec
-  exactement ces IDs :
-  - `habitude_premium_mensuel`
-  - `habitude_premium_annuel`
+  Monétisation → Produits :
+  - Sous **Abonnements** : créer `habitude_premium_mensuel` et
+    `habitude_premium_annuel`.
+  - Sous **Produits gérés** (achats intégrés classiques, pas abonnements) :
+    créer `habitude_premium_a_vie`.
 - **App Store Connect** (plus tard, si sortie iOS) → votre application →
-  Fonctionnalités de l'app → Achats intégrés → créer un groupe
-  d'abonnements avec les deux mêmes IDs de produit.
-- Les IDs sont centralisés dans `SubscriptionProductIds`
+  Fonctionnalités de l'app → Achats intégrés : un groupe d'abonnements
+  pour les deux premiers IDs, et un achat **non-consommable** pour le
+  troisième.
+- Les IDs sont centralisés dans `PremiumProductIds`
   (`lib/services/purchase_service.dart`) si vous voulez les renommer.
 - Sur Android, testez avec un compte "testeur" ajouté dans Play Console
   (les achats sur émulateur/APK non signé release échoueront).
+- L'achat à vie convertit les utilisateurs allergiques aux abonnements qui,
+  sinon, n'achèteraient rien : bon complément même à prix plus élevé qu'un
+  an d'abonnement, car il n'y a pas de risque de désabonnement/remboursement
+  récurrent à gérer.
 
 ## Structure du code
 
@@ -85,7 +104,7 @@ Le code de l'abonnement est prêt, mais les **produits d'abonnement doivent
 lib/
   l10n/         # app_fr.arb / app_en.arb (source), code généré non versionné
   models/       # Habit (logique de streak / gel / taux de complétion)
-  services/     # StorageService (persistance locale), PurchaseService
+  services/     # StorageService, PurchaseService, NotificationService
   providers/    # HabitsProvider, PremiumProvider (état app)
   screens/      # home, add_habit, habit_detail, paywall, settings
   widgets/      # HabitCard
@@ -105,6 +124,11 @@ lib/
 - Pas de sauvegarde cloud : les habitudes vivent uniquement sur l'appareil
   (désinstaller l'app supprime les données). Une sauvegarde
   cloud/multi-appareil serait un bon argument Premium additionnel.
+- Les rappels programmés (`flutter_local_notifications`) peuvent être
+  perdus après un redémarrage de l'appareil (pas de receiver Android natif
+  au boot). Ils sont automatiquement reprogrammés à chaque ouverture de
+  l'app (`HabitsProvider._load()`), donc l'impact reste limité à "l'app
+  n'a pas été rouverte depuis le redémarrage".
 - Testé via `flutter analyze` et `flutter test` (scaffold Android/iOS
   généré par `flutter create`, non compilé en APK/IPA faute de SDK Android
   dans cet environnement de développement — build web fait à titre

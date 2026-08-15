@@ -2,13 +2,16 @@ import 'dart:async';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
 
-/// Identifiants des abonnements à créer dans App Store Connect et Google
-/// Play Console (mêmes IDs des deux côtés pour simplifier le code).
-class SubscriptionProductIds {
+/// Identifiants des produits Premium à créer dans App Store Connect et
+/// Google Play Console (mêmes IDs des deux côtés pour simplifier le code).
+/// `monthly`/`yearly` sont des abonnements ; `lifetime` est un achat unique
+/// non-consommable (accès à vie, sans reconduction).
+class PremiumProductIds {
   static const monthly = 'habitude_premium_mensuel';
   static const yearly = 'habitude_premium_annuel';
+  static const lifetime = 'habitude_premium_a_vie';
 
-  static const all = {monthly, yearly};
+  static const all = {monthly, yearly, lifetime};
 }
 
 /// Fine wrapper autour de `in_app_purchase` : interroge les stores, lance
@@ -34,7 +37,7 @@ class PurchaseService {
       onError: (Object error) => onError(error.toString()),
     );
 
-    final response = await _iap.queryProductDetails(SubscriptionProductIds.all);
+    final response = await _iap.queryProductDetails(PremiumProductIds.all);
     if (response.error != null) {
       queryError = response.error!.message;
     } else if (response.notFoundIDs.isNotEmpty) {
@@ -66,7 +69,7 @@ class PurchaseService {
           break;
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
-          if (SubscriptionProductIds.all.contains(purchase.productID)) {
+          if (PremiumProductIds.all.contains(purchase.productID)) {
             onPurchaseUpdate(purchase);
           }
           break;

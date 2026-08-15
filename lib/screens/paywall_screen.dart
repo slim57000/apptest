@@ -33,7 +33,7 @@ class PaywallScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(l10n.paywallDescription, textAlign: TextAlign.center),
                 const SizedBox(height: 24),
-                if (premium.isPremium) const _ActivePremiumCard(),
+                if (premium.isPremium) _ActivePremiumCard(isLifetime: premium.isLifetime),
                 if (!premium.storeAvailable) const _StoreUnavailableCard(),
                 if (premium.storeAvailable && premium.queryError != null)
                   _MessageCard(message: premium.queryError!, isError: true),
@@ -69,13 +69,29 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isYearly = product.id == SubscriptionProductIds.yearly;
+    final IconData icon;
+    final String title;
+    switch (product.id) {
+      case PremiumProductIds.yearly:
+        icon = Icons.calendar_month;
+        title = l10n.yearlyPlan;
+        break;
+      case PremiumProductIds.lifetime:
+        icon = Icons.all_inclusive;
+        title = l10n.lifetimePlan;
+        break;
+      default:
+        icon = Icons.event_repeat;
+        title = l10n.monthlyPlan;
+    }
+    final isLifetime = product.id == PremiumProductIds.lifetime;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      color: isLifetime ? Colors.amber.withValues(alpha: 0.12) : null,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
-        leading: Icon(isYearly ? Icons.calendar_month : Icons.event_repeat),
-        title: Text(isYearly ? l10n.yearlyPlan : l10n.monthlyPlan),
+        leading: Icon(icon),
+        title: Text(title),
         subtitle: Text(product.description),
         trailing: pending
             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
@@ -86,7 +102,9 @@ class _PlanCard extends StatelessWidget {
 }
 
 class _ActivePremiumCard extends StatelessWidget {
-  const _ActivePremiumCard();
+  final bool isLifetime;
+
+  const _ActivePremiumCard({required this.isLifetime});
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +114,8 @@ class _ActivePremiumCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       child: ListTile(
         leading: const Icon(Icons.check_circle, color: Colors.green),
-        title: Text(l10n.activeSubscription),
-        subtitle: Text(l10n.manageSubscriptionHint),
+        title: Text(isLifetime ? l10n.lifetimeActive : l10n.activeSubscription),
+        subtitle: isLifetime ? null : Text(l10n.manageSubscriptionHint),
       ),
     );
   }

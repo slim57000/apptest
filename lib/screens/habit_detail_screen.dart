@@ -90,6 +90,8 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 const SizedBox(height: 12),
                 _StreakFreezeBanner(habit: habit),
               ],
+              const SizedBox(height: 16),
+              _ReminderTile(habit: habit),
               const SizedBox(height: 32),
               if (premium.isPremium)
                 _PremiumStats(habit: habit)
@@ -160,6 +162,50 @@ class _StreakFreezeBanner extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ReminderTile extends StatelessWidget {
+  final Habit habit;
+
+  const _ReminderTile({required this.habit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final minutes = habit.reminderMinutes;
+    final time = minutes == null
+        ? null
+        : TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
+
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.notifications_outlined),
+        title: Text(time == null ? l10n.reminderNone : l10n.reminderAt(time.format(context))),
+        trailing: time == null
+            ? TextButton(
+                onPressed: () => _pickTime(context),
+                child: Text(l10n.addReminder),
+              )
+            : IconButton(
+                icon: const Icon(Icons.close),
+                tooltip: l10n.removeReminder,
+                onPressed: () => context.read<HabitsProvider>().setReminder(habit.id, null),
+              ),
+        onTap: () => _pickTime(context),
+      ),
+    );
+  }
+
+  Future<void> _pickTime(BuildContext context) async {
+    final minutes = habit.reminderMinutes;
+    final initial = minutes == null
+        ? const TimeOfDay(hour: 8, minute: 0)
+        : TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
+    final picked = await showTimePicker(context: context, initialTime: initial);
+    if (picked != null && context.mounted) {
+      await context.read<HabitsProvider>().setReminder(habit.id, picked.hour * 60 + picked.minute);
+    }
   }
 }
 

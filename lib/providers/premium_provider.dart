@@ -10,10 +10,12 @@ import '../services/purchase_service.dart';
 /// pour les limites de cette approche « v1 rapide ».
 class PremiumProvider extends ChangeNotifier {
   static const _prefsKey = 'is_premium_v1';
+  static const _productIdPrefsKey = 'premium_product_id_v1';
 
   final PurchaseService _purchaseService;
 
   bool _isPremium = false;
+  String? _premiumProductId;
   bool _loading = true;
   bool _purchasePending = false;
   String? _error;
@@ -23,6 +25,7 @@ class PremiumProvider extends ChangeNotifier {
   }
 
   bool get isPremium => _isPremium;
+  bool get isLifetime => _premiumProductId == PremiumProductIds.lifetime;
   bool get loading => _loading;
   bool get purchasePending => _purchasePending;
   bool get storeAvailable => _purchaseService.isAvailable;
@@ -33,10 +36,11 @@ class PremiumProvider extends ChangeNotifier {
   Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
     _isPremium = prefs.getBool(_prefsKey) ?? false;
+    _premiumProductId = prefs.getString(_productIdPrefsKey);
     notifyListeners();
 
     await _purchaseService.init(
-      onPurchaseUpdate: (purchase) => _setPremium(true),
+      onPurchaseUpdate: (purchase) => _setPremium(purchase.productID),
       onError: (message) {
         _error = message;
         _purchasePending = false;
@@ -74,11 +78,13 @@ class PremiumProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> _setPremium(bool value) async {
-    _isPremium = value;
+  Future<void> _setPremium(String productId) async {
+    _isPremium = true;
+    _premiumProductId = productId;
     _purchasePending = false;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefsKey, value);
+    await prefs.setBool(_prefsKey, true);
+    await prefs.setString(_productIdPrefsKey, productId);
     notifyListeners();
   }
 

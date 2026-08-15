@@ -20,6 +20,10 @@ class Habit {
   /// complétion.
   final Set<String> frozenDates;
 
+  /// Heure de rappel quotidien, en minutes depuis minuit (ex. 510 = 8h30).
+  /// `null` = pas de rappel programmé.
+  final int? reminderMinutes;
+
   const Habit({
     required this.id,
     required this.name,
@@ -29,6 +33,7 @@ class Habit {
     this.activeWeekdays = const {},
     this.completedDates = const {},
     this.frozenDates = const {},
+    this.reminderMinutes,
   });
 
   static String dateKey(DateTime day) {
@@ -89,6 +94,23 @@ class Habit {
     final yesterday = _today().subtract(const Duration(days: 1));
     final updated = Set<String>.from(frozenDates)..add(dateKey(yesterday));
     return copyWith(frozenDates: updated);
+  }
+
+  /// Fixe (ou retire, avec `null`) l'heure de rappel quotidien. Méthode
+  /// dédiée plutôt que `copyWith` car ce champ doit pouvoir repasser à
+  /// `null` explicitement.
+  Habit withReminder(int? reminderMinutes) {
+    return Habit(
+      id: id,
+      name: name,
+      emoji: emoji,
+      colorValue: colorValue,
+      createdAt: createdAt,
+      activeWeekdays: activeWeekdays,
+      completedDates: completedDates,
+      frozenDates: frozenDates,
+      reminderMinutes: reminderMinutes,
+    );
   }
 
   /// Nombre de jours actifs consécutifs complétés (ou gelés), en remontant
@@ -189,6 +211,7 @@ class Habit {
       frozenDates: (json['frozenDates'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toSet(),
+      reminderMinutes: json['reminderMinutes'] as int?,
     );
   }
 
@@ -202,6 +225,7 @@ class Habit {
       'activeWeekdays': activeWeekdays.toList(),
       'completedDates': completedDates.toList(),
       'frozenDates': frozenDates.toList(),
+      'reminderMinutes': reminderMinutes,
     };
   }
 }
