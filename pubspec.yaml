@@ -44,6 +44,9 @@ dependencies:
   # Suivi automatique des pas via Health Connect (Android) / Apple Health (iOS)
   health: ^13.3.2
 
+  # Défis entre amis (backend Supabase — voir supabase/schema.sql)
+  supabase_flutter: ^2.17.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

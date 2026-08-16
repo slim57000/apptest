@@ -120,5 +120,27 @@
 
   "autoTrackStepsLabel": "Automatic step tracking",
   "autoTrackStepsHint": "Automatically mark this habit done when you reach {goal} steps in a day (Health Connect on Android, Apple Health on iOS).",
-  "autoTrackStepsPermissionDenied": "Health permission denied or unavailable."
+  "autoTrackStepsPermissionDenied": "Health permission denied or unavailable.",
+
+  "challengesTitle": "Friend challenges",
+  "challengesNotConfigured": "Not configured yet. See the README for Supabase setup.",
+  "displayNameLabel": "Your name",
+  "displayNameHint": "E.g. Alex",
+  "startAction": "Get started",
+  "createChallenge": "Create a challenge",
+  "joinChallenge": "Join with a code",
+  "challengeNameLabel": "Challenge name",
+  "challengeNameHint": "E.g. This week's workout",
+  "inviteCodeLabel": "Invite code",
+  "inviteCodeInputHint": "6-character code",
+  "join": "Join",
+  "create": "Create",
+  "noChallenges": "No challenges yet. Create one or join a friend's!",
+  "challengeNotFound": "No challenge matches this code.",
+  "checkInToday": "I did it today",
+  "checkedInToday": "Done today!",
+  "copyCode": "Copy code",
+  "codeCopied": "Code copied!",
+  "shareInvite": "Invite friends",
+  "memberStreak": "{count, plural, one{{count} day} other{{count} days}}"
 }

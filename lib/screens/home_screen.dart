@@ -8,6 +8,7 @@ import '../providers/premium_provider.dart';
 import '../widgets/garden_card.dart';
 import '../widgets/habit_card.dart';
 import 'add_habit_screen.dart';
+import 'challenges_screen.dart';
 import 'habit_detail_screen.dart';
 import 'paywall_screen.dart';
 import 'recap_screen.dart';
@@ -42,6 +43,13 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (_) => premium.isPremium ? const RecapScreen() : const PaywallScreen(),
               ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.groups),
+            tooltip: l10n.challengesTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ChallengesScreen()),
             ),
           ),
           IconButton(

@@ -54,6 +54,11 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - **Mode sombre** automatique (suit le thème du système, `lib/theme.dart`).
 - **Widget écran d'accueil Android** (lecture seule) — voir la section
   dédiée plus bas.
+- **Défis entre amis** : créer un défi, inviter par code à 6 caractères,
+  cocher "j'ai réussi aujourd'hui" et voir le statut de chaque membre —
+  seule fonctionnalité avec un vrai backend (Supabase), voir la section
+  dédiée plus bas. Gratuit (pas de mur Premium) pour ne pas freiner
+  l'effet réseau.
 
 ## Stack technique
 
@@ -70,6 +75,10 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - `health` pour le suivi automatique des pas (Health Connect / Apple
   Health) — voir `lib/services/health_service.dart`.
 - `share_plus` + `path_provider` pour la carte de série partageable.
+- `supabase_flutter` pour les défis entre amis (auth anonyme + Postgres +
+  RLS) — voir `lib/services/challenge_service.dart` et
+  `supabase/schema.sql`. Seule brique avec un backend ; tout le reste de
+  l'app reste local-first.
 - Localisation via le système standard Flutter (`flutter_localizations` +
   `flutter gen-l10n`) : fichiers source dans `lib/l10n/*.arb`, le code
   généré (`app_localizations*.dart`) n'est pas versionné (régénéré
@@ -222,6 +231,38 @@ sur un appareil réel** — ajouter le widget à l'écran d'accueil, cocher une
 habitude dans l'app et confirmer que le widget se met à jour. Pas d'
 équivalent iOS (nécessiterait une extension WidgetKit créée depuis Xcode,
 impossible à scaffolder par édition de fichiers seule).
+
+## Configurer les défis entre amis (Supabase)
+
+Le code est prêt mais **désactivé tant qu'il n'a pas de projet Supabase** :
+sans configuration, l'écran de défis affiche juste un message "non
+configuré" plutôt que de planter l'app.
+
+1. Créer un compte et un projet sur [supabase.com](https://supabase.com)
+   (gratuit).
+2. Dans **Authentication → Providers**, activer **Anonymous Sign-Ins**
+   (l'app n'utilise pas d'email/mot de passe, juste un pseudo).
+3. Dans **SQL Editor**, coller et exécuter le contenu de
+   `supabase/schema.sql` (tables + policies RLS).
+4. Récupérer l'**URL du projet** et la **clé publique anon/publishable**
+   (Settings → API), puis lancer l'app avec :
+   ```bash
+   flutter run --dart-define=SUPABASE_URL=https://xxxx.supabase.co \
+               --dart-define=SUPABASE_ANON_KEY=eyJ...
+   ```
+   (voir `lib/config/supabase_config.dart` — ces valeurs peuvent aussi y
+   être codées en dur si vous préférez, la clé anon est conçue pour être
+   publique tant que les policies RLS sont correctes).
+5. Pour un build de production, passer les mêmes `--dart-define` à
+   `flutter build apk` / `flutter build ipa`, ou les injecter via votre
+   pipeline CI.
+
+**Non testé en direct** (pas d'accès à un projet Supabase depuis cet
+environnement) : à vérifier avec un vrai projet avant de shipper — en
+particulier les policies RLS de `supabase/schema.sql`, qui n'ont pas pu
+être exécutées contre une vraie base pour confirmer qu'elles autorisent
+exactement ce qu'il faut (rejoindre un défi par code, voir les autres
+membres, etc.) sans rien laisser d'ouvert en trop.
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 

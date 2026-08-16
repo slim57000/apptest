@@ -338,5 +338,72 @@
   },
 
   "autoTrackStepsPermissionDenied": "Autorisation santé refusée ou indisponible.",
-  "@autoTrackStepsPermissionDenied": {}
+  "@autoTrackStepsPermissionDenied": {},
+
+  "challengesTitle": "Défis entre amis",
+  "@challengesTitle": {},
+
+  "challengesNotConfigured": "Fonctionnalité non configurée pour l'instant. Voir le README pour la configuration Supabase.",
+  "@challengesNotConfigured": {},
+
+  "displayNameLabel": "Ton pseudo",
+  "@displayNameLabel": {},
+
+  "displayNameHint": "Ex. Alex",
+  "@displayNameHint": {},
+
+  "startAction": "Commencer",
+  "@startAction": {},
+
+  "createChallenge": "Créer un défi",
+  "@createChallenge": {},
+
+  "joinChallenge": "Rejoindre avec un code",
+  "@joinChallenge": {},
+
+  "challengeNameLabel": "Nom du défi",
+  "@challengeNameLabel": {},
+
+  "challengeNameHint": "Ex. Sport de la semaine",
+  "@challengeNameHint": {},
+
+  "inviteCodeLabel": "Code d'invitation",
+  "@inviteCodeLabel": {},
+
+  "inviteCodeInputHint": "Code à 6 caractères",
+  "@inviteCodeInputHint": {},
+
+  "join": "Rejoindre",
+  "@join": {},
+
+  "create": "Créer",
+  "@create": {},
+
+  "noChallenges": "Aucun défi pour l'instant. Crées-en un ou rejoins celui d'un ami !",
+  "@noChallenges": {},
+
+  "challengeNotFound": "Aucun défi ne correspond à ce code.",
+  "@challengeNotFound": {},
+
+  "checkInToday": "J'ai réussi aujourd'hui",
+  "@checkInToday": {},
+
+  "checkedInToday": "Fait aujourd'hui !",
+  "@checkedInToday": {},
+
+  "copyCode": "Copier le code",
+  "@copyCode": {},
+
+  "codeCopied": "Code copié !",
+  "@codeCopied": {},
+
+  "shareInvite": "Inviter des amis",
+  "@shareInvite": {},
+
+  "memberStreak": "{count, plural, one{{count} jour} other{{count} jours}}",
+  "@memberStreak": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
