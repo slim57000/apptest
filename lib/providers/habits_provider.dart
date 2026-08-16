@@ -40,6 +40,7 @@ class HabitsProvider extends ChangeNotifier {
     for (final habit in _habits) {
       if (habit.reminderMinutes != null) {
         await _notifications.scheduleReminders(habit);
+        await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
     }
     await _widget.updateHabits(_habits);
@@ -68,6 +69,7 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _persist();
     await _notifications.scheduleReminders(habit);
+    await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
   }
 
   Future<void> deleteHabit(String id) async {
@@ -75,12 +77,21 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _persist();
     await _notifications.cancelReminders(id);
+    await _notifications.cancelFollowUps(id);
   }
 
   Future<void> toggleToday(String id) async {
-    _habits = _habits.map((h) => h.id == id ? h.toggled(DateTime.now()) : h).toList();
+    Habit? updated;
+    _habits = _habits.map((h) {
+      if (h.id != id) return h;
+      updated = h.toggled(DateTime.now());
+      return updated!;
+    }).toList();
     notifyListeners();
     await _persist();
+    if (updated != null) {
+      await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
+    }
   }
 
   Future<void> freezeYesterday(String id) async {
@@ -98,7 +109,10 @@ class HabitsProvider extends ChangeNotifier {
     }).toList();
     notifyListeners();
     await _persist();
-    if (updated != null) await _notifications.scheduleReminders(updated!);
+    if (updated != null) {
+      await _notifications.scheduleReminders(updated!);
+      await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
+    }
   }
 
   Future<void> setNote(String id, DateTime day, String? note) async {
@@ -116,6 +130,7 @@ class HabitsProvider extends ChangeNotifier {
     for (final habit in _habits) {
       if (habit.reminderMinutes != null) {
         await _notifications.scheduleReminders(habit);
+        await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
     }
   }
@@ -152,5 +167,11 @@ class HabitsProvider extends ChangeNotifier {
         .toList();
     notifyListeners();
     await _persist();
+
+    for (final habit in _habits) {
+      if (habit.autoTrackSteps && habit.reminderMinutes != null) {
+        await _notifications.scheduleFollowUp(habit, skipToday: true);
+      }
+    }
   }
 }

@@ -17,6 +17,11 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - **Rappel quotidien** optionnel par habitude (notification locale à une
   heure choisie, uniquement les jours actifs) — voir
   `lib/services/notification_service.dart`.
+- **Relance intelligente** : si l'habitude n'est toujours pas cochée 2h
+  après le rappel, une deuxième notification (plus discrète) relance
+  l'utilisateur. Annulée automatiquement dès que l'habitude est cochée
+  (ou complétée automatiquement via le suivi des pas), pour ne jamais
+  relancer sur un jour déjà fait — voir `NotificationService.scheduleFollowUp`.
 - **Note de journal** optionnelle par jour (réflexion libre sur pourquoi
   une habitude a été tenue/manquée).
 - **Jardin virtuel** sur l'accueil qui grandit avec la régularité globale
@@ -325,8 +330,6 @@ membres, sauvegarder/restaurer uniquement sa propre sauvegarde dans
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 
-- Rappels intelligents (relance si toujours pas fait à une heure donnée,
-  pas juste un rappel statique).
 - Interaction directe depuis le widget (cocher sans ouvrir l'app) —
   nécessiterait un `RemoteViewsService`/callback en tâche de fond, plus
   complexe que la version lecture-seule actuelle.
