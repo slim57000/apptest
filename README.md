@@ -59,8 +59,9 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   `assets/icon/`) appliquée à Android/iOS/web via `flutter_launcher_icons`
   — plus l'icône Flutter par défaut.
 - **Mode sombre** automatique (suit le thème du système, `lib/theme.dart`).
-- **Widget écran d'accueil Android** (lecture seule) — voir la section
-  dédiée plus bas.
+- **Widget écran d'accueil Android interactif** : cocher/décocher une
+  habitude directement depuis le widget, sans ouvrir l'app — voir la
+  section dédiée plus bas.
 - **Défis entre amis** : créer un défi, inviter par code à 6 caractères,
   cocher "j'ai réussi aujourd'hui" et voir le statut de chaque membre —
   fonctionnalité avec un vrai backend (Supabase), voir la section
@@ -268,30 +269,46 @@ canevas pour éviter le rognage), puis :
 dart run flutter_launcher_icons
 ```
 
-## Widget écran d'accueil (Android, lecture seule — à tester sur appareil)
+## Widget écran d'accueil (Android, interactif — à tester en priorité sur appareil)
 
-Affiche jusqu'à 4 habitudes du jour + le compteur "faites/prévues" ; un tap
-ouvre l'app (pas de coche directement depuis le widget en v1). Implémenté
-avec uniquement des APIs Android standard (`SharedPreferences` +
-`AppWidgetManager` + un `MethodChannel` maison) plutôt qu'un package tiers,
-pour rester vérifiable sans dépendre de détails internes non documentés.
+Affiche jusqu'à 4 habitudes du jour + le compteur "faites/prévues". Taper
+sur une ligne **coche/décoche l'habitude directement depuis le widget**,
+sans ouvrir l'app ; taper ailleurs (en-tête) ouvre l'app. Implémenté avec
+uniquement des APIs Android standard (`SharedPreferences` +
+`AppWidgetManager` + `RemoteViews.setOnClickPendingIntent` + un
+`MethodChannel` maison) plutôt qu'un package tiers, pour rester vérifiable
+sans dépendre de détails internes non documentés.
 
-- `lib/services/widget_service.dart` : sérialise les habitudes du jour et
-  les envoie côté natif à chaque changement (`HabitsProvider._persist()`).
+- `lib/services/widget_service.dart` : sérialise les habitudes du jour
+  (avec leur `id`) et les envoie côté natif à chaque changement
+  (`HabitsProvider._persist()`).
 - `android/app/src/main/kotlin/.../MainActivity.kt` : reçoit les données via
   le `MethodChannel` et les écrit dans les `SharedPreferences` du widget.
-- `android/app/src/main/kotlin/.../HabitWidgetProvider.kt` : lit ces
-  données et met à jour l'affichage (`RemoteViews`).
-- `android/app/src/main/res/{layout,xml,drawable}/` : mise en page,
-  métadonnées du widget (taille, période de rafraîchissement) et fond
-  dégradé.
+- `android/app/src/main/kotlin/.../HabitWidgetProvider.kt` : affiche les
+  données (`RemoteViews`) et gère le tap sur une ligne, qui envoie un
+  broadcast `TOGGLE_HABIT` à lui-même.
 
-**Comme le suivi santé, c'est du code natif que cet environnement ne peut
-pas compiler ni exécuter (pas de SDK Android ici) : à vérifier en priorité
-sur un appareil réel** — ajouter le widget à l'écran d'accueil, cocher une
-habitude dans l'app et confirmer que le widget se met à jour. Pas d'
-équivalent iOS (nécessiterait une extension WidgetKit créée depuis Xcode,
-impossible à scaffolder par édition de fichiers seule).
+**Comment la coche fonctionne sans ouvrir l'app** : `HabitWidgetProvider`
+écrit *directement* dans le fichier `SharedPreferences` utilisé par le
+plugin Flutter `shared_preferences` (nom de fichier `FlutterSharedPreferences`
+et préfixe de clé `flutter.` — comportement documenté et stable de ce
+plugin officiel, pas un détail interne non documenté comme aurait pu
+l'être un package tiers), en ne modifiant que le champ `completedDates` de
+l'habitude ciblée dans le même JSON que produit `Habit.toJson()`. Toute
+exception de parsing abandonne sans rien écrire, pour ne jamais risquer de
+corrompre les données. Comme l'app peut avoir un état en mémoire différent
+de ce qui vient d'être écrit sur disque (si elle était déjà ouverte),
+`HabitsProvider.reload()` est appelé au retour au premier plan
+(`app.dart`) pour resynchroniser avant tout nouvel enregistrement.
+
+**C'est la fonctionnalité native la plus délicate de l'app à ce stade
+(écriture directe dans un fichier partagé avec le moteur Flutter) : à
+vérifier en priorité sur un appareil réel avant de shipper** — ajouter le
+widget à l'écran d'accueil, taper sur une ligne pour cocher, revenir dans
+l'app et confirmer que l'état correspond (streak, statistiques...), puis
+refaire le test en ayant l'app ouverte en arrière-plan au moment du tap.
+Pas d'équivalent iOS (nécessiterait une extension WidgetKit créée depuis
+Xcode, impossible à scaffolder par édition de fichiers seule).
 
 ## Configurer les défis entre amis et la sauvegarde cloud (Supabase)
 
@@ -330,6 +347,8 @@ membres, sauvegarder/restaurer uniquement sa propre sauvegarde dans
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 
-- Interaction directe depuis le widget (cocher sans ouvrir l'app) —
-  nécessiterait un `RemoteViewsService`/callback en tâche de fond, plus
-  complexe que la version lecture-seule actuelle.
+Toutes les pistes identifiées à ce stade ont été implémentées (relance
+intelligente, widget interactif, défis, sauvegarde cloud...). Prochaine
+étape naturelle : les tester en conditions réelles (voir les sections
+"non testé en direct" ci-dessus) avant d'envisager de nouvelles
+fonctionnalités.

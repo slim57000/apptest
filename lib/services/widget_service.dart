@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import '../models/habit.dart';
 
 /// Met à jour le widget écran d'accueil Android avec les habitudes du
-/// jour (lecture seule pour la v1 : un tap ouvre l'app). Communique via
-/// un `MethodChannel` maison (voir `MainActivity.kt` /
-/// `HabitWidgetProvider.kt`) plutôt qu'un package tiers, pour ne dépendre
-/// que d'APIs Android standard faciles à vérifier.
+/// jour. Un tap sur une ligne coche/décoche l'habitude directement depuis
+/// le widget (voir `HabitWidgetProvider.kt`, qui écrit directement dans le
+/// stockage `shared_preferences` lu par `StorageService` — c'est pourquoi
+/// chaque ligne inclut `id`) ; un tap ailleurs (en-tête) ouvre l'app.
+/// Communique via un `MethodChannel` maison plutôt qu'un package tiers,
+/// pour ne dépendre que d'APIs Android standard faciles à vérifier.
 class WidgetService {
   static const _channel = MethodChannel('com.habitudeplus.habit_tracker/widget');
 
@@ -20,7 +22,7 @@ class WidgetService {
     final activeToday = habits.where((h) => h.isActiveOn(today)).toList();
     final rows = activeToday
         .take(4)
-        .map((h) => {'name': h.name, 'emoji': h.emoji, 'done': h.isCompletedToday})
+        .map((h) => {'id': h.id, 'name': h.name, 'emoji': h.emoji, 'done': h.isCompletedToday})
         .toList();
     final doneCount = activeToday.where((h) => h.isCompletedToday).length;
 

@@ -40,9 +40,12 @@ class HabitudeApp extends StatelessWidget {
   }
 }
 
-/// Resynchronise les pas de santé (Health Connect / Apple Health) au retour
-/// au premier plan, en plus du sync fait à l'ouverture -- utile si
-/// l'utilisateur marche puis revient dans l'app plus tard dans la journée.
+/// Au retour au premier plan : recharge les habitudes depuis le stockage
+/// (pour récupérer une bascule faite depuis le widget écran d'accueil
+/// pendant que l'app était en arrière-plan) puis resynchronise les pas de
+/// santé (Health Connect / Apple Health), en plus du sync fait à
+/// l'ouverture -- utile si l'utilisateur marche puis revient dans l'app
+/// plus tard dans la journée.
 class _HealthSyncGate extends StatefulWidget {
   final Widget child;
 
@@ -68,8 +71,14 @@ class _HealthSyncGateState extends State<_HealthSyncGate> with WidgetsBindingObs
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      context.read<HabitsProvider>().syncHealthSteps();
+      _onResumed();
     }
+  }
+
+  Future<void> _onResumed() async {
+    final habits = context.read<HabitsProvider>();
+    await habits.reload();
+    await habits.syncHealthSteps();
   }
 
   @override

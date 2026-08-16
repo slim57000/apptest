@@ -47,6 +47,23 @@ class HabitsProvider extends ChangeNotifier {
     await syncHealthSteps();
   }
 
+  /// Recharge les habitudes depuis le stockage local. À appeler quand l'app
+  /// revient au premier plan : une bascule faite depuis le widget écran
+  /// d'accueil pendant que l'app était en arrière-plan écrit directement
+  /// dans le même stockage (voir `HabitWidgetProvider.kt`), donc l'état en
+  /// mémoire doit être resynchronisé pour ne pas l'écraser au prochain
+  /// enregistrement.
+  Future<void> reload() async {
+    _habits = await _storage.loadHabits();
+    notifyListeners();
+    await _widget.updateHabits(_habits);
+    for (final habit in _habits) {
+      if (habit.reminderMinutes != null) {
+        await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
+      }
+    }
+  }
+
   bool canAddHabit(bool isPremium) => isPremium || _habits.length < freeHabitLimit;
 
   Future<void> addHabit({
