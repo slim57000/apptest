@@ -160,5 +160,7 @@
   "restoreConfirmTitle": "Restore this backup?",
   "restoreConfirmContent": "This will replace all habits currently on this device with the ones from the latest cloud backup.",
   "restoreSuccess": "Habits restored!",
-  "noBackupFound": "No backup found."
+  "noBackupFound": "No backup found.",
+
+  "privacyPolicyLabel": "Privacy policy"
 }

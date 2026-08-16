@@ -47,6 +47,9 @@ dependencies:
   # Défis entre amis (backend Supabase — voir supabase/schema.sql)
   supabase_flutter: ^2.17.2
 
+  # Ouvrir la politique de confidentialité depuis les réglages
+  url_launcher: ^6.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -223,9 +223,6 @@ est réellement possible, et déjà en place ou documenté ici :
 - Pas de détection d'annulation/expiration d'abonnement en direct (pas de
   webhook côté store branché) : `isPremium` reste vrai tant qu'aucun
   nouvel événement d'achat n'est reçu par l'app.
-- Pas de sauvegarde cloud : les habitudes vivent uniquement sur l'appareil
-  (désinstaller l'app supprime les données). Une sauvegarde
-  cloud/multi-appareil serait un bon argument Premium additionnel.
 - Les rappels programmés (`flutter_local_notifications`) peuvent être
   perdus après un redémarrage de l'appareil (pas de receiver Android natif
   au boot). Ils sont automatiquement reprogrammés à chaque ouverture de
@@ -344,6 +341,33 @@ particulier les policies RLS de `supabase/schema.sql`, qui n'ont pas pu
 exactement ce qu'il faut (rejoindre un défi par code, voir les autres
 membres, sauvegarder/restaurer uniquement sa propre sauvegarde dans
 `habit_backups`, etc.) sans rien laisser d'ouvert en trop.
+
+## Politique de confidentialité (obligatoire pour publier)
+
+`docs/privacy-policy.html` contient une politique de confidentialité
+bilingue FR/EN (stockage local, Health Connect, achats intégrés, défis et
+sauvegarde cloud via Supabase, contact). Google Play **exige une URL
+publique** vers cette page dès que l'app demande des permissions de santé
+ou gère un compte — donc avant toute publication.
+
+Pour l'héberger gratuitement via GitHub Pages (à faire une seule fois) :
+
+1. Sur GitHub : Settings → Pages → Source : "Deploy from a branch" →
+   branche `main`, dossier `/docs` → Save.
+2. Après quelques minutes, la page est disponible à
+   `https://slim57000.github.io/apptest/privacy-policy.html`.
+3. Cette URL est déjà utilisée dans l'app (`lib/screens/settings_screen.dart`,
+   `_privacyPolicyUrl`) et à renseigner telle quelle dans la fiche Play
+   Console ("App content" → "Privacy policy").
+
+**Limite connue** : les défis et la sauvegarde cloud créent un compte
+anonyme Supabase, mais l'app n'offre pas encore de suppression
+en libre-service de ces données (uniquement sur demande par e-mail, comme
+indiqué dans la politique). Les règles Google Play sur la suppression de
+compte ("Account deletion") peuvent exiger un vrai mécanisme en
+libre-service (dans l'app ou via un lien web) selon comment ces
+fonctionnalités sont classées à la revue — à vérifier avant publication ;
+je peux ajouter un bouton "Supprimer mes données cloud" si besoin.
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 

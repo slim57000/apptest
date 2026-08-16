@@ -457,5 +457,8 @@
   "@restoreSuccess": {},
 
   "noBackupFound": "Aucune sauvegarde trouvée.",
-  "@noBackupFound": {}
+  "@noBackupFound": {},
+
+  "privacyPolicyLabel": "Politique de confidentialité",
+  "@privacyPolicyLabel": {}
 }

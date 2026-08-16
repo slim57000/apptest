@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/backup_provider.dart';
@@ -8,6 +9,11 @@ import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
 import 'paywall_screen.dart';
+
+/// Politique de confidentialité hébergée sur GitHub Pages (voir
+/// `docs/privacy-policy.html` — nécessite d'activer Pages une fois dans
+/// les réglages du dépôt, voir le README).
+const _privacyPolicyUrl = 'https://slim57000.github.io/apptest/privacy-policy.html';
 
 /// `Navigator.pop` avec `null` est indiscernable entre "l'utilisateur a
 /// choisi Système" et "fermeture du dialogue sans choix (tap en dehors)" :
@@ -83,6 +89,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 MaterialPageRoute(builder: (_) => const PaywallScreen()),
               ),
             ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: Text(l10n.privacyPolicyLabel),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => launchUrl(
+              Uri.parse(_privacyPolicyUrl),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
           const Divider(),
           AboutListTile(
             icon: const Icon(Icons.info_outline),
