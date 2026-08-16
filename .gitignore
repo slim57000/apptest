@@ -39,6 +39,12 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Symboles de débogage générés par `flutter build ... --obfuscate
+# --split-debug-info=debug-info` : nécessaires pour décoder les stack
+# traces de crash plus tard, à archiver en lieu sûr (PAS dans ce dépôt
+# public — ils permettraient de désobfusquer le code).
+/debug-info/
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile

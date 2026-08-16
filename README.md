@@ -46,8 +46,10 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
     être testée).
 - Petite animation confettis quand une habitude atteint un palier de streak
   (7, 14, 21 jours...).
-- **Français et anglais**, avec repli automatique sur le français si la
-  langue de l'appareil n'est ni l'un ni l'autre.
+- **Français et anglais**, avec détection automatique de la langue de
+  l'appareil (repli sur le français si ni l'un ni l'autre) et un
+  **sélecteur manuel** dans Réglages pour forcer une langue
+  indépendamment du système (`lib/providers/locale_provider.dart`).
 - Icône d'application personnalisée (flamme sur fond violet, générée dans
   `assets/icon/`) appliquée à Android/iOS/web via `flutter_launcher_icons`
   — plus l'icône Flutter par défaut.
@@ -150,6 +152,51 @@ lib/
   widgets/      # HabitCard
   theme.dart    # thème Material 3 + palettes couleurs/emojis
 ```
+
+## Protection du code / anti-piratage
+
+Pour une app mobile, il n'existe pas de protection totale contre le
+piratage : le code tourne sur un appareil que l'attaquant contrôle. Ce qui
+est réellement possible, et déjà en place ou documenté ici :
+
+1. **Compilation native (déjà acquis avec Flutter)** — contrairement à un
+   `.apk` Java/Kotlin classique, le code Dart est compilé en code machine
+   ARM/x64 (AOT), pas en bytecode facilement décompilable. C'est une
+   protection de base que Flutter offre déjà, sans rien à faire.
+2. **Obfuscation du code Dart** — build à faire pour chaque release :
+   ```bash
+   flutter build apk --release --obfuscate --split-debug-info=debug-info
+   flutter build appbundle --release --obfuscate --split-debug-info=debug-info
+   ```
+   Renomme les noms de classes/méthodes en identifiants illisibles.
+   Conserver le dossier `debug-info/` en lieu sûr **hors du dépôt public**
+   (déjà dans `.gitignore`) : nécessaire pour décoder les stack traces de
+   crash plus tard, mais permettrait aussi de désobfusquer le code s'il
+   fuitait.
+3. **Minification/obfuscation Android (R8/ProGuard)** — activée dans
+   `android/app/build.gradle.kts` (`isMinifyEnabled`, `isShrinkResources`)
+   avec des règles de conservation pour les plugins sensibles à la
+   réflexion (`android/app/proguard-rules.pro`). Comme pour les autres
+   modifications natives de cette session, **non testée avec un vrai build
+   release** faute de SDK Android ici : à vérifier avant publication que
+   l'app se lance toujours et que l'achat in-app / les rappels / le suivi
+   santé fonctionnent bien une fois minifiés (un plugin mal couvert par
+   les règles de conservation peut planter silencieusement en release
+   alors qu'il marchait en debug).
+4. **Le vrai point faible reste le statut Premium côté client** (voir
+   limite ci-dessous) : l'obfuscation ralentit un attaquant qui
+   voudrait patcher l'app pour se donner Premium gratuitement, mais ne
+   l'empêche pas. La vraie protection serait une vérification serveur des
+   reçus d'achat.
+5. Non fait ici, à évaluer selon le besoin réel : détection root/jailbreak
+   (`safe_device`, `flutter_jailbreak_detection`...) — délibérément pas
+   ajoutée, car ça reste un signal faible (beaucoup d'utilisateurs
+   légitimes root leur téléphone) et ça revient à ajouter une dépendance
+   native de plus qui ne pourrait pas être vérifiée dans cet environnement
+   sans SDK Android ; **Play Integrity API** côté Android pour détecter les
+   APK modifiés/republiés — nécessiterait une vérification serveur (le
+   projet Supabase déjà en place pourrait héberger une Edge Function pour
+   ça, mais c'est un chantier à part).
 
 ## Limites connues (v1 volontairement simple)
 

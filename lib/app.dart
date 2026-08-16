@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'l10n/app_localizations.dart';
 import 'providers/habits_provider.dart';
+import 'providers/locale_provider.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
@@ -11,6 +12,8 @@ class HabitudeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeOverride = context.watch<LocaleProvider>().locale;
+
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
@@ -19,8 +22,11 @@ class HabitudeApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      // Le français reste la langue de repli par défaut (marché principal),
-      // même si l'ordre alphabétique généré met l'anglais en premier.
+      // `locale` force la langue choisie dans les Réglages ; `null` laisse
+      // le callback ci-dessous suivre la langue du système (avec repli sur
+      // le français, marché principal, même si l'ordre alphabétique généré
+      // met l'anglais en premier dans supportedLocales).
+      locale: localeOverride,
       localeResolutionCallback: (locale, supportedLocales) {
         if (locale != null) {
           for (final supported in supportedLocales) {

@@ -34,6 +34,17 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            // Réduit/obfusque le code Kotlin/Java natif (rétro-ingénierie
+            // plus difficile) et retire les ressources inutilisées.
+            // Complète l'obfuscation côté Dart (voir README, section
+            // "Protection du code / anti-piratage") : `flutter build apk
+            // --obfuscate --split-debug-info=...`.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

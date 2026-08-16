@@ -6,6 +6,7 @@ import 'app.dart';
 import 'config/supabase_config.dart';
 import 'providers/challenge_provider.dart';
 import 'providers/habits_provider.dart';
+import 'providers/locale_provider.dart';
 import 'providers/premium_provider.dart';
 import 'services/challenge_service.dart';
 import 'services/health_service.dart';
@@ -45,6 +46,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => ChallengeProvider(ChallengeService()),
         ),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: const HabitudeApp(),
     ),

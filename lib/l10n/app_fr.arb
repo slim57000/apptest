@@ -405,5 +405,17 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+
+  "languageLabel": "Langue",
+  "@languageLabel": {},
+
+  "languageSystem": "Système",
+  "@languageSystem": {},
+
+  "languageFrench": "Français",
+  "@languageFrench": {},
+
+  "languageEnglish": "English",
+  "@languageEnglish": {}
 }

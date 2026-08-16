@@ -142,5 +142,10 @@
   "copyCode": "Copy code",
   "codeCopied": "Code copied!",
   "shareInvite": "Invite friends",
-  "memberStreak": "{count, plural, one{{count} day} other{{count} days}}"
+  "memberStreak": "{count, plural, one{{count} day} other{{count} days}}",
+
+  "languageLabel": "Language",
+  "languageSystem": "System",
+  "languageFrench": "Français",
+  "languageEnglish": "English"
 }
