@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../providers/backup_provider.dart';
 import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
@@ -12,8 +14,20 @@ import 'paywall_screen.dart';
 /// cette valeur encode explicitement le premier cas.
 const _systemLanguageChoice = '__system__';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final backup = context.read<BackupProvider>();
+    if (backup.configured) backup.refreshStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +70,19 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _pickLanguage(context, locale),
           ),
+          const Divider(),
+          if (premium.isPremium)
+            const _CloudBackupSection()
+          else
+            ListTile(
+              leading: const Icon(Icons.cloud_outlined),
+              title: Text(l10n.cloudBackupTitle),
+              subtitle: Text(l10n.statusFree),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PaywallScreen()),
+              ),
+            ),
           const Divider(),
           AboutListTile(
             icon: const Icon(Icons.info_outline),
@@ -123,5 +150,117 @@ class _LanguageOption extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _CloudBackupSection extends StatelessWidget {
+  const _CloudBackupSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final backup = context.watch<BackupProvider>();
+
+    if (!backup.configured) {
+      return ListTile(
+        leading: const Icon(Icons.cloud_outlined),
+        title: Text(l10n.cloudBackupTitle),
+        subtitle: Text(l10n.cloudBackupNotConfigured),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.cloud_outlined),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l10n.cloudBackupTitle, style: Theme.of(context).textTheme.titleMedium)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(l10n.cloudBackupDescription, style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 6),
+          Text(
+            backup.lastBackupAt == null
+                ? l10n.neverBackedUp
+                : l10n.lastBackupAt(DateFormat.yMd(Localizations.localeOf(context).toString())
+                    .add_Hm()
+                    .format(backup.lastBackupAt!.toLocal())),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: backup.loading ? null : () => _restore(context),
+                  child: Text(l10n.restoreBackup),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton(
+                  onPressed: backup.loading ? null : () => _backupNow(context),
+                  child: backup.loading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.backupNow),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _backupNow(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final habits = context.read<HabitsProvider>().habits;
+    final ok = await context.read<BackupProvider>().backup(habits);
+    if (!context.mounted) return;
+    final backup = context.read<BackupProvider>();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(ok ? l10n.backupSuccess : (backup.error ?? ''))),
+    );
+  }
+
+  Future<void> _restore(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.restoreConfirmTitle),
+        content: Text(l10n.restoreConfirmContent),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.restoreBackup)),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final backupProvider = context.read<BackupProvider>();
+    final habits = await backupProvider.restore();
+    if (!context.mounted) return;
+
+    if (habits == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(backupProvider.error ?? l10n.noBackupFound)),
+      );
+      return;
+    }
+
+    await context.read<HabitsProvider>().replaceAll(habits);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.restoreSuccess)));
+    }
   }
 }

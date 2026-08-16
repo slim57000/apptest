@@ -58,9 +58,14 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   dédiée plus bas.
 - **Défis entre amis** : créer un défi, inviter par code à 6 caractères,
   cocher "j'ai réussi aujourd'hui" et voir le statut de chaque membre —
-  seule fonctionnalité avec un vrai backend (Supabase), voir la section
+  fonctionnalité avec un vrai backend (Supabase), voir la section
   dédiée plus bas. Gratuit (pas de mur Premium) pour ne pas freiner
   l'effet réseau.
+- **Sauvegarde cloud des habitudes** (Premium) : sauvegarder/restaurer
+  toutes ses habitudes (et leur historique) sur le même projet Supabase
+  que les défis, pour les récupérer après une réinstallation ou sur un
+  nouvel appareil — voir `lib/services/backup_service.dart` et la section
+  Supabase plus bas.
 
 ## Stack technique
 
@@ -77,10 +82,14 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - `health` pour le suivi automatique des pas (Health Connect / Apple
   Health) — voir `lib/services/health_service.dart`.
 - `share_plus` + `path_provider` pour la carte de série partageable.
-- `supabase_flutter` pour les défis entre amis (auth anonyme + Postgres +
-  RLS) — voir `lib/services/challenge_service.dart` et
-  `supabase/schema.sql`. Seule brique avec un backend ; tout le reste de
-  l'app reste local-first.
+- `supabase_flutter` pour les deux seules fonctionnalités avec un backend
+  (auth anonyme + Postgres + RLS), tout le reste de l'app restant
+  local-first :
+  - les défis entre amis — `lib/services/challenge_service.dart` ;
+  - la sauvegarde cloud des habitudes (Premium) —
+    `lib/services/backup_service.dart`.
+  Les deux partagent le même projet Supabase et le même
+  `supabase/schema.sql`.
 - Localisation via le système standard Flutter (`flutter_localizations` +
   `flutter gen-l10n`) : fichiers source dans `lib/l10n/*.arb`, le code
   généré (`app_localizations*.dart`) n'est pas versionné (régénéré
@@ -279,11 +288,13 @@ habitude dans l'app et confirmer que le widget se met à jour. Pas d'
 équivalent iOS (nécessiterait une extension WidgetKit créée depuis Xcode,
 impossible à scaffolder par édition de fichiers seule).
 
-## Configurer les défis entre amis (Supabase)
+## Configurer les défis entre amis et la sauvegarde cloud (Supabase)
 
 Le code est prêt mais **désactivé tant qu'il n'a pas de projet Supabase** :
-sans configuration, l'écran de défis affiche juste un message "non
-configuré" plutôt que de planter l'app.
+sans configuration, l'écran de défis et la section sauvegarde cloud des
+réglages affichent juste un message "non configuré" plutôt que de planter
+l'app. Les deux fonctionnalités partagent la même configuration Supabase
+ci-dessous.
 
 1. Créer un compte et un projet sur [supabase.com](https://supabase.com)
    (gratuit).
@@ -309,7 +320,8 @@ environnement) : à vérifier avec un vrai projet avant de shipper — en
 particulier les policies RLS de `supabase/schema.sql`, qui n'ont pas pu
 être exécutées contre une vraie base pour confirmer qu'elles autorisent
 exactement ce qu'il faut (rejoindre un défi par code, voir les autres
-membres, etc.) sans rien laisser d'ouvert en trop.
+membres, sauvegarder/restaurer uniquement sa propre sauvegarde dans
+`habit_backups`, etc.) sans rien laisser d'ouvert en trop.
 
 ## Idées pour la suite (différenciation vs. un simple rappel natif)
 

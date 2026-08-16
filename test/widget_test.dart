@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:habit_tracker/app.dart';
+import 'package:habit_tracker/providers/backup_provider.dart';
 import 'package:habit_tracker/providers/challenge_provider.dart';
 import 'package:habit_tracker/providers/habits_provider.dart';
 import 'package:habit_tracker/providers/locale_provider.dart';
 import 'package:habit_tracker/providers/premium_provider.dart';
+import 'package:habit_tracker/services/backup_service.dart';
 import 'package:habit_tracker/services/challenge_service.dart';
 import 'package:habit_tracker/services/health_service.dart';
 import 'package:habit_tracker/services/notification_service.dart';
@@ -35,6 +37,7 @@ void main() {
           ),
           ChangeNotifierProvider(create: (_) => PremiumProvider(PurchaseService())),
           ChangeNotifierProvider(create: (_) => ChallengeProvider(ChallengeService())),
+          ChangeNotifierProvider(create: (_) => BackupProvider(BackupService())),
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ],
         child: const HabitudeApp(),

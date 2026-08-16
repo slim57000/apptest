@@ -117,3 +117,31 @@ create policy "Un membre peut cocher son propre check-in du jour"
         and m.user_id = auth.uid ()
     )
   );
+
+-- --- Sauvegarde cloud des habitudes (Premium) ----------------------------
+-- Une ligne par utilisateur : le blob JSON complet des habitudes (même
+-- format que le stockage local, voir StorageService/Habit.toJson), écrasé
+-- à chaque sauvegarde. Pas de profil requis : indépendant des défis entre
+-- amis, pour que la sauvegarde marche même sans jamais toucher un défi.
+create table if not exists habit_backups (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  habits_json jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table habit_backups enable row level security;
+
+create policy "Un utilisateur ne peut lire que sa propre sauvegarde"
+  on habit_backups for select
+  to authenticated
+  using (auth.uid () = user_id);
+
+create policy "Un utilisateur ne peut créer que sa propre sauvegarde"
+  on habit_backups for insert
+  to authenticated
+  with check (auth.uid () = user_id);
+
+create policy "Un utilisateur ne peut mettre à jour que sa propre sauvegarde"
+  on habit_backups for update
+  to authenticated
+  using (auth.uid () = user_id);

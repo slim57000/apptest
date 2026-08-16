@@ -4,10 +4,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'config/supabase_config.dart';
+import 'providers/backup_provider.dart';
 import 'providers/challenge_provider.dart';
 import 'providers/habits_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/premium_provider.dart';
+import 'services/backup_service.dart';
 import 'services/challenge_service.dart';
 import 'services/health_service.dart';
 import 'services/notification_service.dart';
@@ -45,6 +47,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => ChallengeProvider(ChallengeService()),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => BackupProvider(BackupService()),
         ),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],

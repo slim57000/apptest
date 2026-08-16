@@ -417,5 +417,45 @@
   "@languageFrench": {},
 
   "languageEnglish": "English",
-  "@languageEnglish": {}
+  "@languageEnglish": {},
+
+  "cloudBackupTitle": "Sauvegarde cloud",
+  "@cloudBackupTitle": {},
+
+  "cloudBackupNotConfigured": "Fonctionnalité non configurée pour l'instant. Voir le README pour la configuration Supabase.",
+  "@cloudBackupNotConfigured": {},
+
+  "cloudBackupDescription": "Sauvegardez vos habitudes dans le cloud pour les retrouver après une réinstallation ou sur un nouvel appareil.",
+  "@cloudBackupDescription": {},
+
+  "backupNow": "Sauvegarder maintenant",
+  "@backupNow": {},
+
+  "restoreBackup": "Restaurer",
+  "@restoreBackup": {},
+
+  "lastBackupAt": "Dernière sauvegarde : {date}",
+  "@lastBackupAt": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+
+  "neverBackedUp": "Jamais sauvegardé",
+  "@neverBackedUp": {},
+
+  "backupSuccess": "Sauvegarde effectuée !",
+  "@backupSuccess": {},
+
+  "restoreConfirmTitle": "Restaurer la sauvegarde ?",
+  "@restoreConfirmTitle": {},
+
+  "restoreConfirmContent": "Ceci remplacera toutes les habitudes actuelles sur cet appareil par celles de la dernière sauvegarde cloud.",
+  "@restoreConfirmContent": {},
+
+  "restoreSuccess": "Habitudes restaurées !",
+  "@restoreSuccess": {},
+
+  "noBackupFound": "Aucune sauvegarde trouvée.",
+  "@noBackupFound": {}
 }

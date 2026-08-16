@@ -107,6 +107,19 @@ class HabitsProvider extends ChangeNotifier {
     await _persist();
   }
 
+  /// Remplace toutes les habitudes locales (restauration depuis une
+  /// sauvegarde cloud). Reprogramme les rappels comme au chargement initial.
+  Future<void> replaceAll(List<Habit> habits) async {
+    _habits = habits;
+    notifyListeners();
+    await _persist();
+    for (final habit in _habits) {
+      if (habit.reminderMinutes != null) {
+        await _notifications.scheduleReminders(habit);
+      }
+    }
+  }
+
   /// Active/désactive la complétion automatique via les pas de santé pour
   /// une habitude. À l'activation, demande l'autorisation Health Connect /
   /// Apple Health puis tente une synchronisation immédiate.
