@@ -50,6 +50,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Signature de release (clé d'upload Play Store) : jamais dans le dépôt.
+# Voir android/key.properties.example et le README ("Signer l'app pour
+# publication").
+/android/key.properties
+*.jks
+*.keystore
+
 # Widget Preview related
 .widget_preview/
 

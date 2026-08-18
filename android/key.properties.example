@@ -1,0 +1,7 @@
+# Copie ce fichier en "key.properties" (même dossier) et remplis les
+# vraies valeurs -- "key.properties" est ignoré par git, ne le committe
+# jamais. Voir le README, section "Signer l'app pour publication".
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=CHEMIN_ABSOLU_VERS_TON_FICHIER.jks

@@ -1,7 +1,21 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Signature de release : voir le README ("Signer l'app pour publication")
+// pour générer android/key.properties (jamais commité, voir .gitignore) à
+// partir de android/key.properties.example. Sans ce fichier, le build
+// release retombe sur les clés de debug (comme avant), pour ne pas casser
+// `flutter run --release` en développement.
+val keystorePropertiesFile = rootProject.file("key.properties")
+val hasKeystoreProperties = keystorePropertiesFile.exists()
+val keystoreProperties = Properties().apply {
+    if (hasKeystoreProperties) load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -29,11 +43,27 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasKeystoreProperties) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Signe avec la vraie clé de release si android/key.properties existe
+            // (voir README), sinon retombe sur les clés de debug pour ne pas
+            // casser `flutter run --release` en développement local.
+            signingConfig = if (hasKeystoreProperties) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             // Réduit/obfusque le code Kotlin/Java natif (rétro-ingénierie
             // plus difficile) et retire les ressources inutilisées.
             // Complète l'obfuscation côté Dart (voir README, section

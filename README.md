@@ -123,6 +123,37 @@ le code automatiquement). Pour ajouter une langue : dupliquer un fichier
 `app_XX.arb`, traduire les valeurs, et l'ajouter à `supportedLocales` sera
 automatique au prochain build.
 
+## Signer l'app pour publication (release keystore)
+
+Par défaut, `flutter build apk/appbundle --release` signe avec les clés de
+**debug** (pratique en développement, mais Play Console refuse ces
+builds). Pour signer avec une vraie clé :
+
+1. Générer une clé d'upload (une seule fois, à garder précieusement — sa
+   perte complique les mises à jour futures de l'app) :
+   ```bash
+   keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+   ```
+   Génère-la **en dehors du dépôt** (ex. dans ton dossier utilisateur), et
+   note le mot de passe choisi.
+2. Copier `android/key.properties.example` en `android/key.properties`
+   (déjà dans `.gitignore`, ne sera jamais commité) et renseigner :
+   ```properties
+   storePassword=...
+   keyPassword=...
+   keyAlias=upload
+   storeFile=C:/chemin/absolu/vers/upload-keystore.jks
+   ```
+3. `flutter build appbundle --release` signe désormais automatiquement
+   avec cette clé (voir `android/app/build.gradle.kts` : bascule sur les
+   clés de debug si `key.properties` est absent, pour ne pas casser
+   `flutter run --release` en local).
+
+Au premier envoi sur Play Console, accepter **Play App Signing** (proposé
+par défaut) : Google gère la clé de signature finale de l'app, et cette
+clé d'upload sert uniquement à authentifier tes envois — recommandé, ça
+protège contre la perte de la clé de signature elle-même.
+
 ## Configurer l'abonnement Premium (Play Store / App Store)
 
 Le code est prêt pour 3 produits Premium, mais ils doivent être **créés
