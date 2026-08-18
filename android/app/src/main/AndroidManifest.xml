@@ -60,7 +60,7 @@
                 android:resource="@xml/habit_widget_info" />
         </receiver>
         <!-- Publicités (AdMob) : ID de TEST officiel Google (voir README,
-             "Configurer les publicités") -- à remplacer par le vrai App ID
+             "Configurer les publicités"), à remplacer par le vrai App ID
              AdMob avant publication, sans quoi les pubs restent des pubs
              de démonstration. -->
         <meta-data
