@@ -63,3 +63,7 @@ app.*.map.json
 # Generated localization code (regenerated automatically via `generate: true`
 # in pubspec.yaml / `flutter gen-l10n`; source of truth is lib/l10n/*.arb)
 /lib/l10n/app_localizations*.dart
+
+# Assets store (icône, bannière, captures d'écran) générés localement pour
+# la fiche Play Store -- fichiers de travail, pas versionnés.
+/store_assets/
