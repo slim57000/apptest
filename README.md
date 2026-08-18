@@ -72,6 +72,9 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
   que les défis, pour les récupérer après une réinstallation ou sur un
   nouvel appareil — voir `lib/services/backup_service.dart` et la section
   Supabase plus bas.
+- **Publicité** (version gratuite uniquement) : une seule bannière
+  discrète en bas de l'accueil, jamais affichée aux abonnés Premium, pas
+  d'interstitiel ni de plein écran — voir la section dédiée plus bas.
 
 ## Stack technique
 
@@ -105,6 +108,9 @@ actuelle, et n'a pas pu être testé faute de Mac/Xcode).
 - Design : `google_fonts` (typographie), `flutter_animate`
   (micro-animations), `fl_chart` (graphique de complétion), `confetti`
   (célébration de streak).
+- `google_mobile_ads` pour la bannière publicitaire (version gratuite
+  uniquement) — voir `lib/widgets/banner_ad_widget.dart` et la section
+  dédiée plus bas.
 
 ## Mise en route
 
@@ -372,6 +378,45 @@ particulier les policies RLS de `supabase/schema.sql`, qui n'ont pas pu
 exactement ce qu'il faut (rejoindre un défi par code, voir les autres
 membres, sauvegarder/restaurer uniquement sa propre sauvegarde dans
 `habit_backups`, etc.) sans rien laisser d'ouvert en trop.
+
+## Configurer les publicités (AdMob)
+
+Une seule bannière discrète en bas de l'accueil, uniquement pour la
+version gratuite (jamais aux abonnés Premium — voir la condition dans
+`lib/screens/home_screen.dart`). Pas d'interstitiel, pas de plein écran.
+
+**Par défaut, l'app utilise les ID de test officiels Google**
+(`lib/config/ads_config.dart`, `AndroidManifest.xml`, `Info.plist`) : sûrs
+à committer, ils affichent de vraies publicités... de démonstration.
+**Garder ces ID de test tant que l'app n'est pas prête à publier** —
+utiliser un vrai compte AdMob pendant le développement/les tests expose à
+une suspension pour "trafic invalide" (clics répétés sur ses propres
+pubs).
+
+Avant publication :
+
+1. Créer un compte sur [admob.google.com](https://admob.google.com),
+   ajouter l'app (Android, package `com.slim57000.habitudeplus`), créer un
+   bloc **bannière**.
+2. Récupérer l'**App ID** (format `ca-app-pub-XXXX~YYYY`) et remplacer la
+   valeur de test dans `android/app/src/main/AndroidManifest.xml`
+   (`com.google.android.gms.ads.APPLICATION_ID`) et, pour iOS,
+   `ios/Runner/Info.plist` (`GADApplicationIdentifier`).
+3. Récupérer l'**ID d'unité publicitaire bannière** (format
+   `ca-app-pub-XXXX/YYYY`, différent de l'App ID) et le passer au build :
+   ```bash
+   flutter build appbundle --release --dart-define=ADMOB_BANNER_UNIT_ID=ca-app-pub-...
+   ```
+4. Sur Play Console, section **"Ads"** (App content) : répondre **"Oui"**
+   (l'app contient des publicités), et mettre à jour la section **"Data
+   safety"** pour déclarer la collecte d'un identifiant publicitaire par
+   AdMob (voir `docs/privacy-policy.html`, déjà à jour sur ce point).
+
+**Non testé en direct** (pas de compte AdMob réel ni de SDK Android dans
+cet environnement) : à vérifier sur un appareil réel avant de shipper —
+en particulier que la bannière se charge, ne s'affiche jamais aux
+utilisateurs Premium, et ne casse rien si le chargement échoue (pas de
+connexion, ID invalide...).
 
 ## Politique de confidentialité (obligatoire pour publier)
 

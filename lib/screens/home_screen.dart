@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
+import '../widgets/banner_ad_widget.dart';
 import '../widgets/garden_card.dart';
 import '../widgets/habit_card.dart';
 import 'add_habit_screen.dart';
@@ -95,6 +97,9 @@ class HomeScreen extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: Text(l10n.newHabit),
       ),
+      // Bannière discrète, uniquement pour la version gratuite -- jamais
+      // affichée aux utilisateurs Premium.
+      bottomNavigationBar: (!kIsWeb && !premium.isPremium) ? const BannerAdWidget() : null,
     );
   }
 

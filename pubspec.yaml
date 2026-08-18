@@ -50,6 +50,9 @@ dependencies:
   # Ouvrir la politique de confidentialité depuis les réglages
   url_launcher: ^6.3.1
 
+  # Publicité (bannière discrète, uniquement en version gratuite)
+  google_mobile_ads: ^5.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
