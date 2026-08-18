@@ -285,6 +285,10 @@ est réellement possible, et déjà en place ou documenté ici :
   - Objectif fixe de 5000 pas/jour pour la v1 (`stepsGoalForAutoComplete`
     dans `lib/services/health_service.dart`), non configurable par
     l'utilisateur.
+  - Le plugin `health` requiert **Android 8.0 (API 26) minimum**
+    (`minSdk` dans `android/app/build.gradle.kts`) : l'app n'est plus
+    installable sur des appareils plus anciens. Couvre la quasi-totalité
+    du parc actif en 2026, mais à savoir pour la fiche Play Store.
 
 ## Régénérer l'icône de l'app
 
