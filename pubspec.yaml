@@ -51,7 +51,7 @@ dependencies:
   url_launcher: ^6.3.1
 
   # Publicité (bannière discrète, uniquement en version gratuite)
-  google_mobile_ads: ^5.3.1
+  google_mobile_ads: ^9.1.0
 
 dev_dependencies:
   flutter_test:
