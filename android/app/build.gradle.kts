@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.slim57000.habitudeplus"
+        applicationId = "com.habitudeplus.habit_tracker"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // Le plugin `health` (suivi automatique des pas / Health Connect)
