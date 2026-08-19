@@ -20,6 +20,15 @@
 -keep class com.dexterous.** { *; }
 -keep class * implements java.io.Serializable { *; }
 
+# WorkManager (planification des rappels en tâche de fond) instancie sa
+# base Room par réflexion au démarrage : sans ces règles, R8 renomme les
+# classes générées et l'appli crashe immédiatement au lancement en
+# release avec "Failed to create an instance of androidx.work.impl.WorkDatabase".
+-keep class androidx.work.impl.** { *; }
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.work.**
+
 # Supabase (auth, base de données, websocket temps réel)
 -keep class io.github.jan.supabase.** { *; }
 -dontwarn io.github.jan.supabase.**
