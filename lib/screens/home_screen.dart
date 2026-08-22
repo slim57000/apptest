@@ -29,7 +29,14 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const _AppLogo(),
+            const SizedBox(width: 10),
+            Text(l10n.appTitle),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.auto_awesome),
@@ -111,6 +118,34 @@ class HomeScreen extends StatelessWidget {
       return;
     }
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AddHabitScreen()));
+  }
+}
+
+/// Petit logo bleu affiché à gauche du titre "Habitude+" dans l'AppBar de
+/// l'accueil. Dessiné en vecteur (pas d'asset image) pour rester net à
+/// toutes les résolutions.
+class _AppLogo extends StatelessWidget {
+  const _AppLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF4C6FFF), Color(0xFF2541D8)],
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Icon(
+        Icons.local_fire_department,
+        color: Colors.white,
+        size: 20,
+      ),
+    );
   }
 }
 

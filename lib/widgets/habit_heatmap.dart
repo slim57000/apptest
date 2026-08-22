@@ -30,17 +30,19 @@ class HabitHeatmap extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       reverse: true,
-      child: Row(
-        children: columns
-            .map(
-              (week) => Padding(
-                padding: const EdgeInsets.only(right: 3),
-                child: Column(
-                  children: week.map((day) => _cell(context, day, color, todayDay)).toList(),
+      child: Center(
+        child: Row(
+          children: columns
+              .map(
+                (week) => Padding(
+                  padding: const EdgeInsets.only(right: 3),
+                  child: Column(
+                    children: week.map((day) => _cell(context, day, color, todayDay)).toList(),
+                  ),
                 ),
-              ),
-            )
-            .toList(),
+              )
+              .toList(),
+        ),
       ),
     );
   }

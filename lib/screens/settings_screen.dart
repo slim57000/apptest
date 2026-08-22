@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/backup_provider.dart';
@@ -9,11 +8,12 @@ import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
 import 'paywall_screen.dart';
+import 'privacy_policy_screen.dart';
 
-/// Politique de confidentialité hébergée sur GitHub Pages (voir
-/// `docs/privacy-policy.html` — nécessite d'activer Pages une fois dans
-/// les réglages du dépôt, voir le README).
-const _privacyPolicyUrl = 'https://slim57000.github.io/apptest/privacy-policy.html';
+/// Numéro de version affiché dans "À propos" : à garder synchronisé avec
+/// le `version:` de `pubspec.yaml` (pas de dépendance package_info_plus
+/// pour l'instant, voir README).
+const _appVersion = '1.0.0';
 
 /// `Navigator.pop` avec `null` est indiscernable entre "l'utilisateur a
 /// choisi Système" et "fermeture du dialogue sans choix (tap en dehors)" :
@@ -93,18 +93,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: Text(l10n.privacyPolicyLabel),
-            trailing: const Icon(Icons.open_in_new),
-            onTap: () => launchUrl(
-              Uri.parse(_privacyPolicyUrl),
-              mode: LaunchMode.externalApplication,
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
             ),
           ),
           const Divider(),
-          AboutListTile(
-            icon: const Icon(Icons.info_outline),
-            applicationName: l10n.appTitle,
-            applicationVersion: '1.0.0',
-            child: Text(l10n.aboutTitle),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: Text(l10n.aboutTitle),
+            onTap: () => _showAboutDialog(context, l10n),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context, AppLocalizations l10n) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.info_outline, size: 40),
+            const SizedBox(height: 12),
+            Text(
+              l10n.appTitle,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _appVersion,
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Theme.of(context).hintColor),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.close),
           ),
         ],
       ),
@@ -198,7 +232,14 @@ class _CloudBackupSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text(l10n.cloudBackupDescription, style: Theme.of(context).textTheme.bodySmall),
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              l10n.cloudBackupDescription,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
           const SizedBox(height: 6),
           Text(
             backup.lastBackupAt == null

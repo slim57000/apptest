@@ -57,7 +57,7 @@ class _TemplateTile extends StatelessWidget {
           backgroundColor: color.withValues(alpha: 0.2),
           child: Text(template.emoji, style: const TextStyle(fontSize: 18)),
         ),
-        title: Text(template.name),
+        title: Text(template.name, textAlign: TextAlign.center),
         trailing: IconButton(
           icon: const Icon(Icons.add_circle_outline),
           onPressed: () => _add(context),

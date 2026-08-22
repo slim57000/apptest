@@ -30,6 +30,7 @@
   "deleteHabitTitle": "Delete this habit?",
   "deleteHabitContent": "\"{name}\" and its whole history will be deleted.",
   "cancel": "Cancel",
+  "close": "Close",
   "delete": "Delete",
   "bestStreak": "Best streak",
   "completionRate30": "Rate (30d)",
@@ -151,7 +152,7 @@
 
   "cloudBackupTitle": "Cloud backup",
   "cloudBackupNotConfigured": "Not configured yet. See the README for Supabase setup.",
-  "cloudBackupDescription": "Back up your habits to the cloud to get them back after a reinstall or on a new device.",
+  "cloudBackupDescription": "Back up now!",
   "backupNow": "Back up now",
   "restoreBackup": "Restore",
   "lastBackupAt": "Last backup: {date}",

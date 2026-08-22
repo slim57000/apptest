@@ -90,6 +90,9 @@
   "cancel": "Annuler",
   "@cancel": {},
 
+  "close": "Fermer",
+  "@close": {},
+
   "delete": "Supprimer",
   "@delete": {},
 
@@ -425,7 +428,7 @@
   "cloudBackupNotConfigured": "Fonctionnalité non configurée pour l'instant. Voir le README pour la configuration Supabase.",
   "@cloudBackupNotConfigured": {},
 
-  "cloudBackupDescription": "Sauvegardez vos habitudes dans le cloud pour les retrouver après une réinstallation ou sur un nouvel appareil.",
+  "cloudBackupDescription": "Sauvegardez maintenant !",
   "@cloudBackupDescription": {},
 
   "backupNow": "Sauvegarder maintenant",
