@@ -10,6 +10,7 @@ import '../widgets/banner_ad_widget.dart';
 import '../widgets/garden_card.dart';
 import '../widgets/habit_card.dart';
 import 'add_habit_screen.dart';
+import 'archived_habits_screen.dart';
 import 'challenges_screen.dart';
 import 'habit_detail_screen.dart';
 import 'paywall_screen.dart';
@@ -25,7 +26,10 @@ class HomeScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final habitsProvider = context.watch<HabitsProvider>();
     final premium = context.watch<PremiumProvider>();
-    final habits = habitsProvider.habits;
+    // Le jardin grandit avec l'historique complet (habitudes archivées
+    // comprises), la liste du quotidien n'affiche que les actives.
+    final allHabits = habitsProvider.habits;
+    final habits = habitsProvider.activeHabits;
 
     return Scaffold(
       appBar: AppBar(
@@ -72,6 +76,13 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           IconButton(
+            icon: const Icon(Icons.archive_outlined),
+            tooltip: l10n.archivedHabitsTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
+            ),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -88,11 +99,12 @@ class HomeScreen extends StatelessWidget {
                   itemCount: habits.length + 1,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
-                    if (index == 0) return GardenCard(habits: habits);
+                    if (index == 0) return GardenCard(habits: allHabits);
                     final habit = habits[index - 1];
                     return HabitCard(
                       habit: habit,
                       onToggle: () => habitsProvider.toggleToday(habit.id),
+                      onDecrement: () => habitsProvider.decrementToday(habit.id),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: habit.id)),
                       ),

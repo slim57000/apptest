@@ -12,8 +12,14 @@ class Habit {
   /// dimanche). Vide = active tous les jours.
   final Set<int> activeWeekdays;
 
-  /// Dates complétées, au format `yyyy-MM-dd`.
-  final Set<String> completedDates;
+  /// Nombre de fois par jour où l'habitude doit être faite pour compter
+  /// comme complétée (ex. "boire de l'eau" x8). 1 = comportement classique
+  /// (une case à cocher par jour).
+  final int dailyTarget;
+
+  /// Nombre de fois faite, par jour (`yyyy-MM-dd` -> compteur). Un jour est
+  /// considéré complété quand son compteur atteint [dailyTarget].
+  final Map<String, int> completionCounts;
 
   /// Dates "gelées" (fonctionnalité Premium) : un jour manqué qui ne casse
   /// pas la série, sans compter comme réellement fait dans le taux de
@@ -33,6 +39,11 @@ class Habit {
   /// l'habitude est cochée automatiquement.
   final bool autoTrackSteps;
 
+  /// Habitude archivée : sortie de la liste principale et du décompte du
+  /// quota gratuit, mais historique et séries conservés (contrairement à
+  /// une suppression).
+  final bool archived;
+
   const Habit({
     required this.id,
     required this.name,
@@ -40,11 +51,13 @@ class Habit {
     required this.colorValue,
     required this.createdAt,
     this.activeWeekdays = const {},
-    this.completedDates = const {},
+    this.dailyTarget = 1,
+    this.completionCounts = const {},
     this.frozenDates = const {},
     this.reminderMinutes,
     this.autoTrackSteps = false,
     this.notes = const {},
+    this.archived = false,
   });
 
   static String dateKey(DateTime day) {
@@ -57,7 +70,10 @@ class Habit {
   bool isActiveOn(DateTime day) =>
       activeWeekdays.isEmpty || activeWeekdays.contains(day.weekday);
 
-  bool isCompletedOn(DateTime day) => completedDates.contains(dateKey(day));
+  /// Nombre de fois faite le jour [day] (0 si jamais touché).
+  int countOn(DateTime day) => completionCounts[dateKey(day)] ?? 0;
+
+  bool isCompletedOn(DateTime day) => countOn(day) >= dailyTarget;
 
   bool isFrozenOn(DateTime day) => frozenDates.contains(dateKey(day));
 
@@ -68,23 +84,55 @@ class Habit {
 
   bool get isCompletedToday => isCompletedOn(DateTime.now());
 
+  int get countToday => countOn(DateTime.now());
+
+  /// Nombre de jours où l'habitude a été entièrement complétée (compteur
+  /// >= [dailyTarget]), tous historiques confondus. Utilisé par le jardin
+  /// virtuel : chaque jour pleinement réussi compte pour une "graine",
+  /// jamais les passages intermédiaires d'une habitude x plusieurs fois/jour.
+  int get completedDayCount =>
+      completionCounts.values.where((count) => count >= dailyTarget).length;
+
+  /// Fait avancer le compteur du jour d'un cran, en bouclant à 0 une fois
+  /// [dailyTarget] atteint (ex. 0/1 -> 1/1 -> 0/1 pour une habitude simple ;
+  /// 0/3 -> 1/3 -> 2/3 -> 3/3 -> 0/3 pour une habitude x3/jour).
   Habit toggled(DateTime day) {
     final key = dateKey(day);
-    final updated = Set<String>.from(completedDates);
-    if (!updated.remove(key)) {
-      updated.add(key);
+    final current = completionCounts[key] ?? 0;
+    final next = current >= dailyTarget ? 0 : current + 1;
+    final updated = Map<String, int>.from(completionCounts);
+    if (next == 0) {
+      updated.remove(key);
+    } else {
+      updated[key] = next;
     }
-    return copyWith(completedDates: updated);
+    return copyWith(completionCounts: updated);
   }
 
-  /// Marque [day] comme fait si ce n'est pas déjà le cas ; ne le décoche
-  /// jamais (contrairement à [toggled]). Utilisé par la complétion
+  /// Retire un cran au compteur du jour, sans jamais descendre sous 0.
+  /// Permet de corriger un tap de trop sur une habitude x plusieurs fois/jour.
+  Habit decremented(DateTime day) {
+    final key = dateKey(day);
+    final current = completionCounts[key] ?? 0;
+    if (current <= 0) return this;
+    final updated = Map<String, int>.from(completionCounts);
+    if (current - 1 <= 0) {
+      updated.remove(key);
+    } else {
+      updated[key] = current - 1;
+    }
+    return copyWith(completionCounts: updated);
+  }
+
+  /// Marque [day] comme entièrement fait si ce n'est pas déjà le cas ; ne le
+  /// décoche jamais (contrairement à [toggled]). Utilisé par la complétion
   /// automatique via Health Connect / Apple Health, où appeler la
   /// synchronisation plusieurs fois ne doit jamais annuler une complétion.
   Habit completeOn(DateTime day) {
     if (isCompletedOn(day)) return this;
-    final updated = Set<String>.from(completedDates)..add(dateKey(day));
-    return copyWith(completedDates: updated);
+    final updated = Map<String, int>.from(completionCounts)
+      ..[dateKey(day)] = dailyTarget;
+    return copyWith(completionCounts: updated);
   }
 
   DateTime get _createdDay => DateTime(createdAt.year, createdAt.month, createdAt.day);
@@ -130,11 +178,13 @@ class Habit {
       colorValue: colorValue,
       createdAt: createdAt,
       activeWeekdays: activeWeekdays,
-      completedDates: completedDates,
+      dailyTarget: dailyTarget,
+      completionCounts: completionCounts,
       frozenDates: frozenDates,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
+      archived: archived,
     );
   }
 
@@ -154,11 +204,13 @@ class Habit {
       colorValue: colorValue,
       createdAt: createdAt,
       activeWeekdays: activeWeekdays,
-      completedDates: completedDates,
+      dailyTarget: dailyTarget,
+      completionCounts: completionCounts,
       frozenDates: frozenDates,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: updated,
+      archived: archived,
     );
   }
 
@@ -171,11 +223,33 @@ class Habit {
       colorValue: colorValue,
       createdAt: createdAt,
       activeWeekdays: activeWeekdays,
-      completedDates: completedDates,
+      dailyTarget: dailyTarget,
+      completionCounts: completionCounts,
       frozenDates: frozenDates,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: value,
       notes: notes,
+      archived: archived,
+    );
+  }
+
+  /// Archive ou désarchive l'habitude : sortie/retour de la liste
+  /// principale, sans jamais toucher à l'historique ni aux séries.
+  Habit withArchived(bool value) {
+    return Habit(
+      id: id,
+      name: name,
+      emoji: emoji,
+      colorValue: colorValue,
+      createdAt: createdAt,
+      activeWeekdays: activeWeekdays,
+      dailyTarget: dailyTarget,
+      completionCounts: completionCounts,
+      frozenDates: frozenDates,
+      reminderMinutes: reminderMinutes,
+      autoTrackSteps: autoTrackSteps,
+      notes: notes,
+      archived: value,
     );
   }
 
@@ -246,7 +320,8 @@ class Habit {
     String? emoji,
     int? colorValue,
     Set<int>? activeWeekdays,
-    Set<String>? completedDates,
+    int? dailyTarget,
+    Map<String, int>? completionCounts,
     Set<String>? frozenDates,
   }) {
     return Habit(
@@ -256,15 +331,31 @@ class Habit {
       colorValue: colorValue ?? this.colorValue,
       createdAt: createdAt,
       activeWeekdays: activeWeekdays ?? this.activeWeekdays,
-      completedDates: completedDates ?? this.completedDates,
+      dailyTarget: dailyTarget ?? this.dailyTarget,
+      completionCounts: completionCounts ?? this.completionCounts,
       frozenDates: frozenDates ?? this.frozenDates,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
+      archived: archived,
     );
   }
 
   factory Habit.fromJson(Map<String, dynamic> json) {
+    // Compatibilité ascendante : les sauvegardes créées avant l'ajout des
+    // habitudes "plusieurs fois par jour" stockent `completedDates` (une
+    // liste de jours faits une fois). On les relit comme un compteur à 1.
+    final Map<String, int> completionCounts;
+    if (json['completionCounts'] != null) {
+      completionCounts = (json['completionCounts'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, (value as num).toInt()));
+    } else {
+      completionCounts = {
+        for (final date in (json['completedDates'] as List<dynamic>? ?? []))
+          date as String: 1,
+      };
+    }
+
     return Habit(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -274,9 +365,8 @@ class Habit {
       activeWeekdays: (json['activeWeekdays'] as List<dynamic>? ?? [])
           .map((e) => e as int)
           .toSet(),
-      completedDates: (json['completedDates'] as List<dynamic>? ?? [])
-          .map((e) => e as String)
-          .toSet(),
+      dailyTarget: (json['dailyTarget'] as num?)?.toInt() ?? 1,
+      completionCounts: completionCounts,
       frozenDates: (json['frozenDates'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toSet(),
@@ -284,6 +374,7 @@ class Habit {
       autoTrackSteps: json['autoTrackSteps'] as bool? ?? false,
       notes: (json['notes'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(key, value as String)),
+      archived: json['archived'] as bool? ?? false,
     );
   }
 
@@ -295,11 +386,13 @@ class Habit {
       'colorValue': colorValue,
       'createdAt': createdAt.toIso8601String(),
       'activeWeekdays': activeWeekdays.toList(),
-      'completedDates': completedDates.toList(),
+      'dailyTarget': dailyTarget,
+      'completionCounts': completionCounts,
       'frozenDates': frozenDates.toList(),
       'reminderMinutes': reminderMinutes,
       'autoTrackSteps': autoTrackSteps,
       'notes': notes,
+      'archived': archived,
     };
   }
 }

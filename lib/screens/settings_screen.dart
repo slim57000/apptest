@@ -39,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final premium = context.watch<PremiumProvider>();
-    final habitsCount = context.watch<HabitsProvider>().habits.length;
+    final habitsCount = context.watch<HabitsProvider>().activeHabits.length;
     final locale = context.watch<LocaleProvider>().locale;
 
     return Scaffold(

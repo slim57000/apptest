@@ -8,12 +8,14 @@ class HabitCard extends StatelessWidget {
   final Habit habit;
   final VoidCallback onToggle;
   final VoidCallback onTap;
+  final VoidCallback? onDecrement;
 
   const HabitCard({
     super.key,
     required this.habit,
     required this.onToggle,
     required this.onTap,
+    this.onDecrement,
   });
 
   @override
@@ -48,7 +50,12 @@ class HabitCard extends StatelessWidget {
                           .titleMedium
                           ?.copyWith(fontWeight: FontWeight.w600),
                     ),
-                    if (habit.currentStreak > 0)
+                    if (habit.dailyTarget > 1)
+                      Text(
+                        l10n.timesProgress(habit.countToday, habit.dailyTarget),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      )
+                    else if (habit.currentStreak > 0)
                       Text(
                         l10n.streakDays(habit.currentStreak),
                         style: Theme.of(context).textTheme.bodySmall,
@@ -61,12 +68,17 @@ class HabitCard extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                iconSize: 32,
-                onPressed: active ? onToggle : null,
-                icon: Icon(
-                  done ? Icons.check_circle : Icons.radio_button_unchecked,
-                  color: done ? color : Theme.of(context).disabledColor,
+              GestureDetector(
+                onLongPress: (active && onDecrement != null && habit.countToday > 0)
+                    ? onDecrement
+                    : null,
+                child: IconButton(
+                  iconSize: 32,
+                  onPressed: active ? onToggle : null,
+                  icon: Icon(
+                    done ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: done ? color : Theme.of(context).disabledColor,
+                  ),
                 ),
               ).animate(target: done ? 1 : 0).scaleXY(begin: 1, end: 1.15, curve: Curves.easeOutBack),
             ],

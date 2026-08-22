@@ -23,11 +23,26 @@ class HabitsProvider extends ChangeNotifier {
   }
 
   bool get loading => _loading;
+
+  /// Toutes les habitudes, y compris archivées (sauvegarde cloud, écran de
+  /// détail, jardin virtuel : l'historique d'une habitude archivée continue
+  /// de compter).
   List<Habit> get habits => List.unmodifiable(_habits);
+
+  /// Habitudes non archivées uniquement : liste du quotidien, récap, et
+  /// décompte du quota gratuit.
+  List<Habit> get activeHabits => List.unmodifiable(_habits.where((h) => !h.archived));
+
+  /// Habitudes archivées uniquement, pour l'écran d'archive.
+  List<Habit> get archivedHabits => List.unmodifiable(_habits.where((h) => h.archived));
+
+  /// Habitudes à envoyer au widget d'écran d'accueil : jamais les
+  /// archivées, qui n'ont rien à faire dans un résumé du quotidien.
+  List<Habit> get _widgetHabits => _habits.where((h) => !h.archived).toList();
 
   Future<void> _persist() async {
     await _storage.saveHabits(_habits);
-    await _widget.updateHabits(_habits);
+    await _widget.updateHabits(_widgetHabits);
   }
 
   Future<void> _load() async {
@@ -43,7 +58,7 @@ class HabitsProvider extends ChangeNotifier {
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
     }
-    await _widget.updateHabits(_habits);
+    await _widget.updateHabits(_widgetHabits);
     await syncHealthSteps();
   }
 
@@ -56,7 +71,7 @@ class HabitsProvider extends ChangeNotifier {
   Future<void> reload() async {
     _habits = await _storage.loadHabits();
     notifyListeners();
-    await _widget.updateHabits(_habits);
+    await _widget.updateHabits(_widgetHabits);
     for (final habit in _habits) {
       if (habit.reminderMinutes != null) {
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
@@ -64,13 +79,14 @@ class HabitsProvider extends ChangeNotifier {
     }
   }
 
-  bool canAddHabit(bool isPremium) => isPremium || _habits.length < freeHabitLimit;
+  bool canAddHabit(bool isPremium) => isPremium || activeHabits.length < freeHabitLimit;
 
   Future<void> addHabit({
     required String name,
     required String emoji,
     required int colorValue,
     Set<int> activeWeekdays = const {},
+    int dailyTarget = 1,
     int? reminderMinutes,
   }) async {
     final habit = Habit(
@@ -80,6 +96,7 @@ class HabitsProvider extends ChangeNotifier {
       colorValue: colorValue,
       createdAt: DateTime.now(),
       activeWeekdays: activeWeekdays,
+      dailyTarget: dailyTarget,
       reminderMinutes: reminderMinutes,
     );
     _habits = [..._habits, habit];
@@ -107,6 +124,36 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _persist();
     if (updated != null) {
+      await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
+    }
+  }
+
+  /// Retire un cran au compteur du jour (corrige un tap de trop sur une
+  /// habitude à faire plusieurs fois par jour).
+  Future<void> decrementToday(String id) async {
+    _habits = _habits.map((h) => h.id == id ? h.decremented(DateTime.now()) : h).toList();
+    notifyListeners();
+    await _persist();
+  }
+
+  /// Archive ou désarchive une habitude : elle sort (ou revient) de la liste
+  /// du quotidien sans perdre son historique ni ses séries. Les rappels sont
+  /// suspendus pendant qu'elle est archivée.
+  Future<void> setArchived(String id, bool archived) async {
+    Habit? updated;
+    _habits = _habits.map((h) {
+      if (h.id != id) return h;
+      updated = h.withArchived(archived);
+      return updated!;
+    }).toList();
+    notifyListeners();
+    await _persist();
+    if (updated == null) return;
+    if (archived) {
+      await _notifications.cancelReminders(id);
+      await _notifications.cancelFollowUps(id);
+    } else if (updated!.reminderMinutes != null) {
+      await _notifications.scheduleReminders(updated!);
       await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
     }
   }

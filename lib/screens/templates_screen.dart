@@ -60,14 +60,33 @@ class _TemplateTile extends StatelessWidget {
         title: Text(template.name, textAlign: TextAlign.center),
         trailing: IconButton(
           icon: const Icon(Icons.add_circle_outline),
-          onPressed: () => _add(context),
+          tooltip: AppLocalizations.of(context)!.habitAdded,
+          onPressed: () => _add(context, template.activeWeekdays),
         ),
-        onTap: () => _add(context),
+        // Le tap sur la ligne ouvre la personnalisation des jours actifs ;
+        // le bouton "+" ajoute directement avec la planification par défaut
+        // du modèle (garde le côté "un tap" pour qui n'a pas besoin de
+        // personnaliser).
+        onTap: () => _customize(context),
       ),
     );
   }
 
-  Future<void> _add(BuildContext context) async {
+  Future<void> _customize(BuildContext context) async {
+    final chosen = await showModalBottomSheet<Set<int>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _ScheduleSheet(
+        template: template,
+        initialWeekdays: template.activeWeekdays,
+      ),
+    );
+    if (chosen != null && context.mounted) {
+      await _add(context, chosen);
+    }
+  }
+
+  Future<void> _add(BuildContext context, Set<int> activeWeekdays) async {
     final l10n = AppLocalizations.of(context)!;
     final habitsProvider = context.read<HabitsProvider>();
     final premium = context.read<PremiumProvider>();
@@ -81,7 +100,7 @@ class _TemplateTile extends StatelessWidget {
       name: template.name,
       emoji: template.emoji,
       colorValue: template.colorValue,
-      activeWeekdays: template.activeWeekdays,
+      activeWeekdays: activeWeekdays,
     );
 
     if (context.mounted) {
@@ -89,5 +108,85 @@ class _TemplateTile extends StatelessWidget {
         SnackBar(content: Text(l10n.habitAdded)),
       );
     }
+  }
+}
+
+/// Feuille modale pour choisir les jours actifs avant d'ajouter une
+/// habitude depuis un modèle, au lieu de prendre la planification par
+/// défaut du modèle sans pouvoir la changer.
+class _ScheduleSheet extends StatefulWidget {
+  final HabitTemplate template;
+  final Set<int> initialWeekdays;
+
+  const _ScheduleSheet({required this.template, required this.initialWeekdays});
+
+  @override
+  State<_ScheduleSheet> createState() => _ScheduleSheetState();
+}
+
+class _ScheduleSheetState extends State<_ScheduleSheet> {
+  late final Set<int> _weekdays = Set<int>.from(widget.initialWeekdays);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final weekdayLabels = [
+      l10n.weekdayMon,
+      l10n.weekdayTue,
+      l10n.weekdayWed,
+      l10n.weekdayThu,
+      l10n.weekdayFri,
+      l10n.weekdaySat,
+      l10n.weekdaySun,
+    ];
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          20,
+          20,
+          20 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.template.name, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: List.generate(7, (index) {
+                final weekday = index + 1;
+                final selected = _weekdays.contains(weekday);
+                return FilterChip(
+                  label: Text(weekdayLabels[index]),
+                  selected: selected,
+                  onSelected: (value) => setState(() {
+                    if (value) {
+                      _weekdays.add(weekday);
+                    } else {
+                      _weekdays.remove(weekday);
+                    }
+                  }),
+                );
+              }),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(_weekdays),
+                child: Text(l10n.createButton),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

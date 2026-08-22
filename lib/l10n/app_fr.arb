@@ -77,6 +77,38 @@
   "doneToday": "Fait aujourd'hui",
   "@doneToday": {},
 
+  "timesProgress": "{count}/{target}",
+  "@timesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+
+  "timesPerDayLabel": "Fois par jour",
+  "@timesPerDayLabel": {},
+
+  "archiveAction": "Archiver",
+  "@archiveAction": {},
+
+  "unarchiveAction": "Désarchiver",
+  "@unarchiveAction": {},
+
+  "habitArchivedMessage": "Habitude archivée.",
+  "@habitArchivedMessage": {},
+
+  "habitUnarchivedMessage": "Habitude désarchivée.",
+  "@habitUnarchivedMessage": {},
+
+  "archivedHabitsTitle": "Habitudes archivées",
+  "@archivedHabitsTitle": {},
+
+  "noArchivedHabits": "Aucune habitude archivée.",
+  "@noArchivedHabits": {},
+
+  "undo": "Annuler",
+  "@undo": {},
+
   "deleteHabitTitle": "Supprimer cette habitude ?",
   "@deleteHabitTitle": {},
 

@@ -14,7 +14,7 @@ class RecapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final habits = context.watch<HabitsProvider>().habits;
+    final habits = context.watch<HabitsProvider>().activeHabits;
 
     if (habits.isEmpty) {
       return Scaffold(

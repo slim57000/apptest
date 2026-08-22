@@ -17,6 +17,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   String _emoji = habitEmojiChoices.first;
   int _color = habitColorPalette.first;
   final Set<int> _weekdays = {};
+  int _dailyTarget = 1;
   TimeOfDay? _reminderTime;
 
   @override
@@ -91,6 +92,33 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             }).toList(),
           ),
           const SizedBox(height: 24),
+          Text(l10n.timesPerDayLabel, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              IconButton.outlined(
+                icon: const Icon(Icons.remove),
+                onPressed: _dailyTarget > 1
+                    ? () => setState(() => _dailyTarget--)
+                    : null,
+              ),
+              SizedBox(
+                width: 48,
+                child: Text(
+                  '$_dailyTarget',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              IconButton.outlined(
+                icon: const Icon(Icons.add),
+                onPressed: _dailyTarget < 20
+                    ? () => setState(() => _dailyTarget++)
+                    : null,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
           Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
@@ -160,6 +188,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           emoji: _emoji,
           colorValue: _color,
           activeWeekdays: _weekdays,
+          dailyTarget: _dailyTarget,
           reminderMinutes: _reminderTime == null
               ? null
               : _reminderTime!.hour * 60 + _reminderTime!.minute,

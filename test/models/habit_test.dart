@@ -13,10 +13,12 @@ DateTime _daysAgo(int n) => _today().subtract(Duration(days: n));
 Habit _habit({
   Set<int> activeWeekdays = const {},
   Set<String> completedDates = const {},
+  int dailyTarget = 1,
   Set<String> frozenDates = const {},
   DateTime? createdAt,
   int? reminderMinutes,
   bool autoTrackSteps = false,
+  bool archived = false,
   Map<String, String> notes = const {},
 }) {
   return Habit(
@@ -26,10 +28,12 @@ Habit _habit({
     colorValue: 0xFF000000,
     createdAt: createdAt ?? _daysAgo(365),
     activeWeekdays: activeWeekdays,
-    completedDates: completedDates,
+    dailyTarget: dailyTarget,
+    completionCounts: {for (final d in completedDates) d: dailyTarget},
     frozenDates: frozenDates,
     reminderMinutes: reminderMinutes,
     autoTrackSteps: autoTrackSteps,
+    archived: archived,
     notes: notes,
   );
 }
@@ -60,7 +64,7 @@ void main() {
   });
 
   group('toggled / completeOn', () {
-    test('toggled ajoute puis retire le jour', () {
+    test('toggled ajoute puis retire le jour (habitude simple)', () {
       final habit = _habit();
       final toggled = habit.toggled(_today());
       expect(toggled.isCompletedOn(_today()), isTrue);
@@ -74,7 +78,53 @@ void main() {
       expect(completed.isCompletedOn(_today()), isTrue);
       final completedAgain = completed.completeOn(_today());
       expect(completedAgain.isCompletedOn(_today()), isTrue);
-      expect(completedAgain.completedDates, completed.completedDates);
+      expect(completedAgain.completionCounts, completed.completionCounts);
+    });
+  });
+
+  group('habitudes plusieurs fois par jour', () {
+    test('toggled boucle 0 -> 1 -> 2 -> ... -> target -> 0', () {
+      var habit = _habit(dailyTarget: 3);
+      expect(habit.countToday, 0);
+      expect(habit.isCompletedOn(_today()), isFalse);
+
+      habit = habit.toggled(_today());
+      expect(habit.countToday, 1);
+      expect(habit.isCompletedOn(_today()), isFalse);
+
+      habit = habit.toggled(_today());
+      expect(habit.countToday, 2);
+
+      habit = habit.toggled(_today());
+      expect(habit.countToday, 3);
+      expect(habit.isCompletedOn(_today()), isTrue);
+
+      habit = habit.toggled(_today());
+      expect(habit.countToday, 0);
+      expect(habit.isCompletedOn(_today()), isFalse);
+    });
+
+    test('decremented retire un cran sans descendre sous 0', () {
+      var habit = _habit(dailyTarget: 3).toggled(_today()).toggled(_today());
+      expect(habit.countToday, 2);
+      habit = habit.decremented(_today());
+      expect(habit.countToday, 1);
+      habit = habit.decremented(_today()).decremented(_today());
+      expect(habit.countToday, 0);
+    });
+
+    test('completeOn marque directement le compteur au niveau de la cible', () {
+      final habit = _habit(dailyTarget: 5).completeOn(_today());
+      expect(habit.countToday, 5);
+      expect(habit.isCompletedOn(_today()), isTrue);
+    });
+
+    test('completedDayCount ne compte que les jours pleinement atteints', () {
+      var habit = _habit(dailyTarget: 3);
+      habit = habit.toggled(_today()); // 1/3, pas complet
+      expect(habit.completedDayCount, 0);
+      habit = habit.toggled(_daysAgo(1)).toggled(_daysAgo(1)).toggled(_daysAgo(1)); // 3/3
+      expect(habit.completedDayCount, 1);
     });
   });
 
@@ -217,7 +267,7 @@ void main() {
     });
   });
 
-  group('withReminder / withNote / withAutoTrackSteps', () {
+  group('withReminder / withNote / withAutoTrackSteps / withArchived', () {
     test('withReminder peut repasser à null explicitement', () {
       final habit = _habit(reminderMinutes: 480);
       expect(habit.withReminder(null).reminderMinutes, isNull);
@@ -238,16 +288,26 @@ void main() {
       final habit = _habit();
       expect(habit.withAutoTrackSteps(true).autoTrackSteps, isTrue);
     });
+
+    test('withArchived bascule le statut archivé sans toucher à l\'historique', () {
+      final habit = _habit(completedDates: {Habit.dateKey(_today())});
+      final archived = habit.withArchived(true);
+      expect(archived.archived, isTrue);
+      expect(archived.isCompletedOn(_today()), isTrue);
+      expect(archived.withArchived(false).archived, isFalse);
+    });
   });
 
   group('toJson / fromJson', () {
     test('round-trip préserve toutes les données', () {
       final habit = _habit(
         activeWeekdays: {1, 3, 5},
+        dailyTarget: 3,
         completedDates: {Habit.dateKey(_today())},
         frozenDates: {Habit.dateKey(_daysAgo(5))},
         reminderMinutes: 510,
         autoTrackSteps: true,
+        archived: true,
         notes: {Habit.dateKey(_today()): 'journal'},
       );
       final restored = Habit.fromJson(habit.toJson());
@@ -258,10 +318,12 @@ void main() {
       expect(restored.colorValue, habit.colorValue);
       expect(restored.createdAt, habit.createdAt);
       expect(restored.activeWeekdays, habit.activeWeekdays);
-      expect(restored.completedDates, habit.completedDates);
+      expect(restored.dailyTarget, habit.dailyTarget);
+      expect(restored.completionCounts, habit.completionCounts);
       expect(restored.frozenDates, habit.frozenDates);
       expect(restored.reminderMinutes, habit.reminderMinutes);
       expect(restored.autoTrackSteps, habit.autoTrackSteps);
+      expect(restored.archived, habit.archived);
       expect(restored.notes, habit.notes);
     });
 
@@ -274,11 +336,27 @@ void main() {
         'createdAt': DateTime(2026, 1, 1).toIso8601String(),
       });
       expect(restored.activeWeekdays, isEmpty);
-      expect(restored.completedDates, isEmpty);
+      expect(restored.dailyTarget, 1);
+      expect(restored.completionCounts, isEmpty);
       expect(restored.frozenDates, isEmpty);
       expect(restored.reminderMinutes, isNull);
       expect(restored.autoTrackSteps, isFalse);
+      expect(restored.archived, isFalse);
       expect(restored.notes, isEmpty);
+    });
+
+    test('fromJson relit une ancienne sauvegarde `completedDates` comme un compteur à 1', () {
+      final restored = Habit.fromJson({
+        'id': 'h1',
+        'name': 'Ancienne sauvegarde',
+        'emoji': '🔥',
+        'colorValue': 0xFF000000,
+        'createdAt': DateTime(2026, 1, 1).toIso8601String(),
+        'completedDates': [Habit.dateKey(_today())],
+      });
+      expect(restored.dailyTarget, 1);
+      expect(restored.isCompletedOn(_today()), isTrue);
+      expect(restored.completionCounts[Habit.dateKey(_today())], 1);
     });
   });
 }

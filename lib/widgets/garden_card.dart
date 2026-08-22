@@ -35,7 +35,7 @@ class GardenCard extends StatelessWidget {
   const GardenCard({super.key, required this.habits});
 
   int get _totalCompletions =>
-      habits.fold(0, (sum, h) => sum + h.completedDates.length);
+      habits.fold(0, (sum, h) => sum + h.completedDayCount);
 
   bool get _needsWater {
     if (habits.isEmpty) return false;

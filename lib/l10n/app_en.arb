@@ -27,6 +27,21 @@
   "habitNotFound": "Habit not found.",
   "markDone": "Mark as done",
   "doneToday": "Done today",
+  "timesProgress": "{count}/{target}",
+  "@timesProgress": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "timesPerDayLabel": "Times per day",
+  "archiveAction": "Archive",
+  "unarchiveAction": "Unarchive",
+  "habitArchivedMessage": "Habit archived.",
+  "habitUnarchivedMessage": "Habit unarchived.",
+  "archivedHabitsTitle": "Archived habits",
+  "noArchivedHabits": "No archived habits.",
+  "undo": "Undo",
   "deleteHabitTitle": "Delete this habit?",
   "deleteHabitContent": "\"{name}\" and its whole history will be deleted.",
   "cancel": "Cancel",

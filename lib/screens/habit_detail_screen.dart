@@ -69,6 +69,11 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
             ),
           ),
           IconButton(
+            icon: Icon(habit.archived ? Icons.unarchive_outlined : Icons.archive_outlined),
+            tooltip: habit.archived ? l10n.unarchiveAction : l10n.archiveAction,
+            onPressed: () => _toggleArchived(context, habit),
+          ),
+          IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => _confirmDelete(context, habit),
           ),
@@ -93,18 +98,36 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: habit.isActiveOn(DateTime.now())
-                    ? () => context.read<HabitsProvider>().toggleToday(habit.id)
-                    : null,
-                icon: Icon(
-                  habit.isCompletedToday
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
-                ),
-                label: Text(
-                  habit.isCompletedToday ? l10n.doneToday : l10n.markDone,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: habit.isActiveOn(DateTime.now())
+                          ? () => context.read<HabitsProvider>().toggleToday(habit.id)
+                          : null,
+                      icon: Icon(
+                        habit.isCompletedToday
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                      ),
+                      label: Text(
+                        habit.dailyTarget > 1
+                            ? l10n.timesProgress(habit.countToday, habit.dailyTarget)
+                            : habit.isCompletedToday
+                                ? l10n.doneToday
+                                : l10n.markDone,
+                      ),
+                    ),
+                  ),
+                  if (habit.dailyTarget > 1 && habit.countToday > 0) ...[
+                    const SizedBox(width: 8),
+                    IconButton.outlined(
+                      icon: const Icon(Icons.remove),
+                      tooltip: l10n.undo,
+                      onPressed: () => context.read<HabitsProvider>().decrementToday(habit.id),
+                    ),
+                  ],
+                ],
               ),
               if (premium.isPremium && habit.canFreezeYesterday) ...[
                 const SizedBox(height: 12),
@@ -164,6 +187,23 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       await context.read<HabitsProvider>().deleteHabit(habit.id);
       if (context.mounted) Navigator.of(context).pop();
     }
+  }
+
+  Future<void> _toggleArchived(BuildContext context, Habit habit) async {
+    final l10n = AppLocalizations.of(context)!;
+    final habitsProvider = context.read<HabitsProvider>();
+    final newValue = !habit.archived;
+    await habitsProvider.setArchived(habit.id, newValue);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(newValue ? l10n.habitArchivedMessage : l10n.habitUnarchivedMessage),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () => habitsProvider.setArchived(habit.id, !newValue),
+        ),
+      ),
+    );
   }
 }
 
