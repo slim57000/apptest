@@ -178,14 +178,17 @@ class _Paragraph extends StatelessWidget {
 }
 
 class _BulletList extends StatelessWidget {
-  final List<String> items;
+  final String items;
 
   const _BulletList(this.items);
 
   @override
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: items.map((item) => Padding(
+        // Les listes sont stockées comme une chaîne "a|b|c" dans les ARB :
+        // le format ARB de Flutter ne supporte pas les tableaux comme
+        // valeur de ressource, uniquement des chaînes.
+        children: items.split('|').map((item) => Padding(
               padding: const EdgeInsets.only(left: 16, bottom: 6),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
