@@ -7,6 +7,8 @@ import '../providers/backup_provider.dart';
 import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
+import '../widgets/app_logo.dart';
+import 'challenges_screen.dart';
 import 'paywall_screen.dart';
 import 'privacy_policy_screen.dart';
 
@@ -14,6 +16,9 @@ import 'privacy_policy_screen.dart';
 /// le `version:` de `pubspec.yaml` (pas de dépendance package_info_plus
 /// pour l'instant, voir README).
 const _appVersion = '1.0.0';
+
+/// Site de l'éditeur de l'application, affiché dans la fenêtre À propos.
+const _publisherUrl = 'https://rampedigitale.fr';
 
 /// `Navigator.pop` avec `null` est indiscernable entre "l'utilisateur a
 /// choisi Système" et "fermeture du dialogue sans choix (tap en dehors)" :
@@ -43,53 +48,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final locale = context.watch<LocaleProvider>().locale;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      appBar: AppBar(centerTitle: true, title: Text(l10n.settingsTitle)),
       body: ListView(
         children: [
-          ListTile(
-            leading: Icon(
-              Icons.workspace_premium,
-              color: premium.isPremium ? Colors.amber : null,
-            ),
-            title: Text(l10n.premiumSubscriptionLabel),
-            subtitle: Text(premium.isPremium ? l10n.statusActive : l10n.statusFree),
-            trailing: const Icon(Icons.chevron_right),
+          const SizedBox(height: 8),
+          _SettingsOption(
+            icon: Icons.workspace_premium,
+            iconColor: premium.isPremium ? Colors.amber : null,
+            title: l10n.premiumSubscriptionLabel,
+            subtitle: premium.isPremium ? l10n.statusActive : l10n.statusFree,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const PaywallScreen()),
             ),
           ),
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.checklist),
-            title: Text(l10n.activeHabitsLabel),
-            subtitle: Text(
-              premium.isPremium
-                  ? l10n.activeHabitsCountPremium(habitsCount)
-                  : l10n.activeHabitsCountFree(habitsCount, HabitsProvider.freeHabitLimit),
-            ),
+          _SettingsOption(
+            icon: Icons.checklist,
+            title: l10n.activeHabitsLabel,
+            subtitle: premium.isPremium
+                ? l10n.activeHabitsCountPremium(habitsCount)
+                : l10n.activeHabitsCountFree(habitsCount, HabitsProvider.freeHabitLimit),
           ),
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: Text(l10n.languageLabel),
-            subtitle: Text(_languageLabel(l10n, locale)),
-            trailing: const Icon(Icons.chevron_right),
+          _SettingsOption(
+            icon: Icons.language,
+            title: l10n.languageLabel,
+            subtitle: _languageLabel(l10n, locale),
             onTap: () => _pickLanguage(context, locale),
           ),
           const Divider(),
           if (premium.isPremium)
             const _CloudBackupSection()
           else
-            ListTile(
-              leading: const Icon(Icons.cloud_outlined),
-              title: Text(l10n.cloudBackupTitle),
-              subtitle: Text(l10n.statusFree),
-              trailing: const Icon(Icons.chevron_right),
+            _SettingsOption(
+              icon: Icons.cloud_outlined,
+              title: l10n.cloudBackupTitle,
+              subtitle: l10n.statusFree,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const PaywallScreen()),
               ),
             ),
           const Divider(),
+<<<<<<< Updated upstream
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: Text(l10n.privacyPolicyLabel),
@@ -139,6 +139,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(l10n.close),
+=======
+          _SettingsOption(
+            icon: Icons.groups,
+            title: l10n.challengesTitle,
+            subtitle: l10n.challengesSubtitle,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ChallengesScreen()),
+            ),
+          ),
+          const Divider(),
+          _SettingsOption(
+            icon: Icons.privacy_tip_outlined,
+            title: l10n.privacyPolicyLabel,
+            onTap: () => launchUrl(
+              Uri.parse(_privacyPolicyUrl),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
+          const Divider(),
+          _SettingsOption(
+            icon: Icons.info_outline,
+            title: l10n.aboutTitle,
+            onTap: () => showAboutDialog(
+              context: context,
+              applicationName: l10n.appTitle,
+              applicationVersion: '1.0.0',
+              applicationIcon: const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: AppLogo(size: 56, showText: false),
+              ),
+              children: [
+                const SizedBox(height: 8),
+                Text(l10n.aboutIntro, textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.aboutFeatures,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(height: 1.7),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.aboutPrivacyNote,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.aboutFeedbackNote,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+                const Divider(height: 32),
+                Text(
+                  l10n.aboutPublisherNote,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: () => launchUrl(
+                      Uri.parse(_publisherUrl),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    icon: const Icon(Icons.open_in_new, size: 16),
+                    label: Text(l10n.aboutPublisherSiteLabel),
+                  ),
+                ),
+              ],
+            ),
+>>>>>>> Stashed changes
           ),
         ],
       ),
@@ -203,12 +285,78 @@ class _LanguageOption extends StatelessWidget {
   }
 }
 
-class _CloudBackupSection extends StatelessWidget {
+/// Option du menu Réglages : icône au-dessus du libellé, sous-titre
+/// dessous — le tout sur le même axe central, donc parfaitement aligné.
+class _SettingsOption extends StatelessWidget {
+  final IconData icon;
+  final Color? iconColor;
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onTap;
+
+  const _SettingsOption({
+    required this.icon,
+    this.iconColor,
+    required this.title,
+    this.subtitle,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        child: Column(
+          children: [
+            Icon(icon, size: 24, color: iconColor ?? theme.colorScheme.primary),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+            ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                subtitle!,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CloudBackupSection extends StatefulWidget {
   const _CloudBackupSection();
+
+  @override
+  State<_CloudBackupSection> createState() => _CloudBackupSectionState();
+}
+
+class _CloudBackupSectionState extends State<_CloudBackupSection> {
+  @override
+  void initState() {
+    super.initState();
+    // Rafraîchit la date de dernière sauvegarde depuis le serveur à
+    // l'ouverture des réglages, pour un statut toujours fiable.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<BackupProvider>().refreshStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final backup = context.watch<BackupProvider>();
 
     if (!backup.configured) {
@@ -220,17 +368,19 @@ class _CloudBackupSection extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.cloud_outlined),
-              const SizedBox(width: 12),
-              Expanded(child: Text(l10n.cloudBackupTitle, style: Theme.of(context).textTheme.titleMedium)),
-            ],
+          // Même style que les autres options : icône au-dessus du titre.
+          // Nuage vert coché = une sauvegarde existe sur le serveur.
+          Icon(
+            backup.lastBackupAt == null ? Icons.cloud_outlined : Icons.cloud_done,
+            size: 24,
+            color:
+                backup.lastBackupAt == null ? theme.colorScheme.primary : Colors.green,
           ),
+<<<<<<< Updated upstream
           const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
@@ -240,15 +390,44 @@ class _CloudBackupSection extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
+=======
+>>>>>>> Stashed changes
           const SizedBox(height: 6),
           Text(
-            backup.lastBackupAt == null
-                ? l10n.neverBackedUp
-                : l10n.lastBackupAt(DateFormat.yMd(Localizations.localeOf(context).toString())
-                    .add_Hm()
-                    .format(backup.lastBackupAt!.toLocal())),
-            style: Theme.of(context).textTheme.bodySmall,
+            l10n.cloudBackupTitle,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
           ),
+          const SizedBox(height: 2),
+          Text(
+            l10n.cloudBackupDescription,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          if (backup.loading)
+            const Padding(
+              padding: EdgeInsets.all(4),
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            Text(
+              backup.lastBackupAt == null
+                  ? l10n.neverBackedUp
+                  : l10n.lastBackupAt(DateFormat.yMd(Localizations.localeOf(context).toString())
+                      .add_Hm()
+                      .format(backup.lastBackupAt!.toLocal())),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           const SizedBox(height: 12),
           Row(
             children: [

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
+import 'config/ads_config.dart';
 import 'config/supabase_config.dart';
 import 'providers/backup_provider.dart';
 import 'providers/challenge_provider.dart';
@@ -32,6 +33,12 @@ Future<void> main() async {
   // google_mobile_ads ne supporte pas Flutter Web.
   if (!kIsWeb) {
     await MobileAds.instance.initialize();
+    // Protection anti-suspension : même avec l'ID d'unité réel, les
+    // appareils listés dans AdsConfig.devTestDeviceIds ne reçoivent que
+    // des annonces estampillées « Annonce de test ».
+    MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(testDeviceIds: AdsConfig.devTestDeviceIds),
+    );
   }
 
   runApp(

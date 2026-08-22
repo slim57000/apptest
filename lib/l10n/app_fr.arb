@@ -1,7 +1,7 @@
 {
   "@@locale": "fr",
 
-  "appTitle": "Habitude+",
+  "appTitle": "Habitudes+",
   "@appTitle": {},
 
   "subscriptionTooltip": "Abonnement",
@@ -49,6 +49,56 @@
 
   "activeDaysHint": "Aucun jour sélectionné = tous les jours.",
   "@activeDaysHint": {},
+
+  "scheduleModeLabel": "Planification",
+  "@scheduleModeLabel": {},
+  "modeFixedDays": "Jours fixes",
+  "@modeFixedDays": {},
+  "modeWeeklyGoal": "Objectif hebdo",
+  "@modeWeeklyGoal": {},
+  "weeklyGoalHint": "À faire n'importe quels jours, l'objectif compte les jours faits dans la semaine.",
+  "@weeklyGoalHint": {},
+  "timesPerWeek": "{count}×/sem.",
+  "@timesPerWeek": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekProgress": "{done}/{goal} cette semaine",
+  "@weekProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "streakWeeks": "{count, plural, one{🔥 {count} semaine de suite} other{🔥 {count} semaines de suite}}",
+  "@streakWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shortWeeks": "{count} sem.",
+  "@shortWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "milestoneTitle": "Palier débloqué !",
+  "@milestoneTitle": {},
+  "milestoneCta": "Continuer",
+  "@milestoneCta": {},
+  "challengesSubtitle": "Défiez vos amis !",
+  "@challengesSubtitle": {},
 
   "weekdayMon": "L",
   "@weekdayMon": {},
@@ -146,7 +196,7 @@
   "viewSubscription": "Voir l'abonnement",
   "@viewSubscription": {},
 
-  "paywallTitle": "Habitude+ Premium",
+  "paywallTitle": "Habitudes+ Premium",
   "@paywallTitle": {},
 
   "youArePremium": "Vous êtes Premium",
@@ -155,7 +205,7 @@
   "goPremium": "Passez Premium",
   "@goPremium": {},
 
-  "paywallDescription": "Habitudes illimitées, statistiques avancées (meilleure série, taux de complétion) et graphiques.",
+  "paywallDescription": "✅ 0 publicité\n✅ Habitudes illimitées\n✅ Séries & paliers célébrés\n✅ Objectifs hebdo flexibles\n✅ Statistiques avancées (meilleure série, taux, graphiques 30j)\n✅ Complétion auto par les pas (Health Connect)\n✅ Sauvegarde cloud (Supabase)\n✅ Défis entre amis (codes d'invitation)\n✅ Journal quotidien illimité\n✅ Gel de série (1×/semaine)\n✅ Modèles d'habitudes prêts à l'emploi\n✅ Export / partage de carte de série",
   "@paywallDescription": {},
 
   "monthlyPlan": "Abonnement mensuel",
@@ -256,8 +306,10 @@
 
   "shareCardDaysLabel": "jours de suite",
   "@shareCardDaysLabel": {},
+  "shareCardWeeksLabel": "semaines de suite",
+  "@shareCardWeeksLabel": {},
 
-  "shareCardBranding": "Habitude+",
+  "shareCardBranding": "Habitudes+",
   "@shareCardBranding": {},
 
   "chooseTemplate": "Choisir un modèle",
@@ -420,6 +472,11 @@
   "challengeNotFound": "Aucun défi ne correspond à ce code.",
   "@challengeNotFound": {},
 
+  "createChallengeFailed": "Impossible de créer le défi. Réessaie dans un instant.",
+  "@createChallengeFailed": {},
+  "challengeCreated": "Défi créé ! Partage le code pour inviter tes amis.",
+  "@challengeCreated": {},
+
   "checkInToday": "J'ai réussi aujourd'hui",
   "@checkInToday": {},
 
@@ -495,5 +552,153 @@
   "@noBackupFound": {},
 
   "privacyPolicyLabel": "Politique de confidentialité",
-  "@privacyPolicyLabel": {}
+  "@privacyPolicyLabel": {},
+
+  "aboutIntro": "Habitudes+ est un suivi d'habitudes simple et respectueux de votre vie privée : créez des habitudes, cochez-les chaque jour, et regardez vos séries — et votre jardin — grandir.",
+  "@aboutIntro": {},
+
+  "aboutFeatures": "✅ Suivi quotidien avec séries et relances en douceur\n🌱 Un jardin qui grandit avec votre régularité\n📊 Statistiques détaillées et récapitulatifs (Premium)\n👥 Défis entre amis via code d'invitation\n☁️ Sauvegarde cloud (Premium)\n🔔 Rappels locaux uniquement — vos données restent les vôtres",
+  "@aboutFeatures": {},
+
+  "aboutPrivacyNote": "Vos habitudes sont stockées sur votre appareil. Seuls les défis entre amis et la sauvegarde optionnelle utilisent un serveur, sans création de compte.",
+  "@aboutPrivacyNote": {},
+
+  "aboutFeedbackNote": "Une question, un bug, une idée ? Laissez un avis ou contactez-nous via la fiche du store — vos retours façonnent les prochaines mises à jour.",
+  "@aboutFeedbackNote": {},
+
+  "aboutPublisherNote": "Habitudes+ est éditée par Rampe Digitale.",
+  "@aboutPublisherNote": {},
+
+  "aboutPublisherSiteLabel": "Visiter rampedigitale.fr",
+  "@aboutPublisherSiteLabel": {},
+  "privacyPolicyTitle": "Politique de confidentialité",
+  "@privacyPolicyTitle": {},
+  "privacyPolicyLastUpdated": "Dernière mise à jour : {date}",
+  "@privacyPolicyLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "privacyDataController": "Responsable du traitement",
+  "@privacyDataController": {},
+  "privacyDataControllerDesc": "Habitude+ est éditée par Rampe Digitale (contact@rampedigitale.fr), responsable du traitement de vos données.",
+  "@privacyDataControllerDesc": {},
+  "privacyDataCollected": "Données collectées",
+  "@privacyDataCollected": {},
+  "privacyDataCollectedDesc": "Nous collectons uniquement les données strictement nécessaires :",
+  "@privacyDataCollectedDesc": {},
+  "privacyDataTypes": "Identifiant anonyme (UUID) pour la synchronisation|Habitudes, séries, journaux (stockés localement par défaut)|Pseudo affiché pour les défis entre amis (optionnel)|Données Health Connect / Apple Health si activées (pas envoyées sur nos serveurs)|Adresse email si vous nous contactez",
+  "@privacyDataTypes": {},
+  "privacyDataUsage": "Utilisation des données",
+  "@privacyDataUsage": {},
+  "privacyDataUsageDesc": "Vos données servent uniquement à :",
+  "@privacyDataUsageDesc": {},
+  "privacyUsagePurposes": "Faire fonctionner l'app (habitudes, séries, rappels)|Synchroniser vos défis entre amis (code d'invitation)|Sauvegarder vos habitudes si vous l'activez (Premium)|Améliorer l'app (analyses anonymes, pas de tracking publicitaire)",
+  "@privacyUsagePurposes": {},
+  "privacyDataSharing": "Partage des données",
+  "@privacyDataSharing": {},
+  "privacyDataSharingDesc": "Vos données ne sont jamais vendues. Partage limité aux cas suivants :",
+  "@privacyDataSharingDesc": {},
+  "privacySharingCases": "Supabase (backend défis/sauvegarde) — contrat DPA signé|Google Play / Apple Store (achats, abonnements)|Obligation légale (réquisition judiciaire)",
+  "@privacySharingCases": {},
+  "privacyDataRetention": "Durée de conservation",
+  "@privacyDataRetention": {},
+  "privacyDataRetentionDesc": "Données locales : tant que vous ne les supprimez pas. Données serveur (défis, backup) : supprimées 30 jours après désinstallation ou sur demande. Journaux de contact : 1 an.",
+  "@privacyDataRetentionDesc": {},
+  "privacyUserRights": "Vos droits (RGPD)",
+  "@privacyUserRights": {},
+  "privacyUserRightsDesc": "Vous pouvez à tout moment :",
+  "@privacyUserRightsDesc": {},
+  "privacyRightsList": "Accéder à vos données|Les rectifier|Les effacer (droit à l'oubli)|Limiter le traitement|Retirer votre consentement|Portabilité des données",
+  "@privacyRightsList": {},
+  "privacySecurity": "Sécurité",
+  "@privacySecurity": {},
+  "privacySecurityDesc": "Chiffrement TLS 1.2+ en transit. Stockage chiffré au repos (Supabase). Aucune donnée sensible (mots de passe, biométrie) n'est collectée.",
+  "@privacySecurityDesc": {},
+  "privacyThirdParty": "Services tiers",
+  "@privacyThirdParty": {},
+  "privacyThirdPartyDesc": "Google Play Billing (achats), Supabase (backend), Health Connect / Apple Health (pas optionnel). Aucun tracker publicitaire, aucun réseau social.",
+  "@privacyThirdPartyDesc": {},
+  "privacyChildren": "Enfants",
+  "@privacyChildren": {},
+  "privacyChildrenDesc": "L'app n'est pas destinée aux moins de 13 ans. Nous ne collectons pas sciemment de données d'enfants.",
+  "@privacyChildrenDesc": {},
+  "privacyChanges": "Modifications",
+  "@privacyChanges": {},
+  "privacyChangesDesc": "Toute mise à jour sera notifiée dans l'app et/ou par email (si fourni). La poursuite de l'utilisation vaut acceptation.",
+  "@privacyChangesDesc": {},
+  "privacyContact": "Contact",
+  "@privacyContact": {},
+  "privacyContactDesc": "Questions : contact@rampedigitale.fr ou via l'écran « À propos » de l'app.",
+  "@privacyContactDesc": {},
+  "legalTitle": "Conditions générales d'utilisation",
+  "@legalTitle": {},
+  "legalLastUpdated": "Dernière mise à jour : {date}",
+  "@legalLastUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "contactEmail": "Nous contacter",
+  "@contactEmail": {},
+  "legalAcceptance": "Acceptation",
+  "@legalAcceptance": {},
+  "legalAcceptanceDesc": "En utilisant Habitude+, vous acceptez ces CGU. Si vous n'êtes pas d'accord, n'utilisez pas l'app.",
+  "@legalAcceptanceDesc": {},
+  "legalServiceDescription": "Description du service",
+  "@legalServiceDescription": {},
+  "legalServiceDescriptionDesc": "Habitude+ est un suivi d'habitudes (gratuit / Premium) : création d'habitudes, séries, rappels, objectifs hebdo, journal, défis entre amis, sauvegarde cloud optionnelle.",
+  "@legalServiceDescriptionDesc": {},
+  "legalUserAccount": "Compte utilisateur",
+  "@legalUserAccount": {},
+  "legalUserAccountDesc": "Aucun compte requis pour l'usage local. Un identifiant anonyme (UUID) est généré. Pour les défis/sauvegarde, une session anonyme Supabase est créée (pseudo optionnel).",
+  "@legalUserAccountDesc": {},
+  "legalPremiumSubscription": "Abonnement Premium",
+  "@legalPremiumSubscription": {},
+  "legalPremiumSubscriptionDesc": "Offres : Mensuel (3,99 €), Annuel (19,99 €), À vie (49,99 €). Géré par Google Play Billing. Annulation possible à tout moment depuis le Play Store. Remboursement selon politique Google.",
+  "@legalPremiumSubscriptionDesc": {},
+  "legalSubscriptionDetails": "Renouvellement auto sauf annulation|Essai gratuit 7 j (si affiché)|Prix TTC, peuvent varier selon pays",
+  "@legalSubscriptionDetails": {},
+  "legalUserContent": "Contenu utilisateur",
+  "@legalUserContent": {},
+  "legalUserContentDesc": "Vous restez propriétaire de vos notes, habitudes, pseudos. Vous nous accordez une licence limitée pour héberger/afficher ce contenu dans le cadre du service (défis, backup).",
+  "@legalUserContentDesc": {},
+  "legalProhibited": "Utilisations interdites",
+  "@legalProhibited": {},
+  "legalProhibitedDesc": "Il est interdit d'utiliser l'app pour :",
+  "@legalProhibitedDesc": {},
+  "legalProhibitedList": "Activités illégales|Contenu haineux, harcelant, illicite|Tentative d'accès non autorisé aux serveurs|Reverse engineering, extraction de code|Spam, bots, automatisation abusive",
+  "@legalProhibitedList": {},
+  "legalIntellectualProperty": "Propriété intellectuelle",
+  "@legalIntellectualProperty": {},
+  "legalIntellectualPropertyDesc": "L'app, son code, son design, sa marque « Habitude+ » sont la propriété exclusive de Rampe Digitale. Toute reproduction non autorisée est interdite.",
+  "@legalIntellectualPropertyDesc": {},
+  "legalDisclaimer": "Absence de garantie",
+  "@legalDisclaimer": {},
+  "legalDisclaimerDesc": "L'app est fournie « en l'état », sans garantie d'adéquation à un usage particulier. Nous ne garantissons pas l'absence de bugs, d'interruptions ou de perte de données locale.",
+  "@legalDisclaimerDesc": {},
+  "legalLiability": "Limitation de responsabilité",
+  "@legalLiability": {},
+  "legalLiabilityDesc": "Notre responsabilité est limitée au montant payé par l'utilisateur (si Premium) sur les 12 derniers mois. Exclusion des dommages indirects, perte de chance, préjudice moral.",
+  "@legalLiabilityDesc": {},
+  "legalTermination": "Résiliation",
+  "@legalTermination": {},
+  "legalTerminationDesc": "Vous pouvez supprimer l'app à tout moment (résiliation implicite). Nous pouvons suspendre l'accès en cas de violation grave des CGU (préavis 7 j sauf urgence).",
+  "@legalTerminationDesc": {},
+  "legalChanges": "Modifications des CGU",
+  "@legalChanges": {},
+  "legalChangesDesc": "Les CGU peuvent évoluer. Notification dans l'app 15 jours avant entrée en vigueur. Poursuite de l'utilisation = acceptation.",
+  "@legalChangesDesc": {},
+  "legalGoverningLaw": "Droit applicable",
+  "@legalGoverningLaw": {},
+  "legalGoverningLawDesc": "Droit français. Compétence exclusive des tribunaux français (siège de Rampe Digitale).",
+  "@legalGoverningLawDesc": {},
+  "legalContact": "Contact",
+  "@legalContact": {},
+  "legalContactDesc": "contact@rampedigitale.fr — réponse sous 5 jours ouvrés.",
+  "@legalContactDesc": {}
 }

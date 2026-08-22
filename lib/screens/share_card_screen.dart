@@ -57,7 +57,7 @@ class _ShareCardScreenState extends State<ShareCardScreen> {
   Future<void> _share() async {
     setState(() => _sharing = true);
     try {
-      await ShareService.shareBoundary(_boundaryKey, text: 'Habitude+');
+      await ShareService.shareBoundary(_boundaryKey, text: 'Habitudes+');
     } finally {
       if (mounted) setState(() => _sharing = false);
     }
@@ -110,7 +110,7 @@ class _StreakCard extends StatelessWidget {
               children: [
                 const Text('🔥', style: TextStyle(fontSize: 64)),
                 Text(
-                  '${habit.currentStreak}',
+                  '${habit.currentStreakCount}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 88,
@@ -119,7 +119,9 @@ class _StreakCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  l10n.shareCardDaysLabel,
+                  habit.streakUnitIsWeeks
+                      ? l10n.shareCardWeeksLabel
+                      : l10n.shareCardDaysLabel,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 20,

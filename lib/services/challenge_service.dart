@@ -50,22 +50,19 @@ class ChallengeService {
     return challenge;
   }
 
+  /// Rejoint un défi via le code d'invitation. L'adhésion est validée côté
+  /// serveur par la fonction `join_challenge` (SECURITY DEFINER, voir
+  /// `supabase/rls-patch.sql`) : impossible d'énumérer les codes ou
+  /// d'adhérer sans invitation.
+  ///
   /// Retourne `null` si aucun défi ne correspond à ce code.
   Future<Challenge?> joinChallenge(String inviteCode) async {
-    final rows = await _client
-        .from('challenges')
-        .select()
-        .eq('invite_code', inviteCode.trim().toUpperCase())
-        .limit(1);
+    final rows = await _client.rpc(
+      'join_challenge',
+      params: {'p_code': inviteCode.trim()},
+    ) as List<dynamic>;
     if (rows.isEmpty) return null;
-
-    final challenge = Challenge.fromRow(rows.first);
-    final uid = _client.auth.currentUser!.id;
-    await _client.from('challenge_members').upsert({
-      'challenge_id': challenge.id,
-      'user_id': uid,
-    });
-    return challenge;
+    return Challenge.fromRow(rows.first as Map<String, dynamic>);
   }
 
   Future<void> checkInToday(String challengeId) async {

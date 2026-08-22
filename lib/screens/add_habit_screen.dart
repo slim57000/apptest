@@ -17,7 +17,12 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   String _emoji = habitEmojiChoices.first;
   int _color = habitColorPalette.first;
   final Set<int> _weekdays = {};
+<<<<<<< Updated upstream
   int _dailyTarget = 1;
+=======
+  bool _flexible = false;
+  int _weeklyGoal = 3;
+>>>>>>> Stashed changes
   TimeOfDay? _reminderTime;
 
   @override
@@ -62,15 +67,35 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           const SizedBox(height: 24),
           Text(l10n.iconLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
+          // Tuiles circulaires uniformes, alignées au centre : plus lisible
+          // que des chips de largeur variable.
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
             children: habitEmojiChoices.map((emoji) {
               final selected = emoji == _emoji;
-              return ChoiceChip(
-                label: Text(emoji, style: const TextStyle(fontSize: 18)),
-                selected: selected,
-                onSelected: (_) => setState(() => _emoji = emoji),
+              final scheme = Theme.of(context).colorScheme;
+              return GestureDetector(
+                onTap: () => setState(() => _emoji = emoji),
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selected ? scheme.primaryContainer : scheme.surfaceContainerHighest,
+                    border: Border.all(
+                      color: selected ? scheme.primary : Colors.transparent,
+                      width: 2,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      emoji,
+                      style: TextStyle(fontSize: selected ? 24 : 20),
+                    ),
+                  ),
+                ),
               );
             }).toList(),
           ),
@@ -78,20 +103,33 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           Text(l10n.colorLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
-            spacing: 10,
+            alignment: WrapAlignment.center,
+            spacing: 14,
+            runSpacing: 10,
             children: habitColorPalette.map((value) {
               final selected = value == _color;
               return GestureDetector(
                 onTap: () => setState(() => _color = value),
-                child: CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Color(value),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(value),
+                    border: selected
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2.5,
+                          )
+                        : null,
+                  ),
                   child: selected ? const Icon(Icons.check, color: Colors.white) : null,
                 ),
               );
             }).toList(),
           ),
           const SizedBox(height: 24),
+<<<<<<< Updated upstream
           Text(l10n.timesPerDayLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Row(
@@ -122,25 +160,62 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
+=======
+          Text(l10n.scheduleModeLabel, style: Theme.of(context).textTheme.titleSmall),
+>>>>>>> Stashed changes
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: List.generate(7, (index) {
-              final weekday = index + 1;
-              final selected = _weekdays.contains(weekday);
-              return FilterChip(
-                label: Text(weekdayLabels[index]),
-                selected: selected,
-                onSelected: (value) => setState(() {
-                  if (value) {
-                    _weekdays.add(weekday);
-                  } else {
-                    _weekdays.remove(weekday);
-                  }
-                }),
-              );
-            }),
+          SegmentedButton<bool>(
+            segments: [
+              ButtonSegment(value: false, label: Text(l10n.modeFixedDays)),
+              ButtonSegment(value: true, label: Text(l10n.modeWeeklyGoal)),
+            ],
+            selected: {_flexible},
+            onSelectionChanged: (selection) =>
+                setState(() => _flexible = selection.first),
           ),
+          const SizedBox(height: 12),
+          if (!_flexible) ...[
+            Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: List.generate(7, (index) {
+                final weekday = index + 1;
+                final selected = _weekdays.contains(weekday);
+                return FilterChip(
+                  label: Text(weekdayLabels[index]),
+                  selected: selected,
+                  onSelected: (value) => setState(() {
+                    if (value) {
+                      _weekdays.add(weekday);
+                    } else {
+                      _weekdays.remove(weekday);
+                    }
+                  }),
+                );
+              }),
+            ),
+          ] else ...[
+            Text(l10n.weeklyGoalHint, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: List.generate(7, (index) {
+                final goal = index + 1;
+                return ChoiceChip(
+                  label: Text(l10n.timesPerWeek(goal)),
+                  selected: _weeklyGoal == goal,
+                  onSelected: (_) => setState(() => _weeklyGoal = goal),
+                );
+              }),
+            ),
+          ],
           const SizedBox(height: 24),
           Text(l10n.reminderLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
@@ -153,7 +228,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             trailing: _reminderTime == null
                 ? TextButton(onPressed: _pickReminderTime, child: Text(l10n.addReminder))
                 : IconButton(
-                    icon: const Icon(Icons.close),
+                    // Corbeille : retire le rappel immédiatement, sans ouvrir
+                    // le sélecteur d'heure.
+                    icon: const Icon(Icons.delete_outline),
                     tooltip: l10n.removeReminder,
                     onPressed: () => setState(() => _reminderTime = null),
                   ),
@@ -187,8 +264,13 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           name: name,
           emoji: _emoji,
           colorValue: _color,
+<<<<<<< Updated upstream
           activeWeekdays: _weekdays,
           dailyTarget: _dailyTarget,
+=======
+          activeWeekdays: _flexible ? const {} : _weekdays,
+          weeklyGoal: _flexible ? _weeklyGoal : 0,
+>>>>>>> Stashed changes
           reminderMinutes: _reminderTime == null
               ? null
               : _reminderTime!.hour * 60 + _reminderTime!.minute,

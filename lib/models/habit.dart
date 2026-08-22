@@ -9,9 +9,10 @@ class Habit {
   final DateTime createdAt;
 
   /// Jours de la semaine où l'habitude est active (1 = lundi … 7 =
-  /// dimanche). Vide = active tous les jours.
+  /// dimanche). Vide = active tous les jours. Ignoré si [weeklyGoal] > 0.
   final Set<int> activeWeekdays;
 
+<<<<<<< Updated upstream
   /// Nombre de fois par jour où l'habitude doit être faite pour compter
   /// comme complétée (ex. "boire de l'eau" x8). 1 = comportement classique
   /// (une case à cocher par jour).
@@ -20,6 +21,15 @@ class Habit {
   /// Nombre de fois faite, par jour (`yyyy-MM-dd` -> compteur). Un jour est
   /// considéré complété quand son compteur atteint [dailyTarget].
   final Map<String, int> completionCounts;
+=======
+  /// Objectif hebdomadaire flexible : > 0 = l'habitude doit être faite N
+  /// fois par semaine, n'importe quels jours ; la série se compte alors en
+  /// semaines. 0 (défaut) = mode classique par jours fixes.
+  final int weeklyGoal;
+
+  /// Dates complétées, au format `yyyy-MM-dd`.
+  final Set<String> completedDates;
+>>>>>>> Stashed changes
 
   /// Dates "gelées" (fonctionnalité Premium) : un jour manqué qui ne casse
   /// pas la série, sans compter comme réellement fait dans le taux de
@@ -51,8 +61,13 @@ class Habit {
     required this.colorValue,
     required this.createdAt,
     this.activeWeekdays = const {},
+<<<<<<< Updated upstream
     this.dailyTarget = 1,
     this.completionCounts = const {},
+=======
+    this.weeklyGoal = 0,
+    this.completedDates = const {},
+>>>>>>> Stashed changes
     this.frozenDates = const {},
     this.reminderMinutes,
     this.autoTrackSteps = false,
@@ -67,8 +82,36 @@ class Habit {
     return '$y-$m-$d';
   }
 
+  /// Objectif hebdo : n'importe quel jour peut compter vers l'objectif.
+  /// Mode classique : les jours cochés dans `activeWeekdays` (tous si vide).
   bool isActiveOn(DateTime day) =>
-      activeWeekdays.isEmpty || activeWeekdays.contains(day.weekday);
+      isFlexible || activeWeekdays.isEmpty || activeWeekdays.contains(day.weekday);
+
+  /// true = mode « N fois par semaine » (voir [weeklyGoal]).
+  bool get isFlexible => weeklyGoal > 0;
+
+  /// Le lundi de la semaine contenant [day].
+  static DateTime weekStartOf(DateTime day) {
+    final d = DateTime(day.year, day.month, day.day);
+    return d.subtract(Duration(days: d.weekday - 1));
+  }
+
+  /// Jours complétés (hors gels) dans la semaine contenant [day].
+  int completionsInWeekOf(DateTime day) {
+    final start = weekStartOf(day);
+    var count = 0;
+    for (var i = 0; i < 7; i++) {
+      if (isCompletedOn(start.add(Duration(days: i)))) count++;
+    }
+    return count;
+  }
+
+  /// Progression de la semaine en cours : jours faits / objectif.
+  int get weekProgressDone => completionsInWeekOf(_today());
+
+  /// L'objectif de la semaine de [day] (courante par défaut) est atteint.
+  bool weekGoalReached([DateTime? day]) =>
+      isFlexible && completionsInWeekOf(day ?? _today()) >= weeklyGoal;
 
   /// Nombre de fois faite le jour [day] (0 si jamais touché).
   int countOn(DateTime day) => completionCounts[dateKey(day)] ?? 0;
@@ -143,15 +186,15 @@ class Habit {
   }
 
   /// Le jour manqué le plus récent pouvant être gelé (hier, s'il était actif
-  /// et non complété). Fonctionnalité Premium avec un délai de recharge de
-  /// 7 jours entre deux gels pour rester une exception, pas un contournement.
-  bool get canFreezeYesterday {
+  /// et non complété). Gratuit : 1 gel / mois (30 j). Premium : 1 gel / semaine (7 j).
+  bool canFreezeYesterday({bool isPremium = false}) {
     final yesterday = _today().subtract(const Duration(days: 1));
     if (yesterday.isBefore(_createdDay)) return false;
     if (!isActiveOn(yesterday)) return false;
     if (isCompletedOn(yesterday) || isFrozenOn(yesterday)) return false;
 
-    final cooldownStart = yesterday.subtract(const Duration(days: 6));
+    final cooldownDays = isPremium ? 6 : 29; // 7 j premium, 30 j gratuit
+    final cooldownStart = yesterday.subtract(Duration(days: cooldownDays));
     for (final key in frozenDates) {
       final frozenDay = DateTime.parse(key);
       if (!frozenDay.isBefore(cooldownStart) && !frozenDay.isAfter(yesterday)) {
@@ -181,6 +224,7 @@ class Habit {
       dailyTarget: dailyTarget,
       completionCounts: completionCounts,
       frozenDates: frozenDates,
+      weeklyGoal: weeklyGoal,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
@@ -207,6 +251,7 @@ class Habit {
       dailyTarget: dailyTarget,
       completionCounts: completionCounts,
       frozenDates: frozenDates,
+      weeklyGoal: weeklyGoal,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: updated,
@@ -296,6 +341,69 @@ class Habit {
     return longest;
   }
 
+  /// Séries en semaines pour les objectifs hebdo : nombre de semaines
+  /// consécutives ayant atteint l'objectif, en remontant depuis la semaine
+  /// courante. Celle-ci, non encore atteinte, ne casse pas la série (des
+  /// jours restent disponibles) mais ne compte pas non plus.
+  int get _weeklyStreakCurrent {
+    final todayWeek = weekStartOf(_today());
+    var week = todayWeek;
+    var streak = 0;
+    var first = true;
+    var guard = 0;
+    while (!week.isBefore(weekStartOf(_createdDay)) && guard < 520) {
+      if (completionsInWeekOf(week) >= weeklyGoal) {
+        streak++;
+      } else if (!(first && week == todayWeek)) {
+        break;
+      }
+      first = false;
+      week = week.subtract(const Duration(days: 7));
+      guard++;
+    }
+    return streak;
+  }
+
+  /// Plus grand nombre de semaines consécutives atteignant l'objectif.
+  int get _weeklyStreakLongest {
+    final startWeek = weekStartOf(_createdDay);
+    final lastWeek = weekStartOf(_today());
+    var longest = 0;
+    var running = 0;
+    var week = startWeek;
+    var guard = 0;
+    while (!week.isAfter(lastWeek) && guard < 520) {
+      if (completionsInWeekOf(week) >= weeklyGoal) {
+        running++;
+        if (running > longest) longest = running;
+      } else if (!week.isAtSameMomentAs(lastWeek)) {
+        running = 0; // la semaine courante inachevée ne remet pas à zéro
+      }
+      week = week.add(const Duration(days: 7));
+      guard++;
+    }
+    return longest;
+  }
+
+  /// Unité des séries : true = semaines (objectifs hebdo), false = jours.
+  bool get streakUnitIsWeeks => isFlexible;
+
+  /// Paliers de série célébrés avec des confettis : jours pour le mode
+  /// classique, semaines pour les objectifs hebdomadaires.
+  static const Set<int> dayMilestones = {7, 30, 100, 365};
+  static const Set<int> weekMilestones = {4, 12, 26, 52};
+
+  /// [value] (dans l'unité de la série) est-il un palier célébré ?
+  bool reachedMilestone(int value) => streakUnitIsWeeks
+      ? weekMilestones.contains(value)
+      : dayMilestones.contains(value);
+
+  /// Série courante dans l'unité de [streakUnitIsWeeks].
+  int get currentStreakCount => isFlexible ? _weeklyStreakCurrent : currentStreak;
+
+  /// Meilleure série dans l'unité de [streakUnitIsWeeks].
+  int get longestStreakCount => isFlexible ? _weeklyStreakLongest : longestStreak;
+
   /// Taux de complétion sur les [days] derniers jours (parmi les jours
   /// actifs uniquement). Les jours gelés ne comptent pas comme faits : ce
   /// taux reflète l'adhésion réelle, pas la série protégée.
@@ -334,6 +442,7 @@ class Habit {
       dailyTarget: dailyTarget ?? this.dailyTarget,
       completionCounts: completionCounts ?? this.completionCounts,
       frozenDates: frozenDates ?? this.frozenDates,
+      weeklyGoal: weeklyGoal,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
@@ -365,8 +474,15 @@ class Habit {
       activeWeekdays: (json['activeWeekdays'] as List<dynamic>? ?? [])
           .map((e) => e as int)
           .toSet(),
+<<<<<<< Updated upstream
       dailyTarget: (json['dailyTarget'] as num?)?.toInt() ?? 1,
       completionCounts: completionCounts,
+=======
+      weeklyGoal: json['weeklyGoal'] as int? ?? 0,
+      completedDates: (json['completedDates'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toSet(),
+>>>>>>> Stashed changes
       frozenDates: (json['frozenDates'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toSet(),
@@ -386,8 +502,13 @@ class Habit {
       'colorValue': colorValue,
       'createdAt': createdAt.toIso8601String(),
       'activeWeekdays': activeWeekdays.toList(),
+<<<<<<< Updated upstream
       'dailyTarget': dailyTarget,
       'completionCounts': completionCounts,
+=======
+      'weeklyGoal': weeklyGoal,
+      'completedDates': completedDates.toList(),
+>>>>>>> Stashed changes
       'frozenDates': frozenDates.toList(),
       'reminderMinutes': reminderMinutes,
       'autoTrackSteps': autoTrackSteps,

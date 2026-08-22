@@ -1,6 +1,6 @@
 {
-    "name": "habit_tracker",
-    "short_name": "habit_tracker",
+    "name": "Habitudes+",
+    "short_name": "Habitudes+",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#6C5CE7",

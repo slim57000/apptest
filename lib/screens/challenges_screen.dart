@@ -113,7 +113,18 @@ class _ChallengesList extends StatelessWidget {
               ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
-                    child: Text(l10n.noChallenges, textAlign: TextAlign.center),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.emoji_events_outlined,
+                          size: 56,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(l10n.noChallenges, textAlign: TextAlign.center),
+                      ],
+                    ),
                   ),
                 )
               : ListView(
@@ -137,21 +148,27 @@ class _ChallengesList extends StatelessWidget {
                       .toList(),
                 ),
         ),
+        // Boutons empilés pleine largeur : « Rejoindre avec un code »
+        // tient toujours sur une seule ligne, même en français.
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                child: OutlinedButton(
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
                   onPressed: () => _showJoinDialog(context),
-                  child: Text(l10n.joinChallenge),
+                  icon: const Icon(Icons.vpn_key_outlined),
+                  label: Text(l10n.joinChallenge),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
                   onPressed: () => _showCreateDialog(context),
-                  child: Text(l10n.createChallenge),
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.createChallenge),
                 ),
               ),
             ],
@@ -205,7 +222,17 @@ class _ChallengesList extends StatelessWidget {
       ),
     );
     if (name != null && name.trim().isNotEmpty && context.mounted) {
-      await context.read<ChallengeProvider>().createChallenge(name: name.trim(), emoji: emoji);
+      final provider = context.read<ChallengeProvider>();
+      final ok = await provider.createChallenge(name: name.trim(), emoji: emoji);
+      if (!ok && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(provider.error ?? l10n.createChallengeFailed)),
+        );
+      } else if (ok && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.challengeCreated)),
+        );
+      }
     }
   }
 

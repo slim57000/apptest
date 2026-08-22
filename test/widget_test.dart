@@ -53,7 +53,7 @@ void main() {
     // La locale par défaut du harness de test est l'anglais, quelle que
     // soit la locale de repli de l'app (le français) : on vérifie donc le
     // texte anglais ici plutôt que de dépendre de la résolution de locale.
-    expect(find.text('Habitude+'), findsOneWidget);
+    expect(find.text('Habitudes+'), findsOneWidget);
     expect(find.text('No habits yet'), findsOneWidget);
   });
 }

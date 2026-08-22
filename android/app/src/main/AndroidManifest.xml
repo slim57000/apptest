@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
 
     <application
-        android:label="habit_tracker"
+        android:label="Habitudes+"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -59,13 +59,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/habit_widget_info" />
         </receiver>
-        <!-- Publicités (AdMob) : ID de TEST officiel Google (voir README,
-             "Configurer les publicités"), à remplacer par le vrai App ID
-             AdMob avant publication, sans quoi les pubs restent des pubs
-             de démonstration. -->
+        <!-- Publicités (AdMob) : App ID réel du compte AdMob
+             (l'unité publicitaire de la bannière est dans lib/config/ads_config.dart). -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-1101565530376274~3544857241"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

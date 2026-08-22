@@ -38,11 +38,15 @@ class PaywallScreen extends StatelessWidget {
                 if (premium.storeAvailable && premium.queryError != null)
                   _MessageCard(message: premium.queryError!, isError: true),
                 if (premium.error != null) _MessageCard(message: premium.error!, isError: true),
-                if (premium.storeAvailable && !premium.isPremium)
+                // Les offres et leurs tarifs restent affichées même quand
+                // le Premium est actif (utile en test avec forcePremium) ;
+                // seul le bouton d'achat est désactivé.
+                if (premium.storeAvailable)
                   ...premium.products.map(
                     (product) => _PlanCard(
                       product: product,
                       pending: premium.purchasePending,
+                      canBuy: !premium.isPremium,
                       onTap: () => premium.buy(product),
                     ),
                   ),
@@ -62,27 +66,41 @@ class PaywallScreen extends StatelessWidget {
 class _PlanCard extends StatelessWidget {
   final ProductDetails product;
   final bool pending;
+  final bool canBuy;
   final VoidCallback onTap;
 
-  const _PlanCard({required this.product, required this.pending, required this.onTap});
+  const _PlanCard({
+    required this.product,
+    required this.pending,
+    required this.canBuy,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final IconData icon;
+    Widget leading;
     final String title;
     switch (product.id) {
+      case PremiumProductIds.monthly:
+        leading = const Icon(Icons.calendar_month);
+        title = l10n.monthlyPlan;
+        break;
       case PremiumProductIds.yearly:
-        icon = Icons.calendar_month;
+        leading = const Icon(Icons.calendar_today);
         title = l10n.yearlyPlan;
         break;
       case PremiumProductIds.lifetime:
-        icon = Icons.all_inclusive;
+        leading = Image.asset(
+          'assets/icons/lifetime_premium.png',
+          width: 28,
+          height: 28,
+        );
         title = l10n.lifetimePlan;
         break;
       default:
-        icon = Icons.event_repeat;
-        title = l10n.monthlyPlan;
+        leading = const Icon(Icons.event_repeat);
+        title = product.title;
     }
     final isLifetime = product.id == PremiumProductIds.lifetime;
     return Card(
@@ -90,11 +108,13 @@ class _PlanCard extends StatelessWidget {
       color: isLifetime ? Colors.amber.withValues(alpha: 0.12) : null,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
-        leading: Icon(icon),
+        leading: leading,
         title: Text(title),
         subtitle: Text(product.description),
-        trailing: pending
-            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
+        trailing: pending || !canBuy
+            ? (pending
+                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
+                : null)
             : FilledButton(onPressed: onTap, child: Text(product.price)),
       ),
     );

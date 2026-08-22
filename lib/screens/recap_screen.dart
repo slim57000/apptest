@@ -30,7 +30,7 @@ class RecapScreen extends StatelessWidget {
 
     final overallRate = _overallCompletionRate(habits, 7);
     final bestHabit = habits.reduce(
-      (a, b) => a.currentStreak >= b.currentStreak ? a : b,
+      (a, b) => a.currentStreakCount >= b.currentStreakCount ? a : b,
     );
 
     return Scaffold(
@@ -50,7 +50,9 @@ class RecapScreen extends StatelessWidget {
               Expanded(
                 child: _RecapStat(
                   label: l10n.recapBestHabit,
-                  value: '${bestHabit.emoji} ${bestHabit.currentStreak}',
+                  value: bestHabit.streakUnitIsWeeks
+                      ? '${bestHabit.emoji} ${l10n.shortWeeks(bestHabit.currentStreakCount)}'
+                      : '${bestHabit.emoji} ${bestHabit.currentStreakCount}',
                 ),
               ),
             ],
@@ -104,6 +106,7 @@ class _HabitRecapTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Color(habit.colorValue);
     final rate = habit.completionRate(7);
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -117,7 +120,11 @@ class _HabitRecapTile extends StatelessWidget {
                 Text(habit.emoji, style: const TextStyle(fontSize: 18)),
                 const SizedBox(width: 8),
                 Expanded(child: Text(habit.name, overflow: TextOverflow.ellipsis)),
-                Text('🔥 ${habit.currentStreak}'),
+                Text(
+                  habit.streakUnitIsWeeks
+                      ? '🔥 ${l10n.shortWeeks(habit.currentStreakCount)}'
+                      : '🔥 ${habit.currentStreakCount}',
+                ),
               ],
             ),
             const SizedBox(height: 8),

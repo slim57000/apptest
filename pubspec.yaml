@@ -1,5 +1,5 @@
 name: habit_tracker
-description: "Habitude+ — suivi d'habitudes avec abonnement Premium."
+description: "Habitudes+ — suivi d'habitudes avec abonnement Premium."
 publish_to: 'none'
 
 version: 1.0.0+2
@@ -30,6 +30,8 @@ dependencies:
   # Rappels locaux quotidiens
   flutter_local_notifications: ^18.0.1
   timezone: ^0.9.4
+  # Nom du fuseau horaire de l'appareil (pour tz.setLocalLocation)
+  flutter_timezone: ^4.1.0
 
   # Design : typographie, micro-animations, graphiques, confettis
   google_fonts: ^8.2.1

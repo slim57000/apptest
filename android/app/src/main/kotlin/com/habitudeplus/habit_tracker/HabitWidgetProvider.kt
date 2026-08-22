@@ -172,7 +172,7 @@ class HabitWidgetProvider : AppWidgetProvider() {
             views.setOnClickPendingIntent(R.id.widget_root, openAppIntent)
 
             if (json == null) {
-                views.setTextViewText(R.id.widget_header, "Habitude+")
+                views.setTextViewText(R.id.widget_header, "Habitudes+")
                 for (rowId in ROW_IDS) {
                     views.setViewVisibility(rowId, View.GONE)
                 }

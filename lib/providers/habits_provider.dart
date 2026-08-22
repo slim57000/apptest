@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/habit.dart';
@@ -8,7 +10,7 @@ import '../services/widget_service.dart';
 
 class HabitsProvider extends ChangeNotifier {
   /// Nombre d'habitudes actives autorisées en version gratuite.
-  static const freeHabitLimit = 3;
+  static const freeHabitLimit = 7;
 
   final StorageService _storage;
   final NotificationService _notifications;
@@ -52,9 +54,11 @@ class HabitsProvider extends ChangeNotifier {
     // Reprogramme les rappels à chaque ouverture de l'app : les alarmes
     // planifiées ne survivent pas forcément à un redémarrage de l'appareil,
     // ceci les "répare" sans nécessiter de receiver Android natif au boot.
+    // Rappel intelligent : une habitude déjà cochée aujourd'hui saute le
+    // jour en cours (skipToday).
     for (final habit in _habits) {
       if (habit.reminderMinutes != null) {
-        await _notifications.scheduleReminders(habit);
+        await _notifications.scheduleNextReminder(habit, skipToday: habit.isCompletedToday);
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
     }
@@ -74,6 +78,9 @@ class HabitsProvider extends ChangeNotifier {
     await _widget.updateHabits(_widgetHabits);
     for (final habit in _habits) {
       if (habit.reminderMinutes != null) {
+        // La bascule widget peut avoir changé l'état du jour : replanifie
+        // rappel ET relance en fonction.
+        await _notifications.scheduleNextReminder(habit, skipToday: habit.isCompletedToday);
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
     }
@@ -86,7 +93,11 @@ class HabitsProvider extends ChangeNotifier {
     required String emoji,
     required int colorValue,
     Set<int> activeWeekdays = const {},
+<<<<<<< Updated upstream
     int dailyTarget = 1,
+=======
+    int weeklyGoal = 0,
+>>>>>>> Stashed changes
     int? reminderMinutes,
   }) async {
     final habit = Habit(
@@ -96,14 +107,35 @@ class HabitsProvider extends ChangeNotifier {
       colorValue: colorValue,
       createdAt: DateTime.now(),
       activeWeekdays: activeWeekdays,
+<<<<<<< Updated upstream
       dailyTarget: dailyTarget,
+=======
+      weeklyGoal: weeklyGoal,
+>>>>>>> Stashed changes
       reminderMinutes: reminderMinutes,
     );
+    // L'état est mis à jour et notifié immédiatement (retour visuel
+    // instantané) ; l'écriture disque, la mise à jour du widget et la
+    // planification des rappels — des opérations lentes — s'exécutent en
+    // arrière-plan pour ne pas bloquer l'interface.
     _habits = [..._habits, habit];
     notifyListeners();
+    unawaited(_finalizeAdd(habit));
+  }
+
+  Future<void> _finalizeAdd(Habit habit) async {
     await _persist();
-    await _notifications.scheduleReminders(habit);
+    await _notifications.scheduleNextReminder(habit);
     await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
+  }
+
+  /// Réinsère une habitude supprimée (action « Annuler » du glisser pour
+  /// supprimer). Sans effet si une habitude du même id existe déjà.
+  Future<void> restoreHabit(Habit habit) async {
+    if (_habits.any((h) => h.id == habit.id)) return;
+    _habits = [..._habits, habit];
+    notifyListeners();
+    unawaited(_finalizeAdd(habit));
   }
 
   Future<void> deleteHabit(String id) async {
@@ -123,7 +155,10 @@ class HabitsProvider extends ChangeNotifier {
     }).toList();
     notifyListeners();
     await _persist();
+    // Cœur du rappel intelligent : cocher supprime le rappel/relance du
+    // jour (replanifiés à la prochaine occurrence), décocher les restaure.
     if (updated != null) {
+      await _notifications.scheduleNextReminder(updated!, skipToday: updated!.isCompletedToday);
       await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
     }
   }
@@ -174,7 +209,7 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _persist();
     if (updated != null) {
-      await _notifications.scheduleReminders(updated!);
+      await _notifications.scheduleNextReminder(updated!, skipToday: updated!.isCompletedToday);
       await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
     }
   }
@@ -193,7 +228,7 @@ class HabitsProvider extends ChangeNotifier {
     await _persist();
     for (final habit in _habits) {
       if (habit.reminderMinutes != null) {
-        await _notifications.scheduleReminders(habit);
+        await _notifications.scheduleNextReminder(habit, skipToday: habit.isCompletedToday);
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
     }
@@ -234,6 +269,9 @@ class HabitsProvider extends ChangeNotifier {
 
     for (final habit in _habits) {
       if (habit.autoTrackSteps && habit.reminderMinutes != null) {
+        // Complétion automatique = même effet qu'un coche manuel : le
+        // rappel et la relance du jour sautent au jour suivant.
+        await _notifications.scheduleNextReminder(habit, skipToday: true);
         await _notifications.scheduleFollowUp(habit, skipToday: true);
       }
     }

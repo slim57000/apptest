@@ -14,9 +14,14 @@ class PremiumProvider extends ChangeNotifier {
   static const _prefsKey = 'is_premium_v1';
   static const _productIdPrefsKey = 'premium_product_id_v1';
 
+  /// [DEV] Force le statut Premium sans passer par la boutique (les produits
+  /// in-app ne sont pas encore publiés sur Play Console / App Store Connect).
+  /// ⚠️ À repasser à `false` avant toute mise en production.
+  static const bool forcePremium = true;
+
   final PurchaseService _purchaseService;
 
-  bool _isPremium = false;
+  bool _isPremium = forcePremium;
   String? _premiumProductId;
   bool _loading = true;
   bool _purchasePending = false;
@@ -37,7 +42,7 @@ class PremiumProvider extends ChangeNotifier {
 
   Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
-    _isPremium = prefs.getBool(_prefsKey) ?? false;
+    _isPremium = forcePremium || (prefs.getBool(_prefsKey) ?? false);
     _premiumProductId = prefs.getString(_productIdPrefsKey);
     notifyListeners();
 

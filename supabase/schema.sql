@@ -1,4 +1,4 @@
--- Schéma Supabase pour les défis entre amis d'Habitude+.
+-- Schéma Supabase pour les défis entre amis d'Habitudes+.
 -- À exécuter dans l'éditeur SQL du projet Supabase (Dashboard > SQL Editor).
 -- Voir le README ("Configurer les défis entre amis") pour la procédure
 -- complète, y compris l'activation de l'authentification anonyme.

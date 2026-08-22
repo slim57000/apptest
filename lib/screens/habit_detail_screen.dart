@@ -50,12 +50,11 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       return Scaffold(body: Center(child: Text(l10n.habitNotFound)));
     }
 
-    if (habit.currentStreak > _lastSeenStreak &&
-        habit.currentStreak > 0 &&
-        habit.currentStreak % 7 == 0) {
+    final streak = habit.currentStreakCount;
+    if (streak > _lastSeenStreak && streak > 0 && habit.reachedMilestone(streak)) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _confetti.play());
     }
-    _lastSeenStreak = habit.currentStreak;
+    _lastSeenStreak = streak;
 
     return Scaffold(
       appBar: AppBar(
@@ -91,8 +90,18 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                     Text(habit.emoji, style: const TextStyle(fontSize: 48)),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.streakDays(habit.currentStreak),
+                      habit.streakUnitIsWeeks
+                          ? l10n.streakWeeks(habit.currentStreakCount)
+                          : l10n.streakDays(habit.currentStreakCount),
                       style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${l10n.bestStreak} · ${habit.longestStreakCount}${habit.streakUnitIsWeeks ? '' : ' j'}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
@@ -129,7 +138,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                   ],
                 ],
               ),
-              if (premium.isPremium && habit.canFreezeYesterday) ...[
+              if (habit.canFreezeYesterday(isPremium: premium.isPremium)) ...[
                 const SizedBox(height: 12),
                 _StreakFreezeBanner(habit: habit),
               ],
@@ -263,7 +272,9 @@ class _ReminderTile extends StatelessWidget {
                 child: Text(l10n.addReminder),
               )
             : IconButton(
-                icon: const Icon(Icons.close),
+                // Corbeille : supprime le rappel immédiatement, sans ouvrir
+                // le sélecteur d'heure.
+                icon: const Icon(Icons.delete_outline),
                 tooltip: l10n.removeReminder,
                 onPressed: () =>
                     context.read<HabitsProvider>().setReminder(habit.id, null),
@@ -404,7 +415,9 @@ class _PremiumStats extends StatelessWidget {
             Expanded(
               child: _StatTile(
                 label: l10n.bestStreak,
-                value: '${habit.longestStreak} j',
+                value: habit.streakUnitIsWeeks
+                    ? l10n.shortWeeks(habit.longestStreakCount)
+                    : '${habit.longestStreakCount} j',
               ),
             ),
             const SizedBox(width: 12),

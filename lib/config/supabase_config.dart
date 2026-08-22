@@ -1,14 +1,22 @@
 /// Identifiants du projet Supabase pour les défis entre amis.
 ///
-/// À remplir après avoir créé un projet sur https://supabase.com (gratuit)
-/// et exécuté `supabase/schema.sql` dans son éditeur SQL — voir le README
-/// ("Configurer les défis entre amis") pour la procédure complète.
+/// Projet : https://supabase.com/dashboard/project/kcjunokemdnrvhkhahsl
 ///
-/// Laissés vides, les défis affichent un message "non configuré" au lieu
-/// de planter l'app : aucune des autres fonctionnalités n'en dépend.
+/// La clé ci-dessous est la clé **publishable/anon** (publique par design) :
+/// la sécurité est assurée par les policies RLS de `supabase/schema.sql`.
+/// Ne JAMAIS mettre ici la clé `service_role` (secrète).
+///
+/// Ces valeurs restent surchargeables par `--dart-define` (utile en CI pour
+/// pointer vers un projet de test) ; à défaut, ce sont elles qui servent.
 class SupabaseConfig {
-  static const url = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
-  static const anonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
+  static const url = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'https://kcjunokemdnrvhkhahsl.supabase.co',
+  );
+  static const anonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: 'sb_publishable_OFR8wC9telLsRqwEgbeMxg_Yn8KRJNY',
+  );
 
   static bool get isConfigured => url.isNotEmpty && anonKey.isNotEmpty;
 }

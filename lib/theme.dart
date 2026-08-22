@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static ThemeData light() => _themeFrom(
-        ColorScheme.fromSeed(seedColor: const Color(0xFF6C5CE7)),
+        ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
       );
 
   static ThemeData dark() => _themeFrom(
         ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6C5CE7),
+          seedColor: const Color(0xFF2563EB),
           brightness: Brightness.dark,
         ),
       );
@@ -40,7 +40,7 @@ class AppTheme {
 
 /// Palette de couleurs proposées pour une habitude (valeurs ARGB).
 const List<int> habitColorPalette = [
-  0xFF6C5CE7,
+  0xFF2563EB,
   0xFF00B894,
   0xFFE17055,
   0xFF0984E3,

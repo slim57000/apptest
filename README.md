@@ -1,4 +1,4 @@
-# Habitude+
+# Habitudes+
 
 Application Flutter de suivi d'habitudes avec un abonnement Premium payant.
 Pensée pour être rapide à développer : **aucun backend**, tout est stocké
@@ -361,7 +361,10 @@ ci-dessous.
 2. Dans **Authentication → Providers**, activer **Anonymous Sign-Ins**
    (l'app n'utilise pas d'email/mot de passe, juste un pseudo).
 3. Dans **SQL Editor**, coller et exécuter le contenu de
-   `supabase/schema.sql` (tables + policies RLS).
+   `supabase/schema.sql` (tables + policies RLS), puis celui de
+   `supabase/rls-patch.sql` (correctifs de sécurité : codes d'invitation
+   non énumérables, adhésion par fonction serveur, quitter un défi,
+   check-ins répétables).
 4. Récupérer l'**URL du projet** et la **clé publique anon/publishable**
    (Settings → API), puis lancer l'app avec :
    ```bash

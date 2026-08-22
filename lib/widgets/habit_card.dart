@@ -50,6 +50,7 @@ class HabitCard extends StatelessWidget {
                           .titleMedium
                           ?.copyWith(fontWeight: FontWeight.w600),
                     ),
+<<<<<<< Updated upstream
                     if (habit.dailyTarget > 1)
                       Text(
                         l10n.timesProgress(habit.countToday, habit.dailyTarget),
@@ -60,6 +61,45 @@ class HabitCard extends StatelessWidget {
                         l10n.streakDays(habit.currentStreak),
                         style: Theme.of(context).textTheme.bodySmall,
                       )
+=======
+                    const SizedBox(height: 4),
+                    if (habit.isFlexible) ...[
+                      // Objectif hebdo : anneau linéaire de progression
+                      // vers le nombre de jours visés cette semaine.
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(999),
+                              child: LinearProgressIndicator(
+                                value:
+                                    (habit.weekProgressDone / habit.weeklyGoal)
+                                        .clamp(0.0, 1.0),
+                                minHeight: 5,
+                                backgroundColor: color.withValues(alpha: 0.15),
+                                valueColor: AlwaysStoppedAnimation(color),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            l10n.weekProgress(habit.weekProgressDone, habit.weeklyGoal),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: color.computeLuminance() > 0.5
+                                      ? Colors.black87
+                                      : color,
+                                ),
+                          ),
+                        ],
+                      ),
+                      if (habit.currentStreakCount > 1) ...[
+                        const SizedBox(height: 6),
+                        _streakPill(context, l10n.streakWeeks(habit.currentStreakCount)),
+                      ],
+                    ] else if (habit.currentStreak > 0)
+                      _streakPill(context, l10n.streakDays(habit.currentStreak))
+>>>>>>> Stashed changes
                     else
                       Text(
                         active ? l10n.notStartedYet : l10n.notScheduledToday,
@@ -84,6 +124,34 @@ class HabitCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// Pastille flamme « série en cours » (jours ou semaines selon le mode).
+  Widget _streakPill(BuildContext context, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEF6C00).withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: const Color(0xFFEF6C00).withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.local_fire_department, size: 15, color: Color(0xFFE65100)),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: Theme.of(context)
+                .textTheme
+                .labelMedium
+                ?.copyWith(fontWeight: FontWeight.w700, color: const Color(0xFFE65100)),
+          ),
+        ],
       ),
     );
   }
