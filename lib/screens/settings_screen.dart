@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/backup_provider.dart';
@@ -9,8 +10,8 @@ import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
 import '../widgets/app_logo.dart';
 import 'challenges_screen.dart';
+import 'legal_screen.dart';
 import 'paywall_screen.dart';
-import 'privacy_policy_screen.dart';
 
 /// Numéro de version affiché dans "À propos" : à garder synchronisé avec
 /// le `version:` de `pubspec.yaml` (pas de dépendance package_info_plus
@@ -89,57 +90,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           const Divider(),
-<<<<<<< Updated upstream
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: Text(l10n.privacyPolicyLabel),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
-            ),
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text(l10n.aboutTitle),
-            onTap: () => _showAboutDialog(context, l10n),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAboutDialog(BuildContext context, AppLocalizations l10n) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(Icons.info_outline, size: 40),
-            const SizedBox(height: 12),
-            Text(
-              l10n.appTitle,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              _appVersion,
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Theme.of(context).hintColor),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.close),
-=======
           _SettingsOption(
             icon: Icons.groups,
             title: l10n.challengesTitle,
@@ -149,78 +99,115 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const Divider(),
+          // Écran interne à l'app (pas de navigateur externe) : contenu
+          // complet dans LegalScreen, voir lib/screens/legal_screen.dart.
           _SettingsOption(
             icon: Icons.privacy_tip_outlined,
             title: l10n.privacyPolicyLabel,
-            onTap: () => launchUrl(
-              Uri.parse(_privacyPolicyUrl),
-              mode: LaunchMode.externalApplication,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const LegalScreen(isPrivacyPolicy: true)),
+            ),
+          ),
+          const Divider(),
+          _SettingsOption(
+            icon: Icons.description_outlined,
+            title: l10n.legalTitle,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const LegalScreen()),
             ),
           ),
           const Divider(),
           _SettingsOption(
             icon: Icons.info_outline,
             title: l10n.aboutTitle,
-            onTap: () => showAboutDialog(
-              context: context,
-              applicationName: l10n.appTitle,
-              applicationVersion: '1.0.0',
-              applicationIcon: const Padding(
-                padding: EdgeInsets.only(bottom: 12),
-                child: AppLogo(size: 56, showText: false),
+            onTap: () => _showAboutDialog(context, l10n),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Dialogue personnalisé (au lieu du showAboutDialog standard, dont l'icône
+  // + le nom de l'app en Row force un retour à la ligne mal centré) : tout
+  // le contenu est dans une Column, donc réellement centré.
+  void _showAboutDialog(BuildContext context, AppLocalizations l10n) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const AppLogo(size: 56, showText: false),
+              const SizedBox(height: 12),
+              Text(
+                l10n.appTitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              children: [
-                const SizedBox(height: 8),
-                Text(l10n.aboutIntro, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.aboutFeatures,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(height: 1.7),
+              const SizedBox(height: 4),
+              Text(
+                _appVersion,
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Theme.of(context).hintColor),
+              ),
+              const SizedBox(height: 16),
+              Text(l10n.aboutIntro, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              Text(
+                l10n.aboutFeatures,
+                textAlign: TextAlign.center,
+                style: const TextStyle(height: 1.7),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.aboutPrivacyNote,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.5,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.aboutPrivacyNote,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    height: 1.5,
-                  ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.aboutFeedbackNote,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.5,
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  l10n.aboutFeedbackNote,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    height: 1.5,
-                  ),
+              ),
+              const Divider(height: 32),
+              Text(
+                l10n.aboutPublisherNote,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                const Divider(height: 32),
-                Text(
-                  l10n.aboutPublisherNote,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              TextButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse(_publisherUrl),
+                  mode: LaunchMode.externalApplication,
                 ),
-                const SizedBox(height: 4),
-                Center(
-                  child: TextButton.icon(
-                    onPressed: () => launchUrl(
-                      Uri.parse(_publisherUrl),
-                      mode: LaunchMode.externalApplication,
-                    ),
-                    icon: const Icon(Icons.open_in_new, size: 16),
-                    label: Text(l10n.aboutPublisherSiteLabel),
-                  ),
-                ),
-              ],
-            ),
->>>>>>> Stashed changes
+                icon: const Icon(Icons.open_in_new, size: 16),
+                label: Text(l10n.aboutPublisherSiteLabel),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.close),
           ),
         ],
       ),
@@ -380,18 +367,6 @@ class _CloudBackupSectionState extends State<_CloudBackupSection> {
             color:
                 backup.lastBackupAt == null ? theme.colorScheme.primary : Colors.green,
           ),
-<<<<<<< Updated upstream
-          const SizedBox(height: 4),
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              l10n.cloudBackupDescription,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-=======
->>>>>>> Stashed changes
           const SizedBox(height: 6),
           Text(
             l10n.cloudBackupTitle,

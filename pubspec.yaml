@@ -64,6 +64,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  # Requis par AppLogo (lib/widgets/app_logo.dart), qui affiche
+  # assets/icon/icon_foreground.png directement dans l'UI (pas seulement
+  # comme source pour flutter_launcher_icons).
+  assets:
+    - assets/icon/
 
 flutter_launcher_icons:
   android: true

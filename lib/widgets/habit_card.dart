@@ -50,20 +50,13 @@ class HabitCard extends StatelessWidget {
                           .titleMedium
                           ?.copyWith(fontWeight: FontWeight.w600),
                     ),
-<<<<<<< Updated upstream
+                    const SizedBox(height: 4),
                     if (habit.dailyTarget > 1)
                       Text(
                         l10n.timesProgress(habit.countToday, habit.dailyTarget),
                         style: Theme.of(context).textTheme.bodySmall,
                       )
-                    else if (habit.currentStreak > 0)
-                      Text(
-                        l10n.streakDays(habit.currentStreak),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      )
-=======
-                    const SizedBox(height: 4),
-                    if (habit.isFlexible) ...[
+                    else if (habit.isFlexible) ...[
                       // Objectif hebdo : anneau linéaire de progression
                       // vers le nombre de jours visés cette semaine.
                       Row(
@@ -99,7 +92,6 @@ class HabitCard extends StatelessWidget {
                       ],
                     ] else if (habit.currentStreak > 0)
                       _streakPill(context, l10n.streakDays(habit.currentStreak))
->>>>>>> Stashed changes
                     else
                       Text(
                         active ? l10n.notStartedYet : l10n.notScheduledToday,

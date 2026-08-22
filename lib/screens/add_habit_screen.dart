@@ -17,12 +17,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   String _emoji = habitEmojiChoices.first;
   int _color = habitColorPalette.first;
   final Set<int> _weekdays = {};
-<<<<<<< Updated upstream
   int _dailyTarget = 1;
-=======
   bool _flexible = false;
   int _weeklyGoal = 3;
->>>>>>> Stashed changes
   TimeOfDay? _reminderTime;
 
   @override
@@ -129,7 +126,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             }).toList(),
           ),
           const SizedBox(height: 24),
-<<<<<<< Updated upstream
           Text(l10n.timesPerDayLabel, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Row(
@@ -157,12 +153,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 4),
-          Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
-=======
           Text(l10n.scheduleModeLabel, style: Theme.of(context).textTheme.titleSmall),
->>>>>>> Stashed changes
           const SizedBox(height: 8),
           SegmentedButton<bool>(
             segments: [
@@ -264,13 +255,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           name: name,
           emoji: _emoji,
           colorValue: _color,
-<<<<<<< Updated upstream
-          activeWeekdays: _weekdays,
-          dailyTarget: _dailyTarget,
-=======
           activeWeekdays: _flexible ? const {} : _weekdays,
+          dailyTarget: _dailyTarget,
           weeklyGoal: _flexible ? _weeklyGoal : 0,
->>>>>>> Stashed changes
           reminderMinutes: _reminderTime == null
               ? null
               : _reminderTime!.hour * 60 + _reminderTime!.minute,

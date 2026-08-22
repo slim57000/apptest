@@ -93,11 +93,8 @@ class HabitsProvider extends ChangeNotifier {
     required String emoji,
     required int colorValue,
     Set<int> activeWeekdays = const {},
-<<<<<<< Updated upstream
     int dailyTarget = 1,
-=======
     int weeklyGoal = 0,
->>>>>>> Stashed changes
     int? reminderMinutes,
   }) async {
     final habit = Habit(
@@ -107,11 +104,8 @@ class HabitsProvider extends ChangeNotifier {
       colorValue: colorValue,
       createdAt: DateTime.now(),
       activeWeekdays: activeWeekdays,
-<<<<<<< Updated upstream
       dailyTarget: dailyTarget,
-=======
       weeklyGoal: weeklyGoal,
->>>>>>> Stashed changes
       reminderMinutes: reminderMinutes,
     );
     // L'état est mis à jour et notifié immédiatement (retour visuel
@@ -188,7 +182,7 @@ class HabitsProvider extends ChangeNotifier {
       await _notifications.cancelReminders(id);
       await _notifications.cancelFollowUps(id);
     } else if (updated!.reminderMinutes != null) {
-      await _notifications.scheduleReminders(updated!);
+      await _notifications.scheduleNextReminder(updated!, skipToday: updated!.isCompletedToday);
       await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
     }
   }

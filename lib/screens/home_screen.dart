@@ -38,64 +38,6 @@ class HomeScreen extends StatelessWidget {
       // En-tête personnalisé : logo au-dessus de la rangée d'icônes
       // centrée (un AppBar classique avec 5 actions tronquait le titre).
       appBar: AppBar(
-<<<<<<< Updated upstream
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const _AppLogo(),
-            const SizedBox(width: 10),
-            Text(l10n.appTitle),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.auto_awesome),
-            tooltip: l10n.chooseTemplate,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const TemplatesScreen()),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.insights),
-            tooltip: l10n.recapTitle,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => premium.isPremium ? const RecapScreen() : const PaywallScreen(),
-              ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.groups),
-            tooltip: l10n.challengesTitle,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ChallengesScreen()),
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.workspace_premium,
-              color: premium.isPremium ? Colors.amber : null,
-            ),
-            tooltip: l10n.subscriptionTooltip,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PaywallScreen()),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.archive_outlined),
-            tooltip: l10n.archivedHabitsTitle,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            ),
-          ),
-        ],
-=======
         automaticallyImplyLeading: false,
         toolbarHeight: 128,
         centerTitle: true,
@@ -143,6 +85,13 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  icon: const Icon(Icons.archive_outlined),
+                  tooltip: l10n.archivedHabitsTitle,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
+                  ),
+                ),
+                IconButton(
                   icon: const Icon(Icons.settings),
                   tooltip: l10n.settingsTitle,
                   onPressed: () => Navigator.of(context).push(
@@ -153,7 +102,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
->>>>>>> Stashed changes
       ),
       body: habitsProvider.loading
           ? const Center(child: CircularProgressIndicator())
@@ -163,22 +111,8 @@ class HomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   itemCount: habits.length + 1,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
-<<<<<<< Updated upstream
-                  itemBuilder: (context, index) {
-                    if (index == 0) return GardenCard(habits: allHabits);
-                    final habit = habits[index - 1];
-                    return HabitCard(
-                      habit: habit,
-                      onToggle: () => habitsProvider.toggleToday(habit.id),
-                      onDecrement: () => habitsProvider.decrementToday(habit.id),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: habit.id)),
-                      ),
-                    ).animate().fadeIn(delay: (40 * (index - 1)).ms).slideY(begin: 0.08, end: 0);
-                  },
-=======
                    itemBuilder: (context, index) {
-                     if (index == 0) return GardenCard(habits: habits);
+                     if (index == 0) return GardenCard(habits: allHabits);
                      final habit = habits[index - 1];
                      // Glisser vers la gauche = suppression immédiate,
                      // annulable quelques secondes via le snackbar.
@@ -210,13 +144,13 @@ class HomeScreen extends StatelessWidget {
                         child: HabitCard(
                           habit: habit,
                           onToggle: () => _toggleWithCelebration(context, habitsProvider, habit),
+                          onDecrement: () => habitsProvider.decrementToday(habit.id),
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: habit.id)),
                           ),
                         ),
                      ).animate().fadeIn(delay: (40 * (index - 1)).ms).slideY(begin: 0.08, end: 0);
                    },
->>>>>>> Stashed changes
                 ),
       // Le bouton "Nouvelle habitude" est intégré à l'état vide centré ;
       // le FAB n'a de sens que lorsqu'il existe déjà des habitudes.
@@ -275,34 +209,6 @@ class HomeScreen extends StatelessWidget {
             : l10n.streakDays(after),
       );
     }
-  }
-}
-
-/// Petit logo bleu affiché à gauche du titre "Habitude+" dans l'AppBar de
-/// l'accueil. Dessiné en vecteur (pas d'asset image) pour rester net à
-/// toutes les résolutions.
-class _AppLogo extends StatelessWidget {
-  const _AppLogo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF4C6FFF), Color(0xFF2541D8)],
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: const Icon(
-        Icons.local_fire_department,
-        color: Colors.white,
-        size: 20,
-      ),
-    );
   }
 }
 

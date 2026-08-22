@@ -12,7 +12,6 @@ class Habit {
   /// dimanche). Vide = active tous les jours. Ignoré si [weeklyGoal] > 0.
   final Set<int> activeWeekdays;
 
-<<<<<<< Updated upstream
   /// Nombre de fois par jour où l'habitude doit être faite pour compter
   /// comme complétée (ex. "boire de l'eau" x8). 1 = comportement classique
   /// (une case à cocher par jour).
@@ -21,15 +20,11 @@ class Habit {
   /// Nombre de fois faite, par jour (`yyyy-MM-dd` -> compteur). Un jour est
   /// considéré complété quand son compteur atteint [dailyTarget].
   final Map<String, int> completionCounts;
-=======
+
   /// Objectif hebdomadaire flexible : > 0 = l'habitude doit être faite N
   /// fois par semaine, n'importe quels jours ; la série se compte alors en
   /// semaines. 0 (défaut) = mode classique par jours fixes.
   final int weeklyGoal;
-
-  /// Dates complétées, au format `yyyy-MM-dd`.
-  final Set<String> completedDates;
->>>>>>> Stashed changes
 
   /// Dates "gelées" (fonctionnalité Premium) : un jour manqué qui ne casse
   /// pas la série, sans compter comme réellement fait dans le taux de
@@ -61,13 +56,9 @@ class Habit {
     required this.colorValue,
     required this.createdAt,
     this.activeWeekdays = const {},
-<<<<<<< Updated upstream
     this.dailyTarget = 1,
     this.completionCounts = const {},
-=======
     this.weeklyGoal = 0,
-    this.completedDates = const {},
->>>>>>> Stashed changes
     this.frozenDates = const {},
     this.reminderMinutes,
     this.autoTrackSteps = false,
@@ -271,6 +262,7 @@ class Habit {
       dailyTarget: dailyTarget,
       completionCounts: completionCounts,
       frozenDates: frozenDates,
+      weeklyGoal: weeklyGoal,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: value,
       notes: notes,
@@ -291,6 +283,7 @@ class Habit {
       dailyTarget: dailyTarget,
       completionCounts: completionCounts,
       frozenDates: frozenDates,
+      weeklyGoal: weeklyGoal,
       reminderMinutes: reminderMinutes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
@@ -474,15 +467,9 @@ class Habit {
       activeWeekdays: (json['activeWeekdays'] as List<dynamic>? ?? [])
           .map((e) => e as int)
           .toSet(),
-<<<<<<< Updated upstream
       dailyTarget: (json['dailyTarget'] as num?)?.toInt() ?? 1,
       completionCounts: completionCounts,
-=======
       weeklyGoal: json['weeklyGoal'] as int? ?? 0,
-      completedDates: (json['completedDates'] as List<dynamic>? ?? [])
-          .map((e) => e as String)
-          .toSet(),
->>>>>>> Stashed changes
       frozenDates: (json['frozenDates'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toSet(),
@@ -502,13 +489,9 @@ class Habit {
       'colorValue': colorValue,
       'createdAt': createdAt.toIso8601String(),
       'activeWeekdays': activeWeekdays.toList(),
-<<<<<<< Updated upstream
       'dailyTarget': dailyTarget,
       'completionCounts': completionCounts,
-=======
       'weeklyGoal': weeklyGoal,
-      'completedDates': completedDates.toList(),
->>>>>>> Stashed changes
       'frozenDates': frozenDates.toList(),
       'reminderMinutes': reminderMinutes,
       'autoTrackSteps': autoTrackSteps,
