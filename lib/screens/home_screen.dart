@@ -13,7 +13,6 @@ import '../widgets/garden_card.dart';
 import '../widgets/habit_card.dart';
 import '../widgets/milestone_celebration.dart';
 import 'add_habit_screen.dart';
-import 'archived_habits_screen.dart';
 import 'challenges_screen.dart';
 import 'habit_detail_screen.dart';
 import 'paywall_screen.dart';
@@ -82,13 +81,6 @@ class HomeScreen extends StatelessWidget {
                   tooltip: l10n.subscriptionTooltip,
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const PaywallScreen()),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.archive_outlined),
-                  tooltip: l10n.archivedHabitsTitle,
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
                   ),
                 ),
                 IconButton(

@@ -9,6 +9,7 @@ import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
 import '../widgets/app_logo.dart';
+import 'archived_habits_screen.dart';
 import 'challenges_screen.dart';
 import 'legal_screen.dart';
 import 'paywall_screen.dart';
@@ -110,10 +111,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const Divider(),
           _SettingsOption(
-            icon: Icons.description_outlined,
-            title: l10n.legalTitle,
+            icon: Icons.archive_outlined,
+            title: l10n.archivedHabitsTitle,
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const LegalScreen()),
+              MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
             ),
           ),
           const Divider(),
@@ -422,7 +423,7 @@ class _CloudBackupSectionState extends State<_CloudBackupSection> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(l10n.backupNow),
+                      : Text(l10n.backupNow, textAlign: TextAlign.center),
                 ),
               ),
             ],

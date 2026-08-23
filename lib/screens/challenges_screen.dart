@@ -63,6 +63,7 @@ class _DisplayNamePrompt extends StatelessWidget {
             const SizedBox(height: 16),
             TextField(
               controller: nameController,
+              textAlign: TextAlign.center,
               decoration: InputDecoration(
                 labelText: l10n.displayNameLabel,
                 hintText: l10n.displayNameHint,
