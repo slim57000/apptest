@@ -28,7 +28,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     final provider = context.watch<ChallengeProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.challengesTitle)),
+      appBar: AppBar(centerTitle: true, title: Text(l10n.challengesTitle)),
       body: !provider.configured
           ? Center(
               child: Padding(
