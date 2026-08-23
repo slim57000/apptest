@@ -75,10 +75,11 @@ class GardenCard extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     level.name(l10n),
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 2),
@@ -88,6 +89,7 @@ class GardenCard extends StatelessWidget {
                         : next == null
                             ? l10n.gardenCompletionsCount(total)
                             : l10n.gardenProgressToNext(next.threshold - total),
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
