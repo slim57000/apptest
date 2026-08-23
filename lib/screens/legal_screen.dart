@@ -155,9 +155,13 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 8),
           ...children,
           const SizedBox(height: 16),
@@ -173,7 +177,11 @@ class _Paragraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(bottom: 12),
-        child: Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5)),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
+        ),
       );
 }
 
@@ -184,18 +192,16 @@ class _BulletList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         // Les listes sont stockées comme une chaîne "a|b|c" dans les ARB :
         // le format ARB de Flutter ne supporte pas les tableaux comme
         // valeur de ressource, uniquement des chaînes.
         children: items.split('|').map((item) => Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 6),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('• ', style: Theme.of(context).textTheme.bodyMedium),
-                  Expanded(child: Text(item, style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5))),
-                ],
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text(
+                '• $item',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
               ),
             )).toList(),
       );
