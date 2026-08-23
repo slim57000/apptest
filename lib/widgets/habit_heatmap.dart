@@ -27,23 +27,38 @@ class HabitHeatmap extends StatelessWidget {
       columns.add(List.generate(7, (i) => weekStart.add(Duration(days: i))));
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      reverse: true,
-      child: Center(
-        child: Row(
-          children: columns
-              .map(
-                (week) => Padding(
-                  padding: const EdgeInsets.only(right: 3),
-                  child: Column(
-                    children: week.map((day) => _cell(context, day, color, todayDay)).toList(),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
+    // `Center` seul n'a aucun effet ici : dans un SingleChildScrollView
+    // horizontal, l'enfant reçoit une largeur infinie, donc Center ne peut
+    // rien centrer. Il faut d'abord contraindre l'enfant à au moins la
+    // largeur du viewport (via LayoutBuilder) pour que Center ait un espace
+    // fini dans lequel centrer la grille quand elle est plus étroite que
+    // l'écran.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          reverse: true,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: columns
+                    .map(
+                      (week) => Padding(
+                        padding: const EdgeInsets.only(right: 3),
+                        child: Column(
+                          children:
+                              week.map((day) => _cell(context, day, color, todayDay)).toList(),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
