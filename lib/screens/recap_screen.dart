@@ -58,7 +58,7 @@ class RecapScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          Text(l10n.recapPerHabit, style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.recapPerHabit, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 12),
           ...habits.map((habit) => _HabitRecapTile(habit: habit)),
         ],
@@ -86,10 +86,10 @@ class _RecapStat extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(value, style: Theme.of(context).textTheme.headlineSmall),
-            Text(label, style: Theme.of(context).textTheme.bodySmall),
+            Text(value, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
+            Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),
