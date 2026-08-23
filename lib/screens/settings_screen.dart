@@ -164,16 +164,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(height: 1.7),
               ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.aboutPrivacyNote,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  height: 1.5,
-                ),
-              ),
               const SizedBox(height: 12),
               Text(
                 l10n.aboutFeedbackNote,
