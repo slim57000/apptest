@@ -58,16 +58,25 @@ class _TemplateTile extends StatelessWidget {
           child: Text(template.emoji, style: const TextStyle(fontSize: 18)),
         ),
         title: Text(template.name, textAlign: TextAlign.center),
-        trailing: IconButton(
-          icon: const Icon(Icons.add_circle_outline),
-          tooltip: AppLocalizations.of(context)!.habitAdded,
-          onPressed: () => _add(context, template.activeWeekdays),
+        // Deux actions visibles côte à côte, plutôt qu'un comportement
+        // caché derrière le tap de la ligne : on voit tout de suite qu'on
+        // peut soit ajouter direct, soit personnaliser les jours d'abord.
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit_calendar_outlined),
+              tooltip: AppLocalizations.of(context)!.activeDaysLabel,
+              onPressed: () => _customize(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              tooltip: AppLocalizations.of(context)!.habitAdded,
+              onPressed: () => _add(context, template.activeWeekdays),
+            ),
+          ],
         ),
-        // Le tap sur la ligne ouvre la personnalisation des jours actifs ;
-        // le bouton "+" ajoute directement avec la planification par défaut
-        // du modèle (garde le côté "un tap" pour qui n'a pas besoin de
-        // personnaliser).
-        onTap: () => _customize(context),
+        onTap: () => _add(context, template.activeWeekdays),
       ),
     );
   }
