@@ -29,7 +29,14 @@ class TemplatesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(pack.title, style: Theme.of(context).textTheme.titleMedium),
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    pack.title,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 ...pack.templates.map((template) => _TemplateTile(template: template)),
               ],
