@@ -1,7 +1,7 @@
 {
   "@@locale": "fr",
 
-  "appTitle": "Habitudes+",
+  "appTitle": "Habitude+",
   "@appTitle": {},
 
   "subscriptionTooltip": "Abonnement",
@@ -196,7 +196,7 @@
   "viewSubscription": "Voir l'abonnement",
   "@viewSubscription": {},
 
-  "paywallTitle": "Habitudes+ Premium",
+  "paywallTitle": "Habitude+ Premium",
   "@paywallTitle": {},
 
   "youArePremium": "Vous êtes Premium",
@@ -309,7 +309,7 @@
   "shareCardWeeksLabel": "semaines de suite",
   "@shareCardWeeksLabel": {},
 
-  "shareCardBranding": "Habitudes+",
+  "shareCardBranding": "Habitude+",
   "@shareCardBranding": {},
 
   "chooseTemplate": "Choisir un modèle",
@@ -554,7 +554,7 @@
   "privacyPolicyLabel": "Politique de confidentialité",
   "@privacyPolicyLabel": {},
 
-  "aboutIntro": "Habitudes+ est un suivi d'habitudes simple et respectueux de votre vie privée : créez des habitudes, cochez-les chaque jour, et regardez vos séries — et votre jardin — grandir.",
+  "aboutIntro": "Habitude+ est un suivi d'habitudes simple et respectueux de votre vie privée : créez des habitudes, cochez-les chaque jour, et regardez vos séries — et votre jardin — grandir.",
   "@aboutIntro": {},
 
   "aboutFeatures": "✅ Suivi quotidien avec séries et relances en douceur\n🌱 Un jardin qui grandit avec votre régularité\n📊 Statistiques détaillées et récapitulatifs (Premium)\n👥 Défis entre amis via code d'invitation\n☁️ Sauvegarde cloud (Premium)\n🔔 Rappels locaux uniquement — vos données restent les vôtres",
@@ -566,7 +566,7 @@
   "aboutFeedbackNote": "Une question, un bug, une idée ? Laissez un avis ou contactez-nous via la fiche du store — vos retours façonnent les prochaines mises à jour.",
   "@aboutFeedbackNote": {},
 
-  "aboutPublisherNote": "Habitudes+ est éditée par Rampe Digitale.",
+  "aboutPublisherNote": "Habitude+ est éditée par Rampe Digitale.",
   "@aboutPublisherNote": {},
 
   "aboutPublisherSiteLabel": "Visiter rampedigitale.fr",

@@ -1,4 +1,4 @@
-# Habitudes+
+# Habitude+
 
 Application Flutter de suivi d'habitudes avec un abonnement Premium payant.
 Pensée pour être rapide à développer : **aucun backend**, tout est stocké

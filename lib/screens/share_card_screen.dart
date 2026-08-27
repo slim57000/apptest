@@ -57,7 +57,7 @@ class _ShareCardScreenState extends State<ShareCardScreen> {
   Future<void> _share() async {
     setState(() => _sharing = true);
     try {
-      await ShareService.shareBoundary(_boundaryKey, text: 'Habitudes+');
+      await ShareService.shareBoundary(_boundaryKey, text: 'Habitude+');
     } finally {
       if (mounted) setState(() => _sharing = false);
     }

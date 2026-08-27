@@ -123,7 +123,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
     await SharePlus.instance.share(
       ShareParams(
         text: '${widget.challenge.emoji} ${widget.challenge.name} — '
-            'rejoins mon défi sur Habitudes+ avec le code ${widget.challenge.inviteCode} !',
+            'rejoins mon défi sur Habitude+ avec le code ${widget.challenge.inviteCode} !',
       ),
     );
   }

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Habitudes+</string>
+	<string>Habitude+</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Habitudes+</string>
+	<string>Habitude+</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Habitudes+ lit votre nombre de pas quotidien pour cocher automatiquement les habitudes que vous avez choisi de suivre via la santé.</string>
+	<string>Habitude+ lit votre nombre de pas quotidien pour cocher automatiquement les habitudes que vous avez choisi de suivre via la santé.</string>
 	<!-- Publicités (AdMob) : ID de TEST officiel Google (voir README,
 	     "Configurer les publicités"), à remplacer avant publication. -->
 	<key>GADApplicationIdentifier</key>
@@ -36,7 +36,7 @@
 	     Transparency) ; l'invite ne s'affiche que si du code appelle
 	     explicitement l'API ATT, non encore fait ici, voir README. -->
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Cette identification permet d'afficher des publicités pertinentes dans la version gratuite d'Habitudes+.</string>
+	<string>Cette identification permet d'afficher des publicités pertinentes dans la version gratuite d'Habitude+.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

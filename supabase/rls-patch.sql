@@ -1,5 +1,5 @@
 -- ============================================================================
--- Correctifs RLS suite à l'audit de sécurité (Habitudes+)
+-- Correctifs RLS suite à l'audit de sécurité (Habitude+)
 -- À exécuter UNE FOIS dans SQL Editor, après `schema.sql`.
 --
 -- Corrige :
