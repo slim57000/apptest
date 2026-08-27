@@ -188,29 +188,52 @@ class _ChallengesList extends StatelessWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(l10n.createChallenge),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: controller,
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: l10n.challengeNameLabel,
-                  hintText: l10n.challengeNameHint,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: controller,
+                  autofocus: true,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    labelText: l10n.challengeNameLabel,
+                    hintText: l10n.challengeNameHint,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                children: habitEmojiChoices.take(8).map((e) {
-                  return ChoiceChip(
-                    label: Text(e),
-                    selected: e == emoji,
-                    onSelected: (_) => setState(() => emoji = e),
-                  );
-                }).toList(),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(l10n.iconLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 8),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  runAlignment: WrapAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: habitEmojiChoices.take(8).map((e) {
+                    final selected = e == emoji;
+                    final scheme = Theme.of(context).colorScheme;
+                    return GestureDetector(
+                      onTap: () => setState(() => emoji = e),
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: selected ? scheme.primaryContainer : scheme.surfaceContainerHighest,
+                          border: Border.all(
+                            color: selected ? scheme.primary : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(e, style: TextStyle(fontSize: selected ? 22 : 18)),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),

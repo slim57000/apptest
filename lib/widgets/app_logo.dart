@@ -9,20 +9,12 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // icon_foreground.png est un glyphe blanc sur fond transparent (couche
-    // "foreground" standard pour les icônes adaptatives Android, où le fond
-    // est fourni séparément) : invisible tel quel sur un AppBar clair. On
-    // l'affiche donc ici sur son propre disque bleu de marque, pour rester
-    // lisible partout où ce logo est utilisé dans l'app.
-    final mark = Container(
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Color(0xFF2563EB),
-      ),
-      padding: EdgeInsets.all(size * 0.16),
-      child: Image.asset('assets/icon/icon_foreground.png'),
+    // Logo léger pour l'en-tête : pas de disque de fond, juste le glyphe
+    // "tâche cochée" en bleu de marque, cohérent avec l'usage de l'app.
+    final mark = Icon(
+      Icons.task_alt,
+      size: size,
+      color: const Color(0xFF2563EB),
     );
 
     if (!showText) return mark;

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/habits_provider.dart';
 import '../theme.dart';
+import 'archived_habits_screen.dart';
 
 class AddHabitScreen extends StatefulWidget {
   const AddHabitScreen({super.key});
@@ -234,6 +235,16 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(l10n.createButton),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: TextButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
+              ),
+              icon: const Icon(Icons.archive_outlined),
+              label: Text(l10n.archivedHabitsTitle),
             ),
           ),
         ],

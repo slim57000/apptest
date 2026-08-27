@@ -79,43 +79,64 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    Widget leading;
+    Widget icon;
     final String title;
     switch (product.id) {
       case PremiumProductIds.monthly:
-        leading = const Icon(Icons.calendar_month);
+        icon = const Icon(Icons.calendar_month, size: 32, color: Color(0xFF2563EB));
         title = l10n.monthlyPlan;
         break;
       case PremiumProductIds.yearly:
-        leading = const Icon(Icons.calendar_today);
+        icon = const Icon(Icons.calendar_today, size: 32, color: Color(0xFF2563EB));
         title = l10n.yearlyPlan;
         break;
       case PremiumProductIds.lifetime:
-        leading = Image.asset(
+        icon = Image.asset(
           'assets/icons/lifetime_premium.png',
-          width: 28,
-          height: 28,
+          width: 32,
+          height: 32,
         );
         title = l10n.lifetimePlan;
         break;
       default:
-        leading = const Icon(Icons.event_repeat);
+        icon = const Icon(Icons.event_repeat, size: 32, color: Color(0xFF2563EB));
         title = product.title;
     }
     final isLifetime = product.id == PremiumProductIds.lifetime;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       color: isLifetime ? Colors.amber.withValues(alpha: 0.12) : null,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: leading,
-        title: Text(title),
-        subtitle: Text(product.description),
-        trailing: pending || !canBuy
-            ? (pending
-                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
-                : null)
-            : FilledButton(onPressed: onTap, child: Text(product.price)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              product.description,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 14),
+            if (pending)
+              const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
+            else if (!canBuy)
+              Text(
+                product.price,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+              )
+            else
+              FilledButton(onPressed: onTap, child: Text(product.price)),
+          ],
+        ),
       ),
     );
   }
@@ -132,10 +153,28 @@ class _ActivePremiumCard extends StatelessWidget {
     return Card(
       color: Colors.amber.withValues(alpha: 0.15),
       margin: const EdgeInsets.only(bottom: 16),
-      child: ListTile(
-        leading: const Icon(Icons.check_circle, color: Colors.green),
-        title: Text(isLifetime ? l10n.lifetimeActive : l10n.activeSubscription),
-        subtitle: isLifetime ? null : Text(l10n.manageSubscriptionHint),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 36),
+            const SizedBox(height: 10),
+            Text(
+              isLifetime ? l10n.lifetimeActive : l10n.activeSubscription,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            if (!isLifetime) ...[
+              const SizedBox(height: 4),
+              Text(
+                l10n.manageSubscriptionHint,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

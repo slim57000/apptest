@@ -9,7 +9,6 @@ import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
 import '../widgets/app_logo.dart';
-import 'archived_habits_screen.dart';
 import 'challenges_screen.dart';
 import 'legal_screen.dart';
 import 'paywall_screen.dart';
@@ -107,14 +106,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: l10n.privacyPolicyLabel,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const LegalScreen(isPrivacyPolicy: true)),
-            ),
-          ),
-          const Divider(),
-          _SettingsOption(
-            icon: Icons.archive_outlined,
-            title: l10n.archivedHabitsTitle,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
             ),
           ),
           const Divider(),

@@ -185,7 +185,9 @@ class _ScheduleSheetState extends State<_ScheduleSheet> {
             const SizedBox(height: 8),
             Wrap(
               alignment: WrapAlignment.center,
+              runAlignment: WrapAlignment.center,
               spacing: 8,
+              runSpacing: 8,
               children: List.generate(7, (index) {
                 final weekday = index + 1;
                 final selected = _weekdays.contains(weekday);
