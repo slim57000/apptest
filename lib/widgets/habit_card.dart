@@ -41,10 +41,11 @@ class HabitCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       habit.name,
+                      textAlign: TextAlign.center,
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
@@ -54,6 +55,7 @@ class HabitCard extends StatelessWidget {
                     if (habit.dailyTarget > 1)
                       Text(
                         l10n.timesProgress(habit.countToday, habit.dailyTarget),
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodySmall,
                       )
                     else if (habit.isFlexible) ...[
@@ -95,6 +97,7 @@ class HabitCard extends StatelessWidget {
                     else
                       Text(
                         active ? l10n.notStartedYet : l10n.notScheduledToday,
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                   ],

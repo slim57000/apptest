@@ -10,6 +10,7 @@ class ChallengeProvider extends ChangeNotifier {
   List<Challenge> _challenges = [];
   bool _loading = false;
   String? _error;
+  String? _displayName;
 
   ChallengeProvider(this._service);
 
@@ -18,14 +19,24 @@ class ChallengeProvider extends ChangeNotifier {
   List<Challenge> get challenges => List.unmodifiable(_challenges);
   bool get loading => _loading;
   String? get error => _error;
+  String? get displayName => _displayName;
 
   Future<bool> signIn(String displayName) => _guard(() async {
         await _service.ensureSignedInWithName(displayName);
+        _displayName = displayName;
         await _refresh();
+      });
+
+  /// Change le pseudo affiché aux autres membres des défis, une fois déjà
+  /// connecté.
+  Future<bool> updateDisplayName(String displayName) => _guard(() async {
+        await _service.ensureSignedInWithName(displayName);
+        _displayName = displayName;
       });
 
   Future<void> _refresh() async {
     _challenges = await _service.myChallenges();
+    _displayName ??= await _service.myDisplayName();
     notifyListeners();
   }
 

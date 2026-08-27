@@ -21,6 +21,19 @@ class ChallengeService {
     await _client.from('profiles').upsert({'id': uid, 'display_name': displayName});
   }
 
+  /// Pseudo actuel de l'utilisateur connecté, `null` si non connecté ou
+  /// profil introuvable.
+  Future<String?> myDisplayName() async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return null;
+    final row = await _client
+        .from('profiles')
+        .select('display_name')
+        .eq('id', uid)
+        .maybeSingle();
+    return row?['display_name'] as String?;
+  }
+
   Future<List<Challenge>> myChallenges() async {
     final uid = _client.auth.currentUser!.id;
     final memberRows = await _client

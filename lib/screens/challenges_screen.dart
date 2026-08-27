@@ -22,13 +22,52 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     super.dispose();
   }
 
+  Future<void> _editDisplayName(BuildContext context, ChallengeProvider provider) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: provider.displayName ?? '');
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.displayNameLabel),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(hintText: l10n.displayNameHint),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    if (name != null && name.trim().isNotEmpty && context.mounted) {
+      await provider.updateDisplayName(name.trim());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final provider = context.watch<ChallengeProvider>();
 
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text(l10n.challengesTitle)),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(l10n.challengesTitle),
+        actions: provider.signedIn
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.person_outline),
+                  tooltip: l10n.displayNameLabel,
+                  onPressed: () => _editDisplayName(context, provider),
+                ),
+              ]
+            : null,
+      ),
       body: !provider.configured
           ? Center(
               child: Padding(
@@ -61,11 +100,16 @@ class _DisplayNamePrompt extends StatelessWidget {
           children: [
             const Icon(Icons.groups, size: 56, color: Colors.deepPurple),
             const SizedBox(height: 16),
+            Text(
+              l10n.displayNameLabel,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
             TextField(
               controller: nameController,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
-                labelText: l10n.displayNameLabel,
                 hintText: l10n.displayNameHint,
                 border: const OutlineInputBorder(),
               ),

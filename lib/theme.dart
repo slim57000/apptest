@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static ThemeData light() => _themeFrom(
-        ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
+        ColorScheme.fromSeed(seedColor: const Color(0xFF3B82F6)),
       );
 
   static ThemeData dark() => _themeFrom(
         ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2563EB),
+          seedColor: const Color(0xFF3B82F6),
           brightness: Brightness.dark,
         ),
       );
