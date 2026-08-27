@@ -31,7 +31,7 @@ Habit _habit({
     dailyTarget: dailyTarget,
     completionCounts: {for (final d in completedDates) d: dailyTarget},
     frozenDates: frozenDates,
-    reminderMinutes: reminderMinutes,
+    reminderTimes: reminderMinutes == null ? const [] : [reminderMinutes],
     autoTrackSteps: autoTrackSteps,
     archived: archived,
     notes: notes,
@@ -253,25 +253,26 @@ void main() {
         notes: {Habit.dateKey(_today()): 'une note'},
       );
       final copy = habit.copyWith(name: 'Nouveau nom');
-      expect(copy.reminderMinutes, 480);
+      expect(copy.reminderTimes, [480]);
       expect(copy.autoTrackSteps, isTrue);
       expect(copy.notes, {Habit.dateKey(_today()): 'une note'});
       expect(copy.name, 'Nouveau nom');
     });
 
-    test('toggled/freezeYesterday préservent reminderMinutes/notes/autoTrackSteps', () {
+    test('toggled/freezeYesterday préservent reminderTimes/notes/autoTrackSteps', () {
       final habit = _habit(reminderMinutes: 600, autoTrackSteps: true);
-      expect(habit.toggled(_today()).reminderMinutes, 600);
+      expect(habit.toggled(_today()).reminderTimes, [600]);
       expect(habit.toggled(_today()).autoTrackSteps, isTrue);
-      expect(habit.freezeYesterday().reminderMinutes, 600);
+      expect(habit.freezeYesterday().reminderTimes, [600]);
     });
   });
 
-  group('withReminder / withNote / withAutoTrackSteps / withArchived', () {
-    test('withReminder peut repasser à null explicitement', () {
+  group('withReminderTimes / withNote / withAutoTrackSteps / withArchived', () {
+    test('withReminderTimes peut repasser à vide explicitement, et gère plusieurs heures', () {
       final habit = _habit(reminderMinutes: 480);
-      expect(habit.withReminder(null).reminderMinutes, isNull);
-      expect(habit.withReminder(600).reminderMinutes, 600);
+      expect(habit.withReminderTimes([]).reminderTimes, isEmpty);
+      expect(habit.withReminderTimes([600]).reminderTimes, [600]);
+      expect(habit.withReminderTimes([600, 480]).reminderTimes, [480, 600]);
     });
 
     test('withNote ajoute, met à jour, et retire (texte vide ou null)', () {
@@ -321,7 +322,7 @@ void main() {
       expect(restored.dailyTarget, habit.dailyTarget);
       expect(restored.completionCounts, habit.completionCounts);
       expect(restored.frozenDates, habit.frozenDates);
-      expect(restored.reminderMinutes, habit.reminderMinutes);
+      expect(restored.reminderTimes, habit.reminderTimes);
       expect(restored.autoTrackSteps, habit.autoTrackSteps);
       expect(restored.archived, habit.archived);
       expect(restored.notes, habit.notes);
@@ -339,7 +340,7 @@ void main() {
       expect(restored.dailyTarget, 1);
       expect(restored.completionCounts, isEmpty);
       expect(restored.frozenDates, isEmpty);
-      expect(restored.reminderMinutes, isNull);
+      expect(restored.reminderTimes, isEmpty);
       expect(restored.autoTrackSteps, isFalse);
       expect(restored.archived, isFalse);
       expect(restored.notes, isEmpty);

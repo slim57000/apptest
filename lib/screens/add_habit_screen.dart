@@ -2,26 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
+import '../models/habit.dart';
 import '../providers/habits_provider.dart';
 import '../theme.dart';
 import 'archived_habits_screen.dart';
 
 class AddHabitScreen extends StatefulWidget {
-  const AddHabitScreen({super.key});
+  final Habit? existing;
+
+  const AddHabitScreen({super.key, this.existing});
 
   @override
   State<AddHabitScreen> createState() => _AddHabitScreenState();
 }
 
 class _AddHabitScreenState extends State<AddHabitScreen> {
-  final _nameController = TextEditingController();
-  String _emoji = habitEmojiChoices.first;
-  int _color = habitColorPalette.first;
-  final Set<int> _weekdays = {};
-  int _dailyTarget = 1;
-  bool _flexible = false;
-  int _weeklyGoal = 3;
-  TimeOfDay? _reminderTime;
+  late final _nameController = TextEditingController(text: widget.existing?.name ?? '');
+  late String _emoji = widget.existing?.emoji ?? habitEmojiChoices.first;
+  late int _color = widget.existing?.colorValue ?? habitColorPalette.first;
+  late final Set<int> _weekdays = Set<int>.from(widget.existing?.activeWeekdays ?? const {});
+  late int _dailyTarget = widget.existing?.dailyTarget ?? 1;
+  late bool _flexible = widget.existing?.isFlexible ?? false;
+  late int _weeklyGoal = (widget.existing?.weeklyGoal ?? 0) > 0 ? widget.existing!.weeklyGoal : 3;
+  late final List<TimeOfDay> _reminderTimes = (widget.existing?.reminderTimes ?? const [])
+      .map((m) => TimeOfDay(hour: m ~/ 60, minute: m % 60))
+      .toList();
+
+  bool get _isEditing => widget.existing != null;
 
   @override
   void initState() {
@@ -49,13 +56,13 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.newHabit)),
+      appBar: AppBar(title: Text(_isEditing ? l10n.editHabit : l10n.newHabit)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           TextField(
             controller: _nameController,
-            autofocus: true,
+            autofocus: !_isEditing,
             decoration: InputDecoration(
               labelText: l10n.habitNameLabel,
               hintText: l10n.habitNameHint,
@@ -210,70 +217,108 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             ),
           ],
           const SizedBox(height: 24),
-          Text(l10n.reminderLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
+          SizedBox(
+            width: double.infinity,
+            child: Text(l10n.reminderLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
+          ),
           const SizedBox(height: 8),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.notifications_outlined),
-            title: Text(
-              _reminderTime == null ? l10n.reminderNone : l10n.reminderAt(_reminderTime!.format(context)),
+          if (_reminderTimes.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                l10n.reminderNone,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            )
+          else
+            ..._reminderTimes.map((time) {
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.notifications_outlined),
+                title: Text(time.format(context)),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: l10n.removeReminder,
+                  onPressed: () => setState(() => _reminderTimes.remove(time)),
+                ),
+              );
+            }),
+          const SizedBox(height: 4),
+          Center(
+            child: TextButton.icon(
+              onPressed: _reminderTimes.length >= Habit.maxReminders ? null : _addReminderTime,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.addReminder),
             ),
-            trailing: _reminderTime == null
-                ? TextButton(onPressed: _pickReminderTime, child: Text(l10n.addReminder))
-                : IconButton(
-                    // Corbeille : retire le rappel immédiatement, sans ouvrir
-                    // le sélecteur d'heure.
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: l10n.removeReminder,
-                    onPressed: () => setState(() => _reminderTime = null),
-                  ),
-            onTap: _pickReminderTime,
           ),
           const SizedBox(height: 24),
           FilledButton(
             onPressed: _nameController.text.trim().isEmpty ? null : _save,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(l10n.createButton),
+              child: Text(_isEditing ? l10n.save : l10n.createButton),
             ),
           ),
-          const SizedBox(height: 12),
-          Center(
-            child: TextButton.icon(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
+          if (!_isEditing) ...[
+            const SizedBox(height: 12),
+            Center(
+              child: TextButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
+                ),
+                icon: const Icon(Icons.archive_outlined),
+                label: Text(l10n.archivedHabitsTitle),
               ),
-              icon: const Icon(Icons.archive_outlined),
-              label: Text(l10n.archivedHabitsTitle),
             ),
-          ),
+          ],
         ],
       ),
     );
   }
 
-  Future<void> _pickReminderTime() async {
+  Future<void> _addReminderTime() async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: _reminderTime ?? const TimeOfDay(hour: 8, minute: 0),
+      initialTime: const TimeOfDay(hour: 8, minute: 0),
     );
-    if (picked != null) setState(() => _reminderTime = picked);
+    if (picked == null) return;
+    if (_reminderTimes.any((t) => t.hour == picked.hour && t.minute == picked.minute)) return;
+    setState(() {
+      _reminderTimes.add(picked);
+      _reminderTimes.sort((a, b) => (a.hour * 60 + a.minute).compareTo(b.hour * 60 + b.minute));
+    });
   }
 
   Future<void> _save() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
-    await context.read<HabitsProvider>().addHabit(
-          name: name,
-          emoji: _emoji,
-          colorValue: _color,
-          activeWeekdays: _flexible ? const {} : _weekdays,
-          dailyTarget: _dailyTarget,
-          weeklyGoal: _flexible ? _weeklyGoal : 0,
-          reminderMinutes: _reminderTime == null
-              ? null
-              : _reminderTime!.hour * 60 + _reminderTime!.minute,
-        );
+    final habitsProvider = context.read<HabitsProvider>();
+    final reminderMinutes = _reminderTimes.map((t) => t.hour * 60 + t.minute).toList();
+
+    if (_isEditing) {
+      final id = widget.existing!.id;
+      await habitsProvider.updateHabit(
+        id: id,
+        name: name,
+        emoji: _emoji,
+        colorValue: _color,
+        activeWeekdays: _flexible ? const {} : _weekdays,
+        dailyTarget: _dailyTarget,
+        weeklyGoal: _flexible ? _weeklyGoal : 0,
+      );
+      await habitsProvider.setReminderTimes(id, reminderMinutes);
+    } else {
+      await habitsProvider.addHabit(
+        name: name,
+        emoji: _emoji,
+        colorValue: _color,
+        activeWeekdays: _flexible ? const {} : _weekdays,
+        dailyTarget: _dailyTarget,
+        weeklyGoal: _flexible ? _weeklyGoal : 0,
+        reminderTimes: reminderMinutes,
+      );
+    }
     if (mounted) Navigator.of(context).pop();
   }
 }

@@ -31,9 +31,12 @@ class Habit {
   /// complétion.
   final Set<String> frozenDates;
 
-  /// Heure de rappel quotidien, en minutes depuis minuit (ex. 510 = 8h30).
-  /// `null` = pas de rappel programmé.
-  final int? reminderMinutes;
+  /// Heures de rappel quotidien, en minutes depuis minuit (ex. 510 = 8h30),
+  /// triées. Vide = pas de rappel programmé. Plusieurs entrées = plusieurs
+  /// rappels dans la journée (max [maxReminders]).
+  final List<int> reminderTimes;
+
+  static const maxReminders = 4;
 
   /// Notes de journal par jour (`yyyy-MM-dd` -> texte), optionnelles :
   /// réflexion libre sur pourquoi un jour a été réussi/manqué.
@@ -60,7 +63,7 @@ class Habit {
     this.completionCounts = const {},
     this.weeklyGoal = 0,
     this.frozenDates = const {},
-    this.reminderMinutes,
+    this.reminderTimes = const [],
     this.autoTrackSteps = false,
     this.notes = const {},
     this.archived = false,
@@ -201,10 +204,10 @@ class Habit {
     return copyWith(frozenDates: updated);
   }
 
-  /// Fixe (ou retire, avec `null`) l'heure de rappel quotidien. Méthode
-  /// dédiée plutôt que `copyWith` car ce champ doit pouvoir repasser à
-  /// `null` explicitement.
-  Habit withReminder(int? reminderMinutes) {
+  /// Fixe la liste des heures de rappel quotidien (triée, dédupliquée,
+  /// plafonnée à [maxReminders]). Liste vide = plus aucun rappel.
+  Habit withReminderTimes(List<int> reminderTimes) {
+    final sorted = reminderTimes.toSet().toList()..sort();
     return Habit(
       id: id,
       name: name,
@@ -216,7 +219,7 @@ class Habit {
       completionCounts: completionCounts,
       frozenDates: frozenDates,
       weeklyGoal: weeklyGoal,
-      reminderMinutes: reminderMinutes,
+      reminderTimes: sorted.take(maxReminders).toList(),
       autoTrackSteps: autoTrackSteps,
       notes: notes,
       archived: archived,
@@ -243,7 +246,7 @@ class Habit {
       completionCounts: completionCounts,
       frozenDates: frozenDates,
       weeklyGoal: weeklyGoal,
-      reminderMinutes: reminderMinutes,
+      reminderTimes: reminderTimes,
       autoTrackSteps: autoTrackSteps,
       notes: updated,
       archived: archived,
@@ -263,7 +266,7 @@ class Habit {
       completionCounts: completionCounts,
       frozenDates: frozenDates,
       weeklyGoal: weeklyGoal,
-      reminderMinutes: reminderMinutes,
+      reminderTimes: reminderTimes,
       autoTrackSteps: value,
       notes: notes,
       archived: archived,
@@ -284,7 +287,7 @@ class Habit {
       completionCounts: completionCounts,
       frozenDates: frozenDates,
       weeklyGoal: weeklyGoal,
-      reminderMinutes: reminderMinutes,
+      reminderTimes: reminderTimes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
       archived: value,
@@ -424,6 +427,7 @@ class Habit {
     int? dailyTarget,
     Map<String, int>? completionCounts,
     Set<String>? frozenDates,
+    int? weeklyGoal,
   }) {
     return Habit(
       id: id,
@@ -435,8 +439,8 @@ class Habit {
       dailyTarget: dailyTarget ?? this.dailyTarget,
       completionCounts: completionCounts ?? this.completionCounts,
       frozenDates: frozenDates ?? this.frozenDates,
-      weeklyGoal: weeklyGoal,
-      reminderMinutes: reminderMinutes,
+      weeklyGoal: weeklyGoal ?? this.weeklyGoal,
+      reminderTimes: reminderTimes,
       autoTrackSteps: autoTrackSteps,
       notes: notes,
       archived: archived,
@@ -458,6 +462,19 @@ class Habit {
       };
     }
 
+    // Compatibilité ascendante : les sauvegardes créées avant les rappels
+    // multiples stockent un `reminderMinutes` (int? unique).
+    final List<int> reminderTimes;
+    if (json['reminderTimes'] != null) {
+      reminderTimes = (json['reminderTimes'] as List<dynamic>)
+          .map((e) => e as int)
+          .toList();
+    } else if (json['reminderMinutes'] != null) {
+      reminderTimes = [json['reminderMinutes'] as int];
+    } else {
+      reminderTimes = const [];
+    }
+
     return Habit(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -473,7 +490,7 @@ class Habit {
       frozenDates: (json['frozenDates'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toSet(),
-      reminderMinutes: json['reminderMinutes'] as int?,
+      reminderTimes: reminderTimes,
       autoTrackSteps: json['autoTrackSteps'] as bool? ?? false,
       notes: (json['notes'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(key, value as String)),
@@ -493,7 +510,7 @@ class Habit {
       'completionCounts': completionCounts,
       'weeklyGoal': weeklyGoal,
       'frozenDates': frozenDates.toList(),
-      'reminderMinutes': reminderMinutes,
+      'reminderTimes': reminderTimes,
       'autoTrackSteps': autoTrackSteps,
       'notes': notes,
       'archived': archived,

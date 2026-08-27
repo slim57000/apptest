@@ -59,83 +59,91 @@ class NotificationService {
     _initialized = true;
   }
 
-  /// Id unique du prochain rappel d'une habitude.
-  int _reminderId(String habitId) => '$habitId#next'.hashCode & 0x7fffffff;
+  /// Id unique du prochain rappel d'une habitude, pour le créneau [slot]
+  /// (une habitude peut avoir jusqu'à [Habit.maxReminders] rappels/jour).
+  int _reminderId(String habitId, int slot) =>
+      '$habitId#next#$slot'.hashCode & 0x7fffffff;
 
-  /// Id unique de la prochaine relance d'une habitude.
-  int _followUpId(String habitId) => '$habitId#follow-next'.hashCode & 0x7fffffff;
+  /// Id unique de la prochaine relance d'une habitude, pour le créneau [slot].
+  int _followUpId(String habitId, int slot) =>
+      '$habitId#follow-next#$slot'.hashCode & 0x7fffffff;
 
-  /// Planifie le prochain rappel de [habit] : premier jour actif (tous si
-  /// `activeWeekdays` est vide) où l'heure de rappel est à venir.
+  /// Planifie tous les prochains rappels de [habit] (un par heure dans
+  /// [Habit.reminderTimes]) : pour chacun, le premier jour actif (tous si
+  /// `activeWeekdays` est vide) où l'heure est à venir.
   ///
   /// [skipToday] cale la recherche à partir de demain : utilisé quand
   /// l'habitude est déjà cochée aujourd'hui, pour ne jamais sonner sur un
   /// jour déjà fait.
   Future<void> scheduleNextReminder(Habit habit, {bool skipToday = false}) async {
     await cancelReminders(habit.id);
-    final minutes = habit.reminderMinutes;
-    if (minutes == null) return;
-
-    final when = _nextOccurrence(habit, minutes, skipToday: skipToday);
-    if (when == null) return;
+    if (habit.reminderTimes.isEmpty) return;
 
     await init();
-    await _plugin.zonedSchedule(
-      _reminderId(habit.id),
-      habit.name,
-      habit.emoji,
-      when,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'habit_reminders',
-          'Rappels d\'habitudes',
-          channelDescription: 'Rappels quotidiens pour vos habitudes',
-          importance: Importance.high,
-          priority: Priority.high,
+    for (var slot = 0; slot < habit.reminderTimes.length; slot++) {
+      final minutes = habit.reminderTimes[slot];
+      final when = _nextOccurrence(habit, minutes, skipToday: skipToday);
+      if (when == null) continue;
+
+      await _plugin.zonedSchedule(
+        _reminderId(habit.id, slot),
+        habit.name,
+        habit.emoji,
+        when,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'habit_reminders',
+            'Rappels d\'habitudes',
+            channelDescription: 'Rappels quotidiens pour vos habitudes',
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(),
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      // Pas de matchDateTimeComponents : volontairement ONE-SHOT, le
-      // suivant sera replanifié par l'app au bon moment.
-    );
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        // Pas de matchDateTimeComponents : volontairement ONE-SHOT, le
+        // suivant sera replanifié par l'app au bon moment.
+      );
+    }
   }
 
-  /// Planifie la prochaine relance ([followUpDelayMinutes] après l'heure de
-  /// rappel). Rien à faire si l'habitude n'a pas de rappel ou si le créneau
+  /// Planifie la prochaine relance de chaque rappel ([followUpDelayMinutes]
+  /// après). Rien à faire si l'habitude n'a pas de rappel, ou si un créneau
   /// déborderait sur le lendemain.
   ///
   /// [skipToday] fonctionne comme dans [scheduleNextReminder].
   Future<void> scheduleFollowUp(Habit habit, {bool skipToday = false}) async {
     await cancelFollowUps(habit.id);
-    final reminderMinutes = habit.reminderMinutes;
-    if (reminderMinutes == null) return;
-    final followUpMinutes = reminderMinutes + followUpDelayMinutes;
-    if (followUpMinutes >= 24 * 60) return;
-
-    final when = _nextOccurrence(habit, followUpMinutes, skipToday: skipToday);
-    if (when == null) return;
+    if (habit.reminderTimes.isEmpty) return;
 
     await init();
-    await _plugin.zonedSchedule(
-      _followUpId(habit.id),
-      habit.name,
-      _followUpBody,
-      when,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'habit_followups',
-          'Relances d\'habitudes',
-          channelDescription: 'Relance si une habitude n\'est pas encore faite',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
+    for (var slot = 0; slot < habit.reminderTimes.length; slot++) {
+      final followUpMinutes = habit.reminderTimes[slot] + followUpDelayMinutes;
+      if (followUpMinutes >= 24 * 60) continue;
+
+      final when = _nextOccurrence(habit, followUpMinutes, skipToday: skipToday);
+      if (when == null) continue;
+
+      await _plugin.zonedSchedule(
+        _followUpId(habit.id, slot),
+        habit.name,
+        _followUpBody,
+        when,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'habit_followups',
+            'Relances d\'habitudes',
+            channelDescription: 'Relance si une habitude n\'est pas encore faite',
+            importance: Importance.defaultImportance,
+            priority: Priority.defaultPriority,
+          ),
+          iOS: DarwinNotificationDetails(),
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    }
   }
 
   /// Prochaine date/heure valide pour [habit] : premier jour où l'habitude
@@ -173,20 +181,28 @@ class NotificationService {
     return null;
   }
 
-  /// Annule le rappel programmé, ainsi que ceux des anciennes versions qui
-  /// programmaient un id par jour de semaine (migration silencieuse).
+  /// Annule tous les rappels programmés (tous les créneaux), ainsi que ceux
+  /// des anciennes versions qui programmaient un id par jour de semaine, ou
+  /// un seul rappel sans créneau (migrations silencieuses).
   Future<void> cancelReminders(String habitId) async {
     await init();
-    await _plugin.cancel(_reminderId(habitId));
+    await _plugin.cancel('$habitId#next'.hashCode & 0x7fffffff);
+    for (var slot = 0; slot < Habit.maxReminders; slot++) {
+      await _plugin.cancel(_reminderId(habitId, slot));
+    }
     for (var weekday = 1; weekday <= 7; weekday++) {
       await _plugin.cancel('$habitId#$weekday'.hashCode & 0x7fffffff);
     }
   }
 
-  /// Annule la relance programmée (+ ids hérités des anciennes versions).
+  /// Annule toutes les relances programmées (+ ids hérités des anciennes
+  /// versions).
   Future<void> cancelFollowUps(String habitId) async {
     await init();
-    await _plugin.cancel(_followUpId(habitId));
+    await _plugin.cancel('$habitId#follow-next'.hashCode & 0x7fffffff);
+    for (var slot = 0; slot < Habit.maxReminders; slot++) {
+      await _plugin.cancel(_followUpId(habitId, slot));
+    }
     for (var weekday = 1; weekday <= 7; weekday++) {
       await _plugin.cancel('$habitId#follow#$weekday'.hashCode & 0x7fffffff);
     }

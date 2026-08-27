@@ -57,7 +57,7 @@ class HabitsProvider extends ChangeNotifier {
     // Rappel intelligent : une habitude déjà cochée aujourd'hui saute le
     // jour en cours (skipToday).
     for (final habit in _habits) {
-      if (habit.reminderMinutes != null) {
+      if (habit.reminderTimes.isNotEmpty) {
         await _notifications.scheduleNextReminder(habit, skipToday: habit.isCompletedToday);
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
@@ -77,7 +77,7 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _widget.updateHabits(_widgetHabits);
     for (final habit in _habits) {
-      if (habit.reminderMinutes != null) {
+      if (habit.reminderTimes.isNotEmpty) {
         // La bascule widget peut avoir changé l'état du jour : replanifie
         // rappel ET relance en fonction.
         await _notifications.scheduleNextReminder(habit, skipToday: habit.isCompletedToday);
@@ -95,7 +95,7 @@ class HabitsProvider extends ChangeNotifier {
     Set<int> activeWeekdays = const {},
     int dailyTarget = 1,
     int weeklyGoal = 0,
-    int? reminderMinutes,
+    List<int> reminderTimes = const [],
   }) async {
     final habit = Habit(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -106,7 +106,7 @@ class HabitsProvider extends ChangeNotifier {
       activeWeekdays: activeWeekdays,
       dailyTarget: dailyTarget,
       weeklyGoal: weeklyGoal,
-      reminderMinutes: reminderMinutes,
+      reminderTimes: reminderTimes,
     );
     // L'état est mis à jour et notifié immédiatement (retour visuel
     // instantané) ; l'écriture disque, la mise à jour du widget et la
@@ -115,6 +115,39 @@ class HabitsProvider extends ChangeNotifier {
     _habits = [..._habits, habit];
     notifyListeners();
     unawaited(_finalizeAdd(habit));
+  }
+
+  /// Modifie les champs "identité" d'une habitude existante (nom, emoji,
+  /// couleur, planification, fois/jour) sans toucher à son historique. Les
+  /// rappels sont replanifiés si la planification a changé leur pertinence.
+  Future<void> updateHabit({
+    required String id,
+    required String name,
+    required String emoji,
+    required int colorValue,
+    required Set<int> activeWeekdays,
+    required int dailyTarget,
+    required int weeklyGoal,
+  }) async {
+    Habit? updated;
+    _habits = _habits.map((h) {
+      if (h.id != id) return h;
+      updated = h.copyWith(
+        name: name,
+        emoji: emoji,
+        colorValue: colorValue,
+        activeWeekdays: activeWeekdays,
+        dailyTarget: dailyTarget,
+        weeklyGoal: weeklyGoal,
+      );
+      return updated!;
+    }).toList();
+    notifyListeners();
+    await _persist();
+    if (updated != null && updated!.reminderTimes.isNotEmpty) {
+      await _notifications.scheduleNextReminder(updated!, skipToday: updated!.isCompletedToday);
+      await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
+    }
   }
 
   Future<void> _finalizeAdd(Habit habit) async {
@@ -181,7 +214,7 @@ class HabitsProvider extends ChangeNotifier {
     if (archived) {
       await _notifications.cancelReminders(id);
       await _notifications.cancelFollowUps(id);
-    } else if (updated!.reminderMinutes != null) {
+    } else if (updated!.reminderTimes.isNotEmpty) {
       await _notifications.scheduleNextReminder(updated!, skipToday: updated!.isCompletedToday);
       await _notifications.scheduleFollowUp(updated!, skipToday: updated!.isCompletedToday);
     }
@@ -193,11 +226,11 @@ class HabitsProvider extends ChangeNotifier {
     await _persist();
   }
 
-  Future<void> setReminder(String id, int? reminderMinutes) async {
+  Future<void> setReminderTimes(String id, List<int> reminderTimes) async {
     Habit? updated;
     _habits = _habits.map((h) {
       if (h.id != id) return h;
-      updated = h.withReminder(reminderMinutes);
+      updated = h.withReminderTimes(reminderTimes);
       return updated!;
     }).toList();
     notifyListeners();
@@ -221,7 +254,7 @@ class HabitsProvider extends ChangeNotifier {
     notifyListeners();
     await _persist();
     for (final habit in _habits) {
-      if (habit.reminderMinutes != null) {
+      if (habit.reminderTimes.isNotEmpty) {
         await _notifications.scheduleNextReminder(habit, skipToday: habit.isCompletedToday);
         await _notifications.scheduleFollowUp(habit, skipToday: habit.isCompletedToday);
       }
@@ -262,7 +295,7 @@ class HabitsProvider extends ChangeNotifier {
     await _persist();
 
     for (final habit in _habits) {
-      if (habit.autoTrackSteps && habit.reminderMinutes != null) {
+      if (habit.autoTrackSteps && habit.reminderTimes.isNotEmpty) {
         // Complétion automatique = même effet qu'un coche manuel : le
         // rappel et la relance du jour sautent au jour suivant.
         await _notifications.scheduleNextReminder(habit, skipToday: true);

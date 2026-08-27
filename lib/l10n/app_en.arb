@@ -156,6 +156,8 @@
   "reminderAt": "Reminder at {time}",
   "addReminder": "Add a reminder",
   "removeReminder": "Remove reminder",
+  "manageReminders": "Manage reminders",
+  "editHabit": "Edit habit",
   "lifetimePlan": "Lifetime access",
   "lifetimeActive": "Lifetime access active",
   "activityHeatmapTitle": "Activity (last 12 weeks)",

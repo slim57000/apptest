@@ -183,26 +183,29 @@ class _ScheduleSheetState extends State<_ScheduleSheet> {
               child: Text(l10n.activeDaysHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
             ),
             const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              runAlignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
-              children: List.generate(7, (index) {
-                final weekday = index + 1;
-                final selected = _weekdays.contains(weekday);
-                return FilterChip(
-                  label: Text(weekdayLabels[index]),
-                  selected: selected,
-                  onSelected: (value) => setState(() {
-                    if (value) {
-                      _weekdays.add(weekday);
-                    } else {
-                      _weekdays.remove(weekday);
-                    }
-                  }),
-                );
-              }),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                runAlignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                children: List.generate(7, (index) {
+                  final weekday = index + 1;
+                  final selected = _weekdays.contains(weekday);
+                  return FilterChip(
+                    label: Text(weekdayLabels[index]),
+                    selected: selected,
+                    onSelected: (value) => setState(() {
+                      if (value) {
+                        _weekdays.add(weekday);
+                      } else {
+                        _weekdays.remove(weekday);
+                      }
+                    }),
+                  );
+                }),
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(

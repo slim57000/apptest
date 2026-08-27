@@ -9,6 +9,7 @@ import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
 import '../services/health_service.dart';
 import '../widgets/habit_heatmap.dart';
+import 'add_habit_screen.dart';
 import 'paywall_screen.dart';
 import 'share_card_screen.dart';
 
@@ -60,6 +61,13 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
       appBar: AppBar(
         title: Text(habit.name),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: l10n.editHabit,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => AddHabitScreen(existing: habit)),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.ios_share),
             tooltip: l10n.shareStreakTitle,
@@ -258,14 +266,11 @@ class _ReminderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final minutes = habit.reminderMinutes;
-    final time = minutes == null
-        ? null
-        : TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
+    final times = habit.reminderTimes;
 
     return Card(
       child: InkWell(
-        onTap: () => _pickTime(context),
+        onTap: () => _openSheet(context),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -274,24 +279,19 @@ class _ReminderTile extends StatelessWidget {
               const Icon(Icons.notifications_outlined),
               const SizedBox(height: 6),
               Text(
-                time == null ? l10n.reminderNone : l10n.reminderAt(time.format(context)),
+                times.isEmpty
+                    ? l10n.reminderNone
+                    : times
+                        .map((m) => TimeOfDay(hour: m ~/ 60, minute: m % 60).format(context))
+                        .join(', '),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 4),
-              time == null
-                  ? TextButton(
-                      onPressed: () => _pickTime(context),
-                      child: Text(l10n.addReminder),
-                    )
-                  : IconButton(
-                      // Corbeille : supprime le rappel immédiatement, sans
-                      // ouvrir le sélecteur d'heure.
-                      icon: const Icon(Icons.delete_outline),
-                      tooltip: l10n.removeReminder,
-                      onPressed: () =>
-                          context.read<HabitsProvider>().setReminder(habit.id, null),
-                    ),
+              TextButton(
+                onPressed: () => _openSheet(context),
+                child: Text(times.isEmpty ? l10n.addReminder : l10n.manageReminders),
+              ),
             ],
           ),
         ),
@@ -299,18 +299,118 @@ class _ReminderTile extends StatelessWidget {
     );
   }
 
-  Future<void> _pickTime(BuildContext context) async {
-    final minutes = habit.reminderMinutes;
-    final initial = minutes == null
-        ? const TimeOfDay(hour: 8, minute: 0)
-        : TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
-    final picked = await showTimePicker(context: context, initialTime: initial);
-    if (picked != null && context.mounted) {
-      await context.read<HabitsProvider>().setReminder(
-        habit.id,
-        picked.hour * 60 + picked.minute,
-      );
-    }
+  Future<void> _openSheet(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _RemindersSheet(habitId: habit.id, initialTimes: habit.reminderTimes),
+    );
+  }
+}
+
+/// Feuille de gestion des rappels d'une habitude : ajoute/retire des heures
+/// (jusqu'à [Habit.maxReminders]), chaque changement est persisté et
+/// replanifié immédiatement via [HabitsProvider.setReminderTimes].
+class _RemindersSheet extends StatefulWidget {
+  final String habitId;
+  final List<int> initialTimes;
+
+  const _RemindersSheet({required this.habitId, required this.initialTimes});
+
+  @override
+  State<_RemindersSheet> createState() => _RemindersSheetState();
+}
+
+class _RemindersSheetState extends State<_RemindersSheet> {
+  late List<int> _times = List<int>.from(widget.initialTimes)..sort();
+
+  Future<void> _save() =>
+      context.read<HabitsProvider>().setReminderTimes(widget.habitId, _times);
+
+  Future<void> _addTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 8, minute: 0),
+    );
+    if (picked == null) return;
+    final minutes = picked.hour * 60 + picked.minute;
+    if (_times.contains(minutes)) return;
+    setState(() => _times = (List<int>.from(_times)..add(minutes))..sort());
+    await _save();
+  }
+
+  Future<void> _removeTime(int minutes) async {
+    setState(() => _times = List<int>.from(_times)..remove(minutes));
+    await _save();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          20,
+          20,
+          20 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                l10n.manageReminders,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_times.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  l10n.reminderNone,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              )
+            else
+              ..._times.map((minutes) {
+                final time = TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
+                return ListTile(
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: Text(time.format(context), textAlign: TextAlign.center),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: l10n.removeReminder,
+                    onPressed: () => _removeTime(minutes),
+                  ),
+                );
+              }),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _times.length >= Habit.maxReminders ? null : _addTime,
+                icon: const Icon(Icons.add),
+                label: Text(l10n.addReminder),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(l10n.close),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

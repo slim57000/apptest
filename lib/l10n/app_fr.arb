@@ -289,6 +289,12 @@
   "removeReminder": "Retirer le rappel",
   "@removeReminder": {},
 
+  "manageReminders": "Gérer les rappels",
+  "@manageReminders": {},
+
+  "editHabit": "Modifier l'habitude",
+  "@editHabit": {},
+
   "lifetimePlan": "Accès à vie",
   "@lifetimePlan": {},
 
