@@ -52,10 +52,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             Align(
-              alignment: Alignment.topRight,
+              alignment: Alignment.topCenter,
               child: TextButton(
                 onPressed: _finish,
-                child: Text(l10n.onboardingStart),
+                child: Text(l10n.onboardingStart, textAlign: TextAlign.center),
               ),
             ),
             Expanded(
