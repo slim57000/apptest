@@ -69,6 +69,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: premium.isPremium
                 ? l10n.activeHabitsCountPremium(habitsCount)
                 : l10n.activeHabitsCountFree(habitsCount, HabitsProvider.freeHabitLimit),
+            // Retour direct à l'accueil (où sont listées les habitudes
+            // actives) plutôt qu'une ligne d'info non cliquable.
+            onTap: () => Navigator.of(context).popUntil((route) => route.isFirst),
           ),
           const Divider(),
           _SettingsOption(
@@ -212,15 +215,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final choice = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
-        title: Text(l10n.languageLabel),
+        title: Text(l10n.languageLabel, textAlign: TextAlign.center),
         children: [
           _LanguageOption(
             label: l10n.languageSystem,
             code: _systemLanguageChoice,
+            emoji: '🌐',
             selected: current == null,
           ),
-          _LanguageOption(label: l10n.languageFrench, code: 'fr', selected: current?.languageCode == 'fr'),
-          _LanguageOption(label: l10n.languageEnglish, code: 'en', selected: current?.languageCode == 'en'),
+          _LanguageOption(
+            label: l10n.languageFrench,
+            code: 'fr',
+            emoji: '🇫🇷',
+            selected: current?.languageCode == 'fr',
+          ),
+          _LanguageOption(
+            label: l10n.languageEnglish,
+            code: 'en',
+            emoji: '🇬🇧',
+            selected: current?.languageCode == 'en',
+          ),
         ],
       ),
     );
@@ -235,19 +249,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class _LanguageOption extends StatelessWidget {
   final String label;
   final String code;
+  final String emoji;
   final bool selected;
 
-  const _LanguageOption({required this.label, required this.code, required this.selected});
+  const _LanguageOption({
+    required this.label,
+    required this.code,
+    required this.emoji,
+    required this.selected,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialogOption(
       onPressed: () => Navigator.pop(context, code),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (selected) const Icon(Icons.check, size: 18) else const SizedBox(width: 18),
-          const SizedBox(width: 12),
+          Text(emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
           Text(label),
+          if (selected) ...[
+            const SizedBox(width: 10),
+            Icon(Icons.check, size: 18, color: Theme.of(context).colorScheme.primary),
+          ],
         ],
       ),
     );
@@ -363,28 +388,6 @@ class _CloudBackupSectionState extends State<_CloudBackupSection> {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 2),
-          if (backup.loading)
-            const Padding(
-              padding: EdgeInsets.all(4),
-              child: SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            Text(
-              backup.lastBackupAt == null
-                  ? l10n.neverBackedUp
-                  : l10n.lastBackupAt(DateFormat.yMd(Localizations.localeOf(context).toString())
-                      .add_Hm()
-                      .format(backup.lastBackupAt!.toLocal())),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -409,6 +412,28 @@ class _CloudBackupSectionState extends State<_CloudBackupSection> {
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          if (backup.loading)
+            const Padding(
+              padding: EdgeInsets.all(4),
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            Text(
+              backup.lastBackupAt == null
+                  ? l10n.neverBackedUp
+                  : l10n.lastBackupAt(DateFormat.yMd(Localizations.localeOf(context).toString())
+                      .add_Hm()
+                      .format(backup.lastBackupAt!.toLocal())),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
         ],
       ),
     );

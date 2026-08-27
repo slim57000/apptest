@@ -17,7 +17,7 @@ class PremiumProvider extends ChangeNotifier {
   /// [DEV] Force le statut Premium sans passer par la boutique (les produits
   /// in-app ne sont pas encore publiés sur Play Console / App Store Connect).
   /// ⚠️ À repasser à `false` avant toute mise en production.
-  static const bool forcePremium = true;
+  static const bool forcePremium = false;
 
   final PurchaseService _purchaseService;
 

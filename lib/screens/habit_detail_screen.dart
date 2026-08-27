@@ -143,9 +143,14 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 _StreakFreezeBanner(habit: habit),
               ],
               const SizedBox(height: 16),
-              _ReminderTile(habit: habit),
-              const SizedBox(height: 16),
-              _JournalTile(habit: habit),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _ReminderTile(habit: habit)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _JournalTile(habit: habit)),
+                ],
+              ),
               if (premium.isPremium) ...[
                 const SizedBox(height: 16),
                 _HealthTrackingTile(habit: habit),
@@ -259,27 +264,37 @@ class _ReminderTile extends StatelessWidget {
         : TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
 
     return Card(
-      child: ListTile(
-        leading: const Icon(Icons.notifications_outlined),
-        title: Text(
-          time == null
-              ? l10n.reminderNone
-              : l10n.reminderAt(time.format(context)),
-        ),
-        trailing: time == null
-            ? TextButton(
-                onPressed: () => _pickTime(context),
-                child: Text(l10n.addReminder),
-              )
-            : IconButton(
-                // Corbeille : supprime le rappel immédiatement, sans ouvrir
-                // le sélecteur d'heure.
-                icon: const Icon(Icons.delete_outline),
-                tooltip: l10n.removeReminder,
-                onPressed: () =>
-                    context.read<HabitsProvider>().setReminder(habit.id, null),
-              ),
+      child: InkWell(
         onTap: () => _pickTime(context),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.notifications_outlined),
+              const SizedBox(height: 6),
+              Text(
+                time == null ? l10n.reminderNone : l10n.reminderAt(time.format(context)),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 4),
+              time == null
+                  ? TextButton(
+                      onPressed: () => _pickTime(context),
+                      child: Text(l10n.addReminder),
+                    )
+                  : IconButton(
+                      // Corbeille : supprime le rappel immédiatement, sans
+                      // ouvrir le sélecteur d'heure.
+                      icon: const Icon(Icons.delete_outline),
+                      tooltip: l10n.removeReminder,
+                      onPressed: () =>
+                          context.read<HabitsProvider>().setReminder(habit.id, null),
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -310,26 +325,47 @@ class _JournalTile extends StatelessWidget {
     final note = habit.noteOn(DateTime.now());
 
     return Card(
-      child: ListTile(
-        leading: const Icon(Icons.edit_note),
-        title: Text(l10n.journalTitle),
-        subtitle: note == null
-            ? null
-            : Text(note, maxLines: 2, overflow: TextOverflow.ellipsis),
-        trailing: note == null
-            ? TextButton(
-                onPressed: () => _editNote(context),
-                child: Text(l10n.journalEmpty),
-              )
-            : IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => context.read<HabitsProvider>().setNote(
-                  habit.id,
-                  DateTime.now(),
-                  null,
-                ),
-              ),
+      child: InkWell(
         onTap: () => _editNote(context),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.edit_note),
+              const SizedBox(height: 6),
+              Text(
+                l10n.journalTitle,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (note != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  note,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+              const SizedBox(height: 4),
+              note == null
+                  ? TextButton(
+                      onPressed: () => _editNote(context),
+                      child: Text(l10n.journalEmpty),
+                    )
+                  : IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => context.read<HabitsProvider>().setNote(
+                        habit.id,
+                        DateTime.now(),
+                        null,
+                      ),
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -382,8 +418,8 @@ class _HealthTrackingTile extends StatelessWidget {
     return Card(
       child: SwitchListTile(
         secondary: const Icon(Icons.directions_walk),
-        title: Text(l10n.autoTrackStepsLabel),
-        subtitle: Text(l10n.autoTrackStepsHint(stepsGoalForAutoComplete)),
+        title: Text(l10n.autoTrackStepsLabel, textAlign: TextAlign.center),
+        subtitle: Text(l10n.autoTrackStepsHint(stepsGoalForAutoComplete), textAlign: TextAlign.center),
         value: habit.autoTrackSteps,
         onChanged: (value) async {
           final ok = await context.read<HabitsProvider>().setAutoTrackSteps(habit.id, value);

@@ -700,5 +700,18 @@
   "legalContact": "Contact",
   "@legalContact": {},
   "legalContactDesc": "contact@rampedigitale.fr — réponse sous 5 jours ouvrés.",
-  "@legalContactDesc": {}
+  "@legalContactDesc": {},
+
+  "onboardingWelcomeTitle": "Bienvenue dans Habitude+",
+  "@onboardingWelcomeTitle": {},
+  "onboardingWelcomeDescription": "Suis tes habitudes au quotidien. Coche-les d'un tap, et regarde ta régularité progresser jour après jour.",
+  "@onboardingWelcomeDescription": {},
+  "onboardingGardenTitle": "Ton jardin virtuel",
+  "@onboardingGardenTitle": {},
+  "onboardingGardenDescription": "Chaque habitude complétée fait grandir ton jardin : graine, pousse, plante, arbre, puis fleur. Reste régulier pour le voir s'épanouir !",
+  "@onboardingGardenDescription": {},
+  "onboardingNext": "Suivant",
+  "@onboardingNext": {},
+  "onboardingStart": "Commencer",
+  "@onboardingStart": {}
 }

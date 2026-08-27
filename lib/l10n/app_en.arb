@@ -257,5 +257,12 @@
   "restoreSuccess": "Habits restored!",
   "noBackupFound": "No backup found.",
 
-  "privacyPolicyLabel": "Privacy policy"
+  "privacyPolicyLabel": "Privacy policy",
+
+  "onboardingWelcomeTitle": "Welcome to Habitude+",
+  "onboardingWelcomeDescription": "Track your habits every day. Tap to check them off and watch your consistency grow day after day.",
+  "onboardingGardenTitle": "Your virtual garden",
+  "onboardingGardenDescription": "Every completed habit grows your garden: seed, sprout, plant, tree, then bloom. Stay consistent to watch it flourish!",
+  "onboardingNext": "Next",
+  "onboardingStart": "Get started"
 }

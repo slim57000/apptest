@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/habits_provider.dart';
 import 'providers/locale_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme.dart';
 
 class HabitudeApp extends StatelessWidget {
@@ -35,7 +35,7 @@ class HabitudeApp extends StatelessWidget {
         }
         return const Locale('fr');
       },
-      home: const _HealthSyncGate(child: HomeScreen()),
+      home: const _HealthSyncGate(child: SplashScreen()),
     );
   }
 }

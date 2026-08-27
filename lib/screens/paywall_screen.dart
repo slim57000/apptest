@@ -92,7 +92,7 @@ class _PlanCard extends StatelessWidget {
         break;
       case PremiumProductIds.lifetime:
         icon = Image.asset(
-          'assets/icons/lifetime_premium.png',
+          'assets/icon/lifetime_premium.png',
           width: 32,
           height: 32,
         );
