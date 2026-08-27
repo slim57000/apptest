@@ -66,11 +66,12 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       children: [
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(l10n.inviteCodeLabel, style: Theme.of(context).textTheme.bodySmall),
+                              Text(l10n.inviteCodeLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
                               SelectableText(
                                 widget.challenge.inviteCode,
+                                textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                       letterSpacing: 2,
                                       fontWeight: FontWeight.bold,

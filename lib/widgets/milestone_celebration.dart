@@ -67,13 +67,14 @@ class _MilestoneCelebrationState extends State<MilestoneCelebration> {
                 const SizedBox(height: 12),
                 Text(
                   l10n.milestoneTitle,
+                  textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
                       .headlineSmall
                       ?.copyWith(fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 8),
-                Text(widget.streakLabel, style: Theme.of(context).textTheme.titleMedium),
+                Text(widget.streakLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 20),
                 FilledButton(
                   onPressed: () => Navigator.of(context).pop(),

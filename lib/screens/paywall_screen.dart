@@ -152,7 +152,7 @@ class _StoreUnavailableCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text(l10n.storeUnavailable),
+        child: Text(l10n.storeUnavailable, textAlign: TextAlign.center),
       ),
     );
   }
@@ -171,7 +171,7 @@ class _MessageCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text(message, style: TextStyle(color: isError ? Colors.red : null)),
+        child: Text(message, textAlign: TextAlign.center, style: TextStyle(color: isError ? Colors.red : null)),
       ),
     );
   }

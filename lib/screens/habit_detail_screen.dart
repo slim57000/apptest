@@ -432,6 +432,7 @@ class _PremiumStats extends StatelessWidget {
         const SizedBox(height: 24),
         Text(
           l10n.weeklyCompletionTitle,
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 12),
@@ -439,6 +440,7 @@ class _PremiumStats extends StatelessWidget {
         const SizedBox(height: 24),
         Text(
           l10n.activityHeatmapTitle,
+          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 12),
@@ -462,10 +464,10 @@ class _StatTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(value, style: Theme.of(context).textTheme.headlineSmall),
-            Text(label, style: Theme.of(context).textTheme.bodySmall),
+            Text(value, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
+            Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),

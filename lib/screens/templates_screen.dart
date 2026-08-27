@@ -168,13 +168,23 @@ class _ScheduleSheetState extends State<_ScheduleSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.template.name, style: Theme.of(context).textTheme.titleMedium),
+            SizedBox(
+              width: double.infinity,
+              child: Text(widget.template.name, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium),
+            ),
             const SizedBox(height: 12),
-            Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
+            SizedBox(
+              width: double.infinity,
+              child: Text(l10n.activeDaysLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
+            ),
             const SizedBox(height: 4),
-            Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
+            SizedBox(
+              width: double.infinity,
+              child: Text(l10n.activeDaysHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+            ),
             const SizedBox(height: 8),
             Wrap(
+              alignment: WrapAlignment.center,
               spacing: 8,
               children: List.generate(7, (index) {
                 final weekday = index + 1;

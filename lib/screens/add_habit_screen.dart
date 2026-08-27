@@ -62,7 +62,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Text(l10n.iconLabel, style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.iconLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           // Tuiles circulaires uniformes, alignées au centre : plus lisible
           // que des chips de largeur variable.
@@ -97,7 +97,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             }).toList(),
           ),
           const SizedBox(height: 24),
-          Text(l10n.colorLabel, style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.colorLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Wrap(
             alignment: WrapAlignment.center,
@@ -126,9 +126,10 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             }).toList(),
           ),
           const SizedBox(height: 24),
-          Text(l10n.timesPerDayLabel, style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.timesPerDayLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton.outlined(
                 icon: const Icon(Icons.remove),
@@ -153,7 +154,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          Text(l10n.scheduleModeLabel, style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.scheduleModeLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           SegmentedButton<bool>(
             segments: [
@@ -166,9 +167,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           ),
           const SizedBox(height: 12),
           if (!_flexible) ...[
-            Text(l10n.activeDaysLabel, style: Theme.of(context).textTheme.titleSmall),
+            Text(l10n.activeDaysLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 4),
-            Text(l10n.activeDaysHint, style: Theme.of(context).textTheme.bodySmall),
+            Text(l10n.activeDaysHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 8),
             Wrap(
               alignment: WrapAlignment.center,
@@ -191,7 +192,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               }),
             ),
           ] else ...[
-            Text(l10n.weeklyGoalHint, style: Theme.of(context).textTheme.bodySmall),
+            Text(l10n.weeklyGoalHint, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 8),
             Wrap(
               alignment: WrapAlignment.center,
@@ -208,7 +209,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             ),
           ],
           const SizedBox(height: 24),
-          Text(l10n.reminderLabel, style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.reminderLabel, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           ListTile(
             contentPadding: EdgeInsets.zero,
