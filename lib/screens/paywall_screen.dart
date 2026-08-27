@@ -23,7 +23,7 @@ class PaywallScreen extends StatelessWidget {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const Icon(Icons.workspace_premium, size: 56, color: Colors.amber),
+                const Center(child: Icon(Icons.workspace_premium, size: 56, color: Colors.amber)),
                 const SizedBox(height: 12),
                 Text(
                   premium.isPremium ? l10n.youArePremium : l10n.goPremium,
