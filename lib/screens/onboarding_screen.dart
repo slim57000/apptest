@@ -51,11 +51,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: TextButton(
-                onPressed: _finish,
-                child: Text(l10n.onboardingStart, textAlign: TextAlign.center),
+            SizedBox(
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: _finish,
+                    child: Text(l10n.onboardingStart, textAlign: TextAlign.center),
+                  ),
+                ],
               ),
             ),
             Expanded(
