@@ -566,18 +566,24 @@ class _PremiumStats extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 24),
-        Text(
-          l10n.weeklyCompletionTitle,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleSmall,
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            l10n.weeklyCompletionTitle,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
         ),
         const SizedBox(height: 12),
         SizedBox(height: 160, child: _WeekChart(habit: habit)),
         const SizedBox(height: 24),
-        Text(
-          l10n.activityHeatmapTitle,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleSmall,
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            l10n.activityHeatmapTitle,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
         ),
         const SizedBox(height: 12),
         HabitHeatmap(habit: habit),
@@ -702,6 +708,7 @@ class _StatsUpsell extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               l10n.premiumStatsTitle,
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
