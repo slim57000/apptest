@@ -49,6 +49,7 @@
   "archiveAction": "Archive",
   "unarchiveAction": "Unarchive",
   "habitArchivedMessage": "Habit archived.",
+  "habitUpdatedMessage": "Habit saved.",
   "habitUnarchivedMessage": "Habit unarchived.",
   "archivedHabitsTitle": "Archived habits",
   "noArchivedHabits": "No archived habits.",

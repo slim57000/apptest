@@ -308,6 +308,11 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         weeklyGoal: _flexible ? _weeklyGoal : 0,
       );
       await habitsProvider.setReminderTimes(id, reminderMinutes);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.habitUpdatedMessage)),
+        );
+      }
     } else {
       await habitsProvider.addHabit(
         name: name,

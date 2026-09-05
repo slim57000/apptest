@@ -147,6 +147,9 @@
   "habitArchivedMessage": "Habitude archivée.",
   "@habitArchivedMessage": {},
 
+  "habitUpdatedMessage": "Habitude enregistrée.",
+  "@habitUpdatedMessage": {},
+
   "habitUnarchivedMessage": "Habitude désarchivée.",
   "@habitUnarchivedMessage": {},
 
