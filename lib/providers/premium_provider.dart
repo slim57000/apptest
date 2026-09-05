@@ -103,6 +103,20 @@ class PremiumProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// [DEBUG UNIQUEMENT] Active/désactive le Premium localement sans achat,
+  /// pour tester les fonctionnalités Premium en développement. Un no-op en
+  /// dehors de `flutter run` (kDebugMode) : absent des builds release, donc
+  /// jamais un moyen de débloquer le Premium gratuitement pour un vrai
+  /// utilisateur.
+  Future<void> debugSetPremium(bool value) async {
+    if (!kDebugMode) return;
+    _isPremium = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefsKey, value);
+    if (!value) await prefs.remove(_productIdPrefsKey);
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _purchaseService.dispose();

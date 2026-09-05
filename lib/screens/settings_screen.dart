@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -117,6 +118,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: l10n.aboutTitle,
             onTap: () => _showAboutDialog(context, l10n),
           ),
+          if (kDebugMode) ...[
+            const Divider(),
+            _SettingsOption(
+              icon: Icons.bug_report_outlined,
+              title: 'Debug : Premium',
+              subtitle: premium.isPremium ? 'Activé (debug, flutter run uniquement)' : 'Désactivé',
+              onTap: () => context.read<PremiumProvider>().debugSetPremium(!premium.isPremium),
+            ),
+          ],
         ],
       ),
     );

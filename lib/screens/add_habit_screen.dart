@@ -56,7 +56,20 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? l10n.editHabit : l10n.newHabit)),
+      appBar: AppBar(
+        title: Text(_isEditing ? l10n.editHabit : l10n.newHabit),
+        actions: _isEditing
+            ? null
+            : [
+                IconButton(
+                  icon: const Icon(Icons.archive_outlined),
+                  tooltip: l10n.archivedHabitsTitle,
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
+                  ),
+                ),
+              ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -260,18 +273,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               child: Text(_isEditing ? l10n.save : l10n.createButton),
             ),
           ),
-          if (!_isEditing) ...[
-            const SizedBox(height: 12),
-            Center(
-              child: TextButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ArchivedHabitsScreen()),
-                ),
-                icon: const Icon(Icons.archive_outlined),
-                label: Text(l10n.archivedHabitsTitle),
-              ),
-            ),
-          ],
         ],
       ),
     );
