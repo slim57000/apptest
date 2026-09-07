@@ -81,14 +81,17 @@ class _PlanCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     Widget icon;
     final String title;
+    final String description;
     switch (product.id) {
       case PremiumProductIds.monthly:
         icon = const Icon(Icons.calendar_month, size: 32, color: Color(0xFF2563EB));
         title = l10n.monthlyPlan;
+        description = l10n.monthlyPlanDescription;
         break;
       case PremiumProductIds.yearly:
         icon = const Icon(Icons.calendar_today, size: 32, color: Color(0xFF2563EB));
         title = l10n.yearlyPlan;
+        description = l10n.yearlyPlanDescription;
         break;
       case PremiumProductIds.lifetime:
         icon = Image.asset(
@@ -97,10 +100,16 @@ class _PlanCard extends StatelessWidget {
           height: 32,
         );
         title = l10n.lifetimePlan;
+        description = l10n.lifetimePlanDescription;
         break;
       default:
         icon = const Icon(Icons.event_repeat, size: 32, color: Color(0xFF2563EB));
         title = product.title;
+        // Les descriptions localisées ci-dessus couvrent tous les produits
+        // déclarés dans PremiumProductIds ; celle du store (product.description)
+        // ne sert que de repli pour un produit non prévu par l'app, et n'est
+        // traduite que dans la langue configurée sur la fiche du store.
+        description = product.description;
     }
     final isLifetime = product.id == PremiumProductIds.lifetime;
     return Card(
@@ -120,7 +129,7 @@ class _PlanCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              product.description,
+              description,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),

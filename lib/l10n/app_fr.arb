@@ -217,6 +217,15 @@
   "yearlyPlan": "Abonnement annuel",
   "@yearlyPlan": {},
 
+  "monthlyPlanDescription": "Abonnement mensuel Habitude+ Premium, renouvelable automatiquement. Résiliable à tout moment.",
+  "@monthlyPlanDescription": {},
+
+  "yearlyPlanDescription": "Abonnement annuel Habitude+ Premium, renouvelable automatiquement. Le meilleur rapport qualité-prix.",
+  "@yearlyPlanDescription": {},
+
+  "lifetimePlanDescription": "Débloquez Habitude+ Premium à vie, un seul paiement, sans renouvellement.",
+  "@lifetimePlanDescription": {},
+
   "activeSubscription": "Abonnement actif",
   "@activeSubscription": {},
 
