@@ -93,6 +93,14 @@
       }
     }
   },
+  "shortDays": "{count} j",
+  "@shortDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "milestoneTitle": "Palier débloqué !",
   "@milestoneTitle": {},
   "milestoneCta": "Continuer",
@@ -457,6 +465,15 @@
   "displayNameHint": "Ex. Alex",
   "@displayNameHint": {},
 
+  "networkErrorMessage": "Impossible de joindre le serveur. Vérifie ta connexion et réessaie.",
+  "@networkErrorMessage": {},
+
+  "signInFailed": "Impossible de se connecter. Réessaie dans un instant.",
+  "@signInFailed": {},
+
+  "premiumOnlySuffix": "Premium",
+  "@premiumOnlySuffix": {},
+
   "startAction": "Commencer",
   "@startAction": {},
 
@@ -528,6 +545,18 @@
 
   "languageEnglish": "English",
   "@languageEnglish": {},
+
+  "themeLabel": "Thème",
+  "@themeLabel": {},
+
+  "themeSystem": "Système",
+  "@themeSystem": {},
+
+  "themeLight": "Clair",
+  "@themeLight": {},
+
+  "themeDark": "Sombre",
+  "@themeDark": {},
 
   "cloudBackupTitle": "Sauvegarde cloud",
   "@cloudBackupTitle": {},

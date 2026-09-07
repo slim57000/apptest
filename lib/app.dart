@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/habits_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/theme_mode_provider.dart';
 import 'screens/splash_screen.dart';
 import 'theme.dart';
 
@@ -13,13 +14,14 @@ class HabitudeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localeOverride = context.watch<LocaleProvider>().locale;
+    final themeMode = context.watch<AppThemeModeProvider>().mode;
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       // `locale` force la langue choisie dans les Réglages ; `null` laisse

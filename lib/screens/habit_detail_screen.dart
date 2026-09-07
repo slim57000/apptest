@@ -105,7 +105,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${l10n.bestStreak} · ${habit.longestStreakCount}${habit.streakUnitIsWeeks ? '' : ' j'}',
+                      '${l10n.bestStreak} · ${habit.streakUnitIsWeeks ? l10n.shortWeeks(habit.longestStreakCount) : l10n.shortDays(habit.longestStreakCount)}',
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
@@ -553,7 +553,7 @@ class _PremiumStats extends StatelessWidget {
                 label: l10n.bestStreak,
                 value: habit.streakUnitIsWeeks
                     ? l10n.shortWeeks(habit.longestStreakCount)
-                    : '${habit.longestStreakCount} j',
+                    : l10n.shortDays(habit.longestStreakCount),
               ),
             ),
             const SizedBox(width: 12),

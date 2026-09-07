@@ -57,8 +57,16 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.insights),
-                  tooltip: l10n.recapTitle,
+                  icon: premium.isPremium
+                      ? const Icon(Icons.insights)
+                      : Badge(
+                          label: const Icon(Icons.lock, size: 8, color: Colors.white),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          child: const Icon(Icons.insights),
+                        ),
+                  tooltip: premium.isPremium
+                      ? l10n.recapTitle
+                      : '${l10n.recapTitle} (${l10n.premiumOnlySuffix})',
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) =>

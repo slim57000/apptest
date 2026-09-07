@@ -115,10 +115,16 @@ class _DisplayNamePrompt extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            if (provider.error != null)
+            if (provider.errorKind != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Text(provider.error!, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  provider.errorKind == ChallengeErrorKind.network
+                      ? l10n.networkErrorMessage
+                      : l10n.signInFailed,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               ),
             FilledButton(
               onPressed: provider.loading
@@ -294,7 +300,13 @@ class _ChallengesList extends StatelessWidget {
       final ok = await provider.createChallenge(name: name.trim(), emoji: emoji);
       if (!ok && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.error ?? l10n.createChallengeFailed)),
+          SnackBar(
+            content: Text(
+              provider.errorKind == ChallengeErrorKind.network
+                  ? l10n.networkErrorMessage
+                  : l10n.createChallengeFailed,
+            ),
+          ),
         );
       } else if (ok && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

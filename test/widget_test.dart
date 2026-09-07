@@ -8,6 +8,7 @@ import 'package:habit_tracker/providers/challenge_provider.dart';
 import 'package:habit_tracker/providers/habits_provider.dart';
 import 'package:habit_tracker/providers/locale_provider.dart';
 import 'package:habit_tracker/providers/premium_provider.dart';
+import 'package:habit_tracker/providers/theme_mode_provider.dart';
 import 'package:habit_tracker/services/backup_service.dart';
 import 'package:habit_tracker/services/challenge_service.dart';
 import 'package:habit_tracker/services/health_service.dart';
@@ -39,6 +40,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => ChallengeProvider(ChallengeService())),
           ChangeNotifierProvider(create: (_) => BackupProvider(BackupService())),
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
+          ChangeNotifierProvider(create: (_) => AppThemeModeProvider()),
         ],
         child: const HabitudeApp(),
       ),
