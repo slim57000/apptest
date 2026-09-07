@@ -201,7 +201,7 @@
   "premiumStatsTitle": "Statistiques Premium",
   "@premiumStatsTitle": {},
 
-  "premiumStatsDesc": "Débloquez la meilleure série, le taux de complétion et le graphique hebdomadaire.",
+  "premiumStatsDesc": "Débloquez le taux de complétion sur 30 jours et l'historique d'activité complet.",
   "@premiumStatsDesc": {},
 
   "viewSubscription": "Voir l'abonnement",
@@ -216,7 +216,7 @@
   "goPremium": "Passez Premium",
   "@goPremium": {},
 
-  "paywallDescription": "✅ 0 publicité\n✅ Habitudes illimitées\n✅ Séries & paliers célébrés\n✅ Objectifs hebdo flexibles\n✅ Statistiques avancées (meilleure série, taux, graphiques 30j)\n✅ Complétion auto par les pas (Health Connect)\n✅ Sauvegarde cloud (Supabase)\n✅ Défis entre amis (codes d'invitation)\n✅ Journal quotidien illimité\n✅ Gel de série (1×/semaine)\n✅ Modèles d'habitudes prêts à l'emploi\n✅ Export / partage de carte de série",
+  "paywallDescription": "✅ 0 publicité\n✅ Habitudes illimitées\n✅ Séries & paliers célébrés\n✅ Objectifs hebdo flexibles\n✅ Statistiques avancées (taux 30j, historique d'activité complet, récap par habitude)\n✅ Complétion auto par les pas (Health Connect)\n✅ Sauvegarde cloud (Supabase)\n✅ Défis entre amis (codes d'invitation)\n✅ Journal quotidien illimité\n✅ Gel de série (1×/semaine)\n✅ Modèles d'habitudes prêts à l'emploi\n✅ Export / partage de carte de série",
   "@paywallDescription": {},
 
   "monthlyPlan": "Abonnement mensuel",
@@ -412,6 +412,9 @@
   "recapPerHabit": "Détail par habitude",
   "@recapPerHabit": {},
 
+  "recapUpsellDesc": "Voir le détail hebdomadaire de chaque habitude.",
+  "@recapUpsellDesc": {},
+
   "gardenLevelSeed": "Graine",
   "@gardenLevelSeed": {},
   "gardenLevelSprout": "Pousse",
@@ -470,9 +473,6 @@
 
   "signInFailed": "Impossible de se connecter. Réessaie dans un instant.",
   "@signInFailed": {},
-
-  "premiumOnlySuffix": "Premium",
-  "@premiumOnlySuffix": {},
 
   "startAction": "Commencer",
   "@startAction": {},
@@ -604,7 +604,7 @@
   "aboutIntro": "Habitude+ est un suivi d'habitudes simple et respectueux de votre vie privée : créez des habitudes, cochez-les chaque jour, et regardez vos séries — et votre jardin — grandir.",
   "@aboutIntro": {},
 
-  "aboutFeatures": "✅ Suivi quotidien avec séries et relances en douceur\n🌱 Un jardin qui grandit avec votre régularité\n📊 Statistiques détaillées et récapitulatifs (Premium)\n👥 Défis entre amis via code d'invitation\n☁️ Sauvegarde cloud (Premium)\n🔔 Rappels locaux uniquement — vos données restent les vôtres",
+  "aboutFeatures": "✅ Suivi quotidien avec séries et relances en douceur\n🌱 Un jardin qui grandit avec votre régularité\n📊 Stats & récap hebdo (vue avancée : Premium)\n👥 Défis entre amis via code d'invitation\n☁️ Sauvegarde cloud (Premium)\n🔔 Rappels locaux uniquement — vos données restent les vôtres",
   "@aboutFeatures": {},
 
   "aboutPrivacyNote": "Vos habitudes sont stockées sur votre appareil. Seuls les défis entre amis et la sauvegarde optionnelle utilisent un serveur, sans création de compte.",

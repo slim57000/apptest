@@ -4,10 +4,12 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/habit.dart';
 import '../providers/habits_provider.dart';
+import '../providers/premium_provider.dart';
+import 'paywall_screen.dart';
 
-/// Vue d'ensemble cross-habitudes (Premium) : plus motivant et plus lisible
-/// que de naviguer habitude par habitude pour se faire une idée de la
-/// semaine.
+/// Vue d'ensemble cross-habitudes : les stats globales (taux, meilleure
+/// série) restent gratuites -- un aperçu du payoff motivationnel de l'app --
+/// seul le détail habitude par habitude est réservé au Premium.
 class RecapScreen extends StatelessWidget {
   const RecapScreen({super.key});
 
@@ -15,6 +17,7 @@ class RecapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final habits = context.watch<HabitsProvider>().activeHabits;
+    final premium = context.watch<PremiumProvider>();
 
     if (habits.isEmpty) {
       return Scaffold(
@@ -60,7 +63,14 @@ class RecapScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text(l10n.recapPerHabit, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 12),
-          ...habits.map((habit) => _HabitRecapTile(habit: habit)),
+          if (premium.isPremium)
+            ...habits.map((habit) => _HabitRecapTile(habit: habit))
+          else
+            _RecapUpsell(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PaywallScreen()),
+              ),
+            ),
         ],
       ),
     );
@@ -90,6 +100,37 @@ class _RecapStat extends StatelessWidget {
           children: [
             Text(value, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
             Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecapUpsell extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _RecapUpsell({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const Icon(Icons.bar_chart, size: 36, color: Colors.amber),
+            const SizedBox(height: 12),
+            Text(
+              l10n.premiumStatsTitle,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.recapUpsellDesc, textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: onTap, child: Text(l10n.viewSubscription)),
           ],
         ),
       ),
