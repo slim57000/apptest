@@ -1,1 +1,8 @@
 #include "Generated.xcconfig"
+
+// DEVELOPMENT_TEAM et PROVISIONING_PROFILE_SPECIFIER sont ajoutés ici (pas
+// dans project.pbxproj) par le workflow CI juste avant le build -- voir
+// .github/workflows/ios-release.yml. Ce fichier .xcconfig, au format simple
+// clé = valeur, est bien plus tolérant qu'un patch sed du pbxproj (plist
+// "old-style" strict) pour injecter des valeurs dynamiques depuis des
+// secrets GitHub.
