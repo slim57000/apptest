@@ -109,6 +109,20 @@ jobs:
           EOF
 
       # ---------------------------------------------------------------
+      # Remplace les jetons du projet Xcode par les vraies valeurs, pour
+      # que l'étape d'ARCHIVE (avant l'export régi par ExportOptions.plist)
+      # utilise elle aussi la signature manuelle -- voir le commentaire dans
+      # project.pbxproj à côté de CODE_SIGN_STYLE = Manual.
+      # ---------------------------------------------------------------
+      - name: Configure la signature manuelle dans le projet Xcode
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          PROVISIONING_PROFILE_NAME: ${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}
+        run: |
+          sed -i '' "s/CI_INJECT_TEAM_ID/${APPLE_TEAM_ID}/" ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' "s/CI_INJECT_PROFILE_NAME/${PROVISIONING_PROFILE_NAME}/" ios/Runner.xcodeproj/project.pbxproj
+
+      # ---------------------------------------------------------------
       # Build release avec obfuscation, même logique que le build Android
       # de ce projet (voir README, section "Protection du code").
       # ---------------------------------------------------------------
