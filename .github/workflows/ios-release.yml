@@ -109,23 +109,19 @@ jobs:
           EOF
 
       # ---------------------------------------------------------------
-      # Remplace les jetons du projet Xcode (CI_INJECT_TEAM_ID /
-      # CI_INJECT_PROFILE_NAME, dans project.pbxproj à côté de
-      # CODE_SIGN_STYLE = Manual) par les vraies valeurs, pour que l'étape
-      # d'ARCHIVE (avant l'export régi par ExportOptions.plist) utilise
-      # elle aussi la signature manuelle.
+      # Ajoute DEVELOPMENT_TEAM et PROVISIONING_PROFILE_SPECIFIER pour que
+      # l'étape d'ARCHIVE (avant l'export régi par ExportOptions.plist)
+      # utilise elle aussi la signature manuelle (CODE_SIGN_STYLE = Manual,
+      # déjà fixé dans project.pbxproj).
       #
-      # Pas de `plutil -lint` ici : sur ce projet (objectVersion 54,
-      # généré par un Xcode récent), plutil utilise un parseur ASCII
-      # plist "old-style" plus strict/différent de celui qu'utilise
-      # réellement xcodebuild en interne, et peut rapporter une erreur
-      # ("missing semicolon in dictionary" en toute fin de fichier) sur
-      # un pbxproj que xcodebuild ouvre et compile sans aucun problème
-      # (confirmé : retirer un bloc de commentaires suspecté n'a rien
-      # changé à l'erreur plutil, qui restait identique au caractère
-      # près -- donc plutil, pas le contenu, était en cause). xcodebuild
-      # (via `flutter build ipa` juste après) reste le seul juge réel de
-      # la validité du fichier.
+      # Injecté dans Flutter/Release.xcconfig, PAS en patchant
+      # project.pbxproj avec sed : le pbxproj est un plist "old-style" à la
+      # grammaire stricte, et un patch sed y a provoqué à plusieurs reprises
+      # une corruption ("missing semicolon in dictionary") que même
+      # xcodebuild ne pouvait plus parser -- alors même que les valeurs
+      # injectées semblaient propres. Le format .xcconfig (clé = valeur,
+      # une par ligne) est prévu pour ce genre d'injection dynamique et ne
+      # partage pas cette fragilité.
       # ---------------------------------------------------------------
       - name: Configure la signature manuelle dans le projet Xcode
         env:
@@ -133,18 +129,16 @@ jobs:
           PROVISIONING_PROFILE_NAME: ${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}
         run: |
           set -euo pipefail
-          # Nettoie tout retour à la ligne/espace parasite (piège classique
-          # de secret collé depuis un presse-papier Windows) avant de
-          # l'injecter -- sinon `sed` peut couper la valeur sur plusieurs
-          # lignes et casser la syntaxe du fichier projet.
           TEAM_ID_CLEAN=$(printf '%s' "$APPLE_TEAM_ID" | tr -d '\n\r ')
           PROFILE_NAME_CLEAN=$(printf '%s' "$PROVISIONING_PROFILE_NAME" | tr -d '\n\r')
 
-          sed -i '' "s#CI_INJECT_TEAM_ID#${TEAM_ID_CLEAN}#" ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' "s#CI_INJECT_PROFILE_NAME#${PROFILE_NAME_CLEAN}#" ios/Runner.xcodeproj/project.pbxproj
+          {
+            echo "DEVELOPMENT_TEAM = ${TEAM_ID_CLEAN}"
+            echo "PROVISIONING_PROFILE_SPECIFIER = ${PROFILE_NAME_CLEAN}"
+          } >> ios/Flutter/Release.xcconfig
 
-          echo "--- Vérification post-substitution ---"
-          grep -A2 "DEVELOPMENT_TEAM\|PROVISIONING_PROFILE_SPECIFIER" ios/Runner.xcodeproj/project.pbxproj || true
+          echo "--- Vérification post-ajout ---"
+          cat ios/Flutter/Release.xcconfig
 
       # ---------------------------------------------------------------
       # Build release avec obfuscation, même logique que le build Android
