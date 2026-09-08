@@ -189,5 +189,15 @@ jobs:
             -o ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
 
           IPA_PATH=$(find build/ios/ipa -name '*.ipa' | head -n1)
-          xcrun altool --upload-app -f "$IPA_PATH" -t ios \
-            --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
+          # `altool` peut rendre un exit code 0 tout en affichant une ligne
+          # "ERROR:" (bug connu, ex. "Cannot determine the Apple ID from
+          # Bundle ID" quand la fiche app n'existe pas encore dans App Store
+          # Connect) -- capturer la sortie et vérifier explicitement, sinon
+          # le job passe en succès alors que rien n'a été uploadé.
+          OUTPUT=$(xcrun altool --upload-app -f "$IPA_PATH" -t ios \
+            --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID" 2>&1)
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "ERROR"; then
+            echo "##[error]altool a rapporté une erreur malgré un exit code 0 -- voir ci-dessus."
+            exit 1
+          fi
