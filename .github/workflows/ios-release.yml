@@ -8,7 +8,11 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: macos-14
+    # macos-15 (Xcode 16+, SDK iOS 18) requis : in_app_purchase_storekit
+    # utilise des API StoreKit 2 récentes ("win-back offers", iOS 18) qui
+    # n'existent pas dans le SDK iOS 17 fourni par défaut sur macos-14
+    # (Xcode 15.x) -- échouait avec "has no member 'winBackOffers'" etc.
+    runs-on: macos-15
     timeout-minutes: 45
     env:
       # Au niveau du job (pas d'une step) : c'est la seule façon d'utiliser
