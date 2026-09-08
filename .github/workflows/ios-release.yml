@@ -22,6 +22,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Force la dernière Xcode stable disponible sur le runner (SDK iOS le
+      # plus récent) : certains plugins Flutter (device_info_plus,
+      # in_app_purchase_storekit...) utilisent des API iOS récentes non
+      # déclarées dans le SDK par défaut du runner, ce qui casse la
+      # compilation ("No visible @interface ... declares the selector").
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
