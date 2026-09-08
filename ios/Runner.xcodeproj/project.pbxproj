@@ -527,13 +527,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
-				// Signature manuelle explicite : sans ça, l'étape d'archive (avant
-				// même l'export régi par ExportOptions.plist) retombe sur la
-				// signature "Automatic" par défaut de Xcode, qui nécessite un
-				// compte Apple connecté -- impossible en CI headless. TEAM_ID et
-				// PROVISIONING_PROFILE_SPECIFIER sont des jetons de substitution,
-				// remplacés par le workflow CI juste avant le build (voir
-				// .github/workflows/ios-release.yml) à partir des secrets GitHub.
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = CI_INJECT_TEAM_ID;
 				PROVISIONING_PROFILE_SPECIFIER = "CI_INJECT_PROFILE_NAME";
