@@ -1,0 +1,122 @@
+name: iOS release build
+
+# Déclenchement manuel uniquement : publier une version iOS est une action
+# délibérée (comme l'upload manuel sur Play Console pour Android), pas
+# quelque chose qu'on veut voir se déclencher à chaque push.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build-and-upload:
+    runs-on: macos-14
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: pod install
+        run: pod install
+        working-directory: ios
+
+      # ---------------------------------------------------------------
+      # Signature : importe le certificat de distribution + le profil de
+      # provisioning dans un trousseau (keychain) temporaire propre à ce
+      # run, pour ne jamais laisser de clé privée traîner sur le runner
+      # au-delà de ce job.
+      # ---------------------------------------------------------------
+      - name: Importe le certificat et le profil de provisioning
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+          KEYCHAIN_PASSWORD: ${{ secrets.APPLE_CI_KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          CERT_PATH="$RUNNER_TEMP/distribution.p12"
+          PROFILE_PATH="$RUNNER_TEMP/profile.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/ci-signing.keychain-db"
+
+          echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode -o "$CERT_PATH"
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o "$PROFILE_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | sed 's/"//g')
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$PROFILE_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/ci.mobileprovision
+
+      - name: Génère ExportOptions.plist
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          PROVISIONING_PROFILE_NAME: ${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.habitudeplus.habitTracker</key>
+              <string>${PROVISIONING_PROFILE_NAME}</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+
+      # ---------------------------------------------------------------
+      # Build release avec obfuscation, même logique que le build Android
+      # de ce projet (voir README, section "Protection du code").
+      # ---------------------------------------------------------------
+      - name: flutter build ipa
+        run: |
+          flutter build ipa --release \
+            --obfuscate --split-debug-info=build/debug-info-ios \
+            --export-options-plist="$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Archive le .ipa et les symboles de debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: habitude-plus-ios
+          path: |
+            build/ios/ipa/*.ipa
+            build/debug-info-ios/**
+          retention-days: 90
+
+      # ---------------------------------------------------------------
+      # Upload vers App Store Connect (TestFlight). Ne s'exécute que si
+      # la clé API est configurée -- sinon le job s'arrête après avoir
+      # produit le .ipa signé, à uploader manuellement via Transporter.
+      # ---------------------------------------------------------------
+      - name: Upload vers App Store Connect
+        if: ${{ secrets.APPSTORE_API_KEY_ID != '' }}
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          APPSTORE_API_PRIVATE_KEY_BASE64: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo -n "$APPSTORE_API_PRIVATE_KEY_BASE64" | base64 --decode \
+            -o ~/.appstoreconnect/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+
+          IPA_PATH=$(find build/ios/ipa -name '*.ipa' | head -n1)
+          xcrun altool --upload-app -f "$IPA_PATH" -t ios \
+            --apiKey "$APPSTORE_API_KEY_ID" --apiIssuer "$APPSTORE_API_ISSUER_ID"
