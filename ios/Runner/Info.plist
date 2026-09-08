@@ -37,11 +37,6 @@
 	     "Configurer les publicités"), à remplacer avant publication. -->
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~1458002511</string>
-	<!-- Requis iOS 14.5+ pour le suivi publicitaire (App Tracking
-	     Transparency) ; l'invite ne s'affiche que si du code appelle
-	     explicitement l'API ATT, non encore fait ici, voir README. -->
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Cette identification permet d'afficher des publicités pertinentes dans la version gratuite d'Habitude+.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
