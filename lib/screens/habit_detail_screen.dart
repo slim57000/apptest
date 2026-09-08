@@ -105,7 +105,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${l10n.bestStreak} · ${habit.longestStreakCount}${habit.streakUnitIsWeeks ? '' : ' j'}',
+                      '${l10n.bestStreak} · ${habit.streakUnitIsWeeks ? l10n.shortWeeks(habit.longestStreakCount) : l10n.shortDays(habit.longestStreakCount)}',
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
@@ -164,14 +164,7 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                 _HealthTrackingTile(habit: habit),
               ],
               const SizedBox(height: 32),
-              if (premium.isPremium)
-                _PremiumStats(habit: habit)
-              else
-                _StatsUpsell(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
-                  ),
-                ),
+              _StatsSection(habit: habit, isPremium: premium.isPremium),
             ],
           ),
           ConfettiWidget(
@@ -534,6 +527,46 @@ class _HealthTrackingTile extends StatelessWidget {
   }
 }
 
+/// La série (haut d'écran) et le graphique 7 jours restent gratuits — un
+/// aperçu suffisant du payoff motivationnel de l'app pour donner envie de
+/// passer Premium. Le taux de complétion 30 jours et l'historique
+/// d'activité complet (heatmap) restent, eux, réservés au Premium.
+class _StatsSection extends StatelessWidget {
+  final Habit habit;
+  final bool isPremium;
+
+  const _StatsSection({required this.habit, required this.isPremium});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            l10n.weeklyCompletionTitle,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(height: 160, child: _WeekChart(habit: habit)),
+        const SizedBox(height: 24),
+        if (isPremium)
+          _PremiumStats(habit: habit)
+        else
+          _StatsUpsell(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PaywallScreen()),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class _PremiumStats extends StatelessWidget {
   final Habit habit;
 
@@ -553,7 +586,7 @@ class _PremiumStats extends StatelessWidget {
                 label: l10n.bestStreak,
                 value: habit.streakUnitIsWeeks
                     ? l10n.shortWeeks(habit.longestStreakCount)
-                    : '${habit.longestStreakCount} j',
+                    : l10n.shortDays(habit.longestStreakCount),
               ),
             ),
             const SizedBox(width: 12),
@@ -565,17 +598,6 @@ class _PremiumStats extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: Text(
-            l10n.weeklyCompletionTitle,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(height: 160, child: _WeekChart(habit: habit)),
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,

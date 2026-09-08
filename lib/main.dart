@@ -12,6 +12,7 @@ import 'providers/challenge_provider.dart';
 import 'providers/habits_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/premium_provider.dart';
+import 'providers/theme_mode_provider.dart';
 import 'services/backup_service.dart';
 import 'services/challenge_service.dart';
 import 'services/health_service.dart';
@@ -66,6 +67,7 @@ Future<void> main() async {
           create: (_) => BackupProvider(BackupService()),
         ),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => AppThemeModeProvider()),
       ],
       child: const HabitudeApp(),
     ),

@@ -9,6 +9,7 @@ import '../providers/backup_provider.dart';
 import '../providers/habits_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/premium_provider.dart';
+import '../providers/theme_mode_provider.dart';
 import '../widgets/app_logo.dart';
 import 'challenges_screen.dart';
 import 'legal_screen.dart';
@@ -26,6 +27,9 @@ const _publisherUrl = 'https://rampedigitale.fr';
 /// choisi Système" et "fermeture du dialogue sans choix (tap en dehors)" :
 /// cette valeur encode explicitement le premier cas.
 const _systemLanguageChoice = '__system__';
+
+/// Même logique que [_systemLanguageChoice], pour le choix de thème.
+const _systemThemeChoice = '__system__';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -48,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final premium = context.watch<PremiumProvider>();
     final habitsCount = context.watch<HabitsProvider>().activeHabits.length;
     final locale = context.watch<LocaleProvider>().locale;
+    final themeMode = context.watch<AppThemeModeProvider>().mode;
 
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: Text(l10n.settingsTitle)),
@@ -80,6 +85,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: l10n.languageLabel,
             subtitle: _languageLabel(l10n, locale),
             onTap: () => _pickLanguage(context, locale),
+          ),
+          const Divider(),
+          _SettingsOption(
+            icon: Icons.dark_mode_outlined,
+            title: l10n.themeLabel,
+            subtitle: _themeModeLabel(l10n, themeMode),
+            onTap: () => _pickThemeMode(context, themeMode),
           ),
           const Divider(),
           if (premium.isPremium)
@@ -254,6 +266,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
     }
   }
+
+  String _themeModeLabel(AppLocalizations l10n, ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return l10n.themeLight;
+      case ThemeMode.dark:
+        return l10n.themeDark;
+      case ThemeMode.system:
+        return l10n.themeSystem;
+    }
+  }
+
+  Future<void> _pickThemeMode(BuildContext context, ThemeMode current) async {
+    final l10n = AppLocalizations.of(context)!;
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(l10n.themeLabel, textAlign: TextAlign.center),
+        children: [
+          _ThemeModeOption(
+            label: l10n.themeSystem,
+            code: _systemThemeChoice,
+            icon: Icons.brightness_auto,
+            selected: current == ThemeMode.system,
+          ),
+          _ThemeModeOption(
+            label: l10n.themeLight,
+            code: 'light',
+            icon: Icons.light_mode_outlined,
+            selected: current == ThemeMode.light,
+          ),
+          _ThemeModeOption(
+            label: l10n.themeDark,
+            code: 'dark',
+            icon: Icons.dark_mode_outlined,
+            selected: current == ThemeMode.dark,
+          ),
+        ],
+      ),
+    );
+    if (choice != null && context.mounted) {
+      final mode = switch (choice) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+      await context.read<AppThemeModeProvider>().setMode(mode);
+    }
+  }
 }
 
 class _LanguageOption extends StatelessWidget {
@@ -277,6 +338,39 @@ class _LanguageOption extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Text(label),
+          if (selected) ...[
+            const SizedBox(width: 10),
+            Icon(Icons.check, size: 18, color: Theme.of(context).colorScheme.primary),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ThemeModeOption extends StatelessWidget {
+  final String label;
+  final String code;
+  final IconData icon;
+  final bool selected;
+
+  const _ThemeModeOption({
+    required this.label,
+    required this.code,
+    required this.icon,
+    required this.selected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialogOption(
+      onPressed: () => Navigator.pop(context, code),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18),
           const SizedBox(width: 10),
           Text(label),
           if (selected) ...[

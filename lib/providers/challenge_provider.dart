@@ -4,12 +4,18 @@ import '../config/supabase_config.dart';
 import '../models/challenge.dart';
 import '../services/challenge_service.dart';
 
+/// Catégorie d'erreur affichable, plutôt que le texte brut de l'exception :
+/// une `SocketException`/`ClientException` réseau (nom d'hôte interne inclus)
+/// ne doit jamais atteindre l'écran telle quelle. L'UI choisit le message
+/// localisé selon cette catégorie.
+enum ChallengeErrorKind { network, generic }
+
 class ChallengeProvider extends ChangeNotifier {
   final ChallengeService _service;
 
   List<Challenge> _challenges = [];
   bool _loading = false;
-  String? _error;
+  ChallengeErrorKind? _errorKind;
   String? _displayName;
 
   ChallengeProvider(this._service);
@@ -18,8 +24,18 @@ class ChallengeProvider extends ChangeNotifier {
   bool get signedIn => configured && _service.isSignedIn;
   List<Challenge> get challenges => List.unmodifiable(_challenges);
   bool get loading => _loading;
-  String? get error => _error;
+  ChallengeErrorKind? get errorKind => _errorKind;
   String? get displayName => _displayName;
+
+  static ChallengeErrorKind _classify(Object e) {
+    final text = e.toString();
+    return text.contains('SocketException') ||
+            text.contains('ClientException') ||
+            text.contains('TimeoutException') ||
+            text.contains('Failed host lookup')
+        ? ChallengeErrorKind.network
+        : ChallengeErrorKind.generic;
+  }
 
   Future<bool> signIn(String displayName) => _guard(() async {
         await _service.ensureSignedInWithName(displayName);
@@ -63,21 +79,21 @@ class ChallengeProvider extends ChangeNotifier {
     try {
       return await _service.memberStatuses(challengeId);
     } catch (e) {
-      _error = e.toString();
+      _errorKind = _classify(e);
       notifyListeners();
       return null;
     }
   }
 
   Future<bool> _guard(Future<void> Function() action) async {
-    _error = null;
+    _errorKind = null;
     _loading = true;
     notifyListeners();
     try {
       await action();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _errorKind = _classify(e);
       return false;
     } finally {
       _loading = false;

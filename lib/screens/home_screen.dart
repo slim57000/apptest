@@ -57,13 +57,15 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  // Le récap s'ouvre pour tout le monde : il montre déjà un
+                  // aperçu gratuit (taux global, meilleure série) et ne
+                  // réserve que le détail par habitude au Premium — plus
+                  // besoin du badge cadenas ici, ce n'est plus un mur payant
+                  // surprise dès le tap.
                   icon: const Icon(Icons.insights),
                   tooltip: l10n.recapTitle,
                   onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          premium.isPremium ? const RecapScreen() : const PaywallScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const RecapScreen()),
                   ),
                 ),
                 IconButton(
