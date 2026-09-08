@@ -109,10 +109,16 @@ jobs:
           EOF
 
       # ---------------------------------------------------------------
-      # Remplace les jetons du projet Xcode par les vraies valeurs, pour
-      # que l'étape d'ARCHIVE (avant l'export régi par ExportOptions.plist)
-      # utilise elle aussi la signature manuelle -- voir le commentaire dans
-      # project.pbxproj à côté de CODE_SIGN_STYLE = Manual.
+      # Remplace les jetons du projet Xcode (CI_INJECT_TEAM_ID /
+      # CI_INJECT_PROFILE_NAME, dans project.pbxproj à côté de
+      # CODE_SIGN_STYLE = Manual) par les vraies valeurs, pour que l'étape
+      # d'ARCHIVE (avant l'export régi par ExportOptions.plist) utilise
+      # elle aussi la signature manuelle. Pas de commentaire `//` dans le
+      # pbxproj lui-même : ce fichier est un plist "old-style" où `/` est
+      # aussi un caractère valide de bareword (chemins non quotés comme
+      # Flutter/ephemeral/...) -- un `//` y a fait perdre le parser
+      # jusqu'à la fin du fichier ("missing semicolon" sur la toute
+      # dernière entrée du dictionnaire).
       # ---------------------------------------------------------------
       - name: Configure la signature manuelle dans le projet Xcode
         env:
