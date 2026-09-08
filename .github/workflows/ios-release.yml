@@ -10,6 +10,11 @@ jobs:
   build-and-upload:
     runs-on: macos-14
     timeout-minutes: 45
+    env:
+      # Au niveau du job (pas d'une step) : c'est la seule façon d'utiliser
+      # `secrets` dans un `if:` de step -- GitHub interdit `secrets`
+      # directement dans une condition `if:`.
+      APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
     steps:
       - uses: actions/checkout@v4
 
@@ -106,9 +111,8 @@ jobs:
       # produit le .ipa signé, à uploader manuellement via Transporter.
       # ---------------------------------------------------------------
       - name: Upload vers App Store Connect
-        if: ${{ secrets.APPSTORE_API_KEY_ID != '' }}
+        if: ${{ env.APPSTORE_API_KEY_ID != '' }}
         env:
-          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
           APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
           APPSTORE_API_PRIVATE_KEY_BASE64: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
