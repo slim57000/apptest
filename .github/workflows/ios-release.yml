@@ -22,6 +22,14 @@ jobs:
         with:
           channel: stable
 
+      # Sur un checkout tout neuf, `flutter pub get` tente de préparer
+      # build/ios/SourcePackages/ (support Swift Package Manager de
+      # Flutter pour les plugins) avant que ce dossier existe, ce qui fait
+      # échouer un `rsync mkdir` -- bug connu sur un premier build propre.
+      # Le créer à l'avance suffit à l'éviter.
+      - name: Prépare le dossier SourcePackages
+        run: mkdir -p build/ios/SourcePackages
+
       - name: flutter pub get
         run: flutter pub get
 
