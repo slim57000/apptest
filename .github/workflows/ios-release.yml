@@ -119,8 +119,21 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           PROVISIONING_PROFILE_NAME: ${{ secrets.APPLE_PROVISIONING_PROFILE_NAME }}
         run: |
-          sed -i '' "s/CI_INJECT_TEAM_ID/${APPLE_TEAM_ID}/" ios/Runner.xcodeproj/project.pbxproj
-          sed -i '' "s/CI_INJECT_PROFILE_NAME/${PROVISIONING_PROFILE_NAME}/" ios/Runner.xcodeproj/project.pbxproj
+          set -euo pipefail
+          # Nettoie tout retour à la ligne/espace parasite (piège classique
+          # de secret collé depuis un presse-papier Windows) avant de
+          # l'injecter -- sinon `sed` peut couper la valeur sur plusieurs
+          # lignes et casser la syntaxe du fichier projet (déjà vu : "missing
+          # semicolon in dictionary").
+          TEAM_ID_CLEAN=$(printf '%s' "$APPLE_TEAM_ID" | tr -d '\n\r ')
+          PROFILE_NAME_CLEAN=$(printf '%s' "$PROVISIONING_PROFILE_NAME" | tr -d '\n\r')
+
+          sed -i '' "s#CI_INJECT_TEAM_ID#${TEAM_ID_CLEAN}#" ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' "s#CI_INJECT_PROFILE_NAME#${PROFILE_NAME_CLEAN}#" ios/Runner.xcodeproj/project.pbxproj
+
+          echo "--- Vérification post-substitution ---"
+          grep -A2 "DEVELOPMENT_TEAM\|PROVISIONING_PROFILE_SPECIFIER" ios/Runner.xcodeproj/project.pbxproj || true
+          plutil -lint ios/Runner.xcodeproj/project.pbxproj
 
       # ---------------------------------------------------------------
       # Build release avec obfuscation, même logique que le build Android
