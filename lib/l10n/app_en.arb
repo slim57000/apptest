@@ -249,6 +249,17 @@
   "shareInvite": "Invite friends",
   "memberStreak": "{count, plural, one{{count} day} other{{count} days}}",
 
+  "deleteChallenge": "Delete challenge",
+  "leaveChallenge": "Leave challenge",
+  "deleteChallengeConfirmTitle": "Delete this challenge?",
+  "deleteChallengeConfirmContent": "The challenge will be deleted for all members. This cannot be undone.",
+  "leaveChallengeConfirmTitle": "Leave this challenge?",
+  "leaveChallengeConfirmContent": "You'll no longer see this challenge. You can rejoin later with the invite code.",
+  "challengeDeleted": "Challenge deleted.",
+  "challengeLeft": "You left the challenge.",
+  "deleteChallengeFailed": "Couldn't delete the challenge. Try again in a moment.",
+  "leaveChallengeFailed": "Couldn't leave the challenge. Try again in a moment.",
+
   "languageLabel": "Language",
   "languageSystem": "System",
   "languageFrench": "Français",
