@@ -12,6 +12,7 @@ class ChallengeService {
   SupabaseClient get _client => Supabase.instance.client;
 
   bool get isSignedIn => _client.auth.currentUser != null;
+  String? get currentUserId => _client.auth.currentUser?.id;
 
   Future<void> ensureSignedInWithName(String displayName) async {
     if (_client.auth.currentSession == null) {
@@ -95,6 +96,24 @@ class ChallengeService {
     if (uid == null) return 0;
     final rows = await _client.from('challenge_checkins').select('day').eq('user_id', uid);
     return rows.length;
+  }
+
+  /// Supprime le défi pour tout le monde -- réservé au créateur, la policy
+  /// RLS `supabase/rls-patch-3.sql` le garantit côté serveur. Les membres
+  /// et check-ins associés sont supprimés en cascade automatiquement.
+  Future<void> deleteChallenge(String challengeId) async {
+    await _client.from('challenges').delete().eq('id', challengeId);
+  }
+
+  /// Quitte un défi (retire uniquement sa propre adhésion) -- pour un
+  /// membre qui n'est pas le créateur du défi.
+  Future<void> leaveChallenge(String challengeId) async {
+    final uid = _client.auth.currentUser!.id;
+    await _client
+        .from('challenge_members')
+        .delete()
+        .eq('challenge_id', challengeId)
+        .eq('user_id', uid);
   }
 
   Future<List<ChallengeMemberStatus>> memberStatuses(String challengeId) async {
