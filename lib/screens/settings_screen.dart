@@ -177,7 +177,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 16),
               Text(
                 l10n.aboutFeatures,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
                 style: const TextStyle(height: 1.7),
               ),
               const SizedBox(height: 12),

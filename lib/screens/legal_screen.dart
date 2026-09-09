@@ -20,7 +20,7 @@ class LegalScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Center(child: AppLogo(size: 48)),
+          const Center(child: AppLogo(size: 48, showText: false)),
           const SizedBox(height: 16),
           Text(
             title,
@@ -155,11 +155,10 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
@@ -179,7 +178,6 @@ class _Paragraph extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 12),
         child: Text(
           text,
-          textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
         ),
       );
@@ -192,7 +190,7 @@ class _BulletList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         // Les listes sont stockées comme une chaîne "a|b|c" dans les ARB :
         // le format ARB de Flutter ne supporte pas les tableaux comme
         // valeur de ressource, uniquement des chaînes.
@@ -200,7 +198,6 @@ class _BulletList extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
                 '• $item',
-                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
               ),
             )).toList(),
