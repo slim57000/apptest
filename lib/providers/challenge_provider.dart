@@ -39,6 +39,11 @@ class ChallengeProvider extends ChangeNotifier {
   /// jardin virtuel (voir GardenCard).
   int get totalCheckins => _totalCheckins;
 
+  /// Identifiant de l'utilisateur connecté -- permet à l'UI de savoir si
+  /// elle affiche "Supprimer" (créateur) ou "Quitter" (simple membre) pour
+  /// un défi donné.
+  String? get currentUserId => _service.currentUserId;
+
   static ChallengeErrorKind _classify(Object e) {
     final text = e.toString();
     return text.contains('SocketException') ||
@@ -92,6 +97,19 @@ class ChallengeProvider extends ChangeNotifier {
   Future<bool> checkInToday(String challengeId) => _guard(() async {
         await _service.checkInToday(challengeId);
         await _refreshCheckins();
+      });
+
+  /// Supprime le défi pour tout le monde -- réservé au créateur (voir
+  /// [currentUserId] vs `challenge.createdBy` côté UI).
+  Future<bool> deleteChallenge(String challengeId) => _guard(() async {
+        await _service.deleteChallenge(challengeId);
+        await _refresh();
+      });
+
+  /// Quitte un défi sans le supprimer pour les autres membres.
+  Future<bool> leaveChallenge(String challengeId) => _guard(() async {
+        await _service.leaveChallenge(challengeId);
+        await _refresh();
       });
 
   Future<List<ChallengeMemberStatus>?> memberStatuses(String challengeId) async {
