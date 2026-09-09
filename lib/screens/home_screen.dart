@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/habit.dart';
+import '../providers/challenge_provider.dart';
 import '../providers/habits_provider.dart';
 import '../providers/premium_provider.dart';
 import '../widgets/app_logo.dart';
@@ -28,6 +29,7 @@ class HomeScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final habitsProvider = context.watch<HabitsProvider>();
     final premium = context.watch<PremiumProvider>();
+    final challengeCheckins = context.watch<ChallengeProvider>().totalCheckins;
     // Le jardin grandit avec l'historique complet (habitudes archivées
     // comprises), la liste du quotidien n'affiche que les actives.
     final allHabits = habitsProvider.habits;
@@ -106,7 +108,9 @@ class HomeScreen extends StatelessWidget {
                   itemCount: habits.length + 1,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
                    itemBuilder: (context, index) {
-                     if (index == 0) return GardenCard(habits: allHabits);
+                     if (index == 0) {
+                       return GardenCard(habits: allHabits, challengeCheckins: challengeCheckins);
+                     }
                      final habit = habits[index - 1];
                      // Glisser vers la gauche = suppression immédiate,
                      // annulable quelques secondes via le snackbar.
