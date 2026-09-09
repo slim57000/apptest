@@ -16,7 +16,6 @@ class ChallengeProvider extends ChangeNotifier {
   List<Challenge> _challenges = [];
   bool _loading = false;
   ChallengeErrorKind? _errorKind;
-  String? _lastErrorDetail;
   String? _displayName;
 
   ChallengeProvider(this._service);
@@ -26,11 +25,6 @@ class ChallengeProvider extends ChangeNotifier {
   List<Challenge> get challenges => List.unmodifiable(_challenges);
   bool get loading => _loading;
   ChallengeErrorKind? get errorKind => _errorKind;
-  /// Message d'exception brut de la dernière erreur -- diagnostic
-  /// temporaire (voir problème de création de défi en cours
-  /// d'investigation), pas destiné à rester affiché tel quel une fois le
-  /// bug identifié.
-  String? get lastErrorDetail => _lastErrorDetail;
   String? get displayName => _displayName;
 
   static ChallengeErrorKind _classify(Object e) {
@@ -93,7 +87,6 @@ class ChallengeProvider extends ChangeNotifier {
 
   Future<bool> _guard(Future<void> Function() action) async {
     _errorKind = null;
-    _lastErrorDetail = null;
     _loading = true;
     notifyListeners();
     try {
@@ -101,7 +94,6 @@ class ChallengeProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _errorKind = _classify(e);
-      _lastErrorDetail = e.toString();
       return false;
     } finally {
       _loading = false;
