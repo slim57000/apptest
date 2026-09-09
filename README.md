@@ -163,15 +163,16 @@ protège contre la perte de la clé de signature elle-même.
 ## Configurer l'abonnement Premium (Play Store / App Store)
 
 Le code est prêt pour 3 produits Premium, mais ils doivent être **créés
-côté store** avant de pouvoir tester un achat réel. Prix conseillés
-(fourchette basse du marché des habit trackers, à ajuster librement — le
-code affiche simplement `product.price` tel que configuré côté store) :
+côté store** avant de pouvoir tester un achat réel.
 
-| Produit | ID | Type | Prix conseillé |
+| Produit | ID | Type | Prix (Play Store, référence) |
 |---|---|---|---|
 | Mensuel | `habitude_premium_mensuel` | Abonnement | 3,99 € |
-| Annuel | `habitude_premium_annuel` | Abonnement | 24,99 € (~2,08 €/mois) |
-| À vie | `habitude_premium_a_vie` | Achat unique (non-consommable) | 39,99 € |
+| Annuel | `habitude_premium_annuel` | Abonnement | 34,99 € (~2,92 €/mois) |
+| À vie | `habitude_premium_a_vie` | Achat unique (non-consommable) | 59,99 € |
+
+Prix à répliquer à l'identique sur App Store Connect pour rester cohérent
+entre les deux stores.
 
 - **Google Play Console** (priorité actuelle) → votre application →
   Monétisation → Produits :
