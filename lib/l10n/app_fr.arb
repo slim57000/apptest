@@ -534,6 +534,36 @@
     }
   },
 
+  "deleteChallenge": "Supprimer le défi",
+  "@deleteChallenge": {},
+
+  "leaveChallenge": "Quitter le défi",
+  "@leaveChallenge": {},
+
+  "deleteChallengeConfirmTitle": "Supprimer ce défi ?",
+  "@deleteChallengeConfirmTitle": {},
+
+  "deleteChallengeConfirmContent": "Le défi sera supprimé pour tous les membres. Cette action est irréversible.",
+  "@deleteChallengeConfirmContent": {},
+
+  "leaveChallengeConfirmTitle": "Quitter ce défi ?",
+  "@leaveChallengeConfirmTitle": {},
+
+  "leaveChallengeConfirmContent": "Tu ne verras plus ce défi. Tu pourras le rejoindre à nouveau avec le code d'invitation.",
+  "@leaveChallengeConfirmContent": {},
+
+  "challengeDeleted": "Défi supprimé.",
+  "@challengeDeleted": {},
+
+  "challengeLeft": "Tu as quitté le défi.",
+  "@challengeLeft": {},
+
+  "deleteChallengeFailed": "Impossible de supprimer le défi. Réessaie dans un instant.",
+  "@deleteChallengeFailed": {},
+
+  "leaveChallengeFailed": "Impossible de quitter le défi. Réessaie dans un instant.",
+  "@leaveChallengeFailed": {},
+
   "languageLabel": "Langue",
   "@languageLabel": {},
 
