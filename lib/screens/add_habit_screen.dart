@@ -75,7 +75,6 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         children: [
           TextField(
             controller: _nameController,
-            autofocus: !_isEditing,
             decoration: InputDecoration(
               labelText: l10n.habitNameLabel,
               hintText: l10n.habitNameHint,
