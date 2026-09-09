@@ -56,7 +56,6 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: Text(l10n.challengesTitle),
         actions: provider.signedIn
             ? [
