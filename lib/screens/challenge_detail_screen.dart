@@ -42,6 +42,11 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             tooltip: l10n.shareInvite,
             onPressed: () => _shareInvite(context),
           ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: _isCreator(context) ? l10n.deleteChallenge : l10n.leaveChallenge,
+            onPressed: () => _confirmRemove(context),
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -126,6 +131,56 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
             'rejoins mon défi sur Habitude+ avec le code ${widget.challenge.inviteCode} !',
       ),
     );
+  }
+
+  bool _isCreator(BuildContext context) =>
+      widget.challenge.createdBy == context.read<ChallengeProvider>().currentUserId;
+
+  /// Supprime le défi pour tout le monde si l'utilisateur en est le
+  /// créateur, sinon quitte simplement le défi -- dans les deux cas après
+  /// confirmation, l'action étant irréversible côté serveur.
+  Future<void> _confirmRemove(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final isCreator = _isCreator(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(isCreator ? l10n.deleteChallengeConfirmTitle : l10n.leaveChallengeConfirmTitle),
+        content: Text(isCreator ? l10n.deleteChallengeConfirmContent : l10n.leaveChallengeConfirmContent),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.delete)),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final provider = context.read<ChallengeProvider>();
+    final ok = isCreator
+        ? await provider.deleteChallenge(widget.challenge.id)
+        : await provider.leaveChallenge(widget.challenge.id);
+    if (!context.mounted) return;
+
+    if (ok) {
+      // Le messenger est capturé avant le pop : après navigation, ce
+      // context n'est plus sûr à utiliser pour retrouver l'ancêtre
+      // ScaffoldMessenger (celui de l'écran Défis, pas celui-ci).
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      Navigator.of(context).pop();
+      messenger?.showSnackBar(
+        SnackBar(content: Text(isCreator ? l10n.challengeDeleted : l10n.challengeLeft)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            provider.errorKind == ChallengeErrorKind.network
+                ? l10n.networkErrorMessage
+                : (isCreator ? l10n.deleteChallengeFailed : l10n.leaveChallengeFailed),
+          ),
+        ),
+      );
+    }
   }
 }
 
