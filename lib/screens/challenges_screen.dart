@@ -300,10 +300,12 @@ class _ChallengesList extends StatelessWidget {
       if (!ok && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            duration: const Duration(seconds: 10),
             content: Text(
-              provider.errorKind == ChallengeErrorKind.network
-                  ? l10n.networkErrorMessage
-                  : l10n.createChallengeFailed,
+              // Détail brut de l'exception ajouté temporairement pour
+              // diagnostiquer un échec de création de défi -- voir
+              // ChallengeProvider.lastErrorDetail.
+              '${provider.errorKind == ChallengeErrorKind.network ? l10n.networkErrorMessage : l10n.createChallengeFailed}\n${provider.lastErrorDetail ?? ''}',
             ),
           ),
         );
