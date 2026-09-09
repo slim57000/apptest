@@ -26,16 +26,22 @@ String _tree(AppLocalizations l10n) => l10n.gardenLevelTree;
 String _bloom(AppLocalizations l10n) => l10n.gardenLevelBloom;
 
 /// Jardin virtuel qui grandit avec la régularité globale (toutes habitudes
-/// confondues) : transforme le suivi en investissement émotionnel plutôt
-/// qu'une simple liste de cases à cocher (façon Finch/Forest). Purement
-/// dérivé des habitudes existantes -- aucun état séparé à persister.
+/// confondues, plus les check-ins de défis entre amis) : transforme le
+/// suivi en investissement émotionnel plutôt qu'une simple liste de cases
+/// à cocher (façon Finch/Forest). Dérivé des habitudes existantes et du
+/// nombre de check-ins de défis -- aucun état séparé à persister.
 class GardenCard extends StatelessWidget {
   final List<Habit> habits;
 
-  const GardenCard({super.key, required this.habits});
+  /// Check-ins de défis entre amis (Supabase) à ajouter à la croissance du
+  /// jardin, en plus des complétions d'habitudes locales -- 0 si les défis
+  /// ne sont pas configurés/utilisés.
+  final int challengeCheckins;
+
+  const GardenCard({super.key, required this.habits, this.challengeCheckins = 0});
 
   int get _totalCompletions =>
-      habits.fold(0, (sum, h) => sum + h.completedDayCount);
+      habits.fold(challengeCheckins, (sum, h) => sum + h.completedDayCount);
 
   bool get _needsWater {
     if (habits.isEmpty) return false;
