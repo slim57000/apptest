@@ -17,8 +17,15 @@ class ChallengeProvider extends ChangeNotifier {
   bool _loading = false;
   ChallengeErrorKind? _errorKind;
   String? _displayName;
+  int _totalCheckins = 0;
 
-  ChallengeProvider(this._service);
+  ChallengeProvider(this._service) {
+    // Si une session anonyme existe déjà (utilisateur déjà passé par les
+    // défis lors d'une session précédente), recharge silencieusement les
+    // check-ins dès le démarrage -- sinon le jardin de l'accueil ne
+    // compterait les défis qu'après une visite de l'écran Défis.
+    if (_service.isSignedIn) _refreshCheckins();
+  }
 
   bool get configured => SupabaseConfig.isConfigured;
   bool get signedIn => configured && _service.isSignedIn;
@@ -26,6 +33,11 @@ class ChallengeProvider extends ChangeNotifier {
   bool get loading => _loading;
   ChallengeErrorKind? get errorKind => _errorKind;
   String? get displayName => _displayName;
+
+  /// Total des check-ins de défis de l'utilisateur, tous défis confondus --
+  /// s'ajoute aux complétions d'habitudes locales pour la croissance du
+  /// jardin virtuel (voir GardenCard).
+  int get totalCheckins => _totalCheckins;
 
   static ChallengeErrorKind _classify(Object e) {
     final text = e.toString();
@@ -53,6 +65,12 @@ class ChallengeProvider extends ChangeNotifier {
   Future<void> _refresh() async {
     _challenges = await _service.myChallenges();
     _displayName ??= await _service.myDisplayName();
+    _totalCheckins = await _service.myTotalCheckins();
+    notifyListeners();
+  }
+
+  Future<void> _refreshCheckins() async {
+    _totalCheckins = await _service.myTotalCheckins();
     notifyListeners();
   }
 
@@ -73,6 +91,7 @@ class ChallengeProvider extends ChangeNotifier {
 
   Future<bool> checkInToday(String challengeId) => _guard(() async {
         await _service.checkInToday(challengeId);
+        await _refreshCheckins();
       });
 
   Future<List<ChallengeMemberStatus>?> memberStatuses(String challengeId) async {

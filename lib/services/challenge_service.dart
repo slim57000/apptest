@@ -87,6 +87,16 @@ class ChallengeService {
     });
   }
 
+  /// Nombre total de check-ins de l'utilisateur, tous défis confondus --
+  /// utilisé par le jardin virtuel pour que les défis entre amis comptent
+  /// aussi dans sa croissance, pas seulement les habitudes locales.
+  Future<int> myTotalCheckins() async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return 0;
+    final rows = await _client.from('challenge_checkins').select('day').eq('user_id', uid);
+    return rows.length;
+  }
+
   Future<List<ChallengeMemberStatus>> memberStatuses(String challengeId) async {
     final memberRows = await _client
         .from('challenge_members')
