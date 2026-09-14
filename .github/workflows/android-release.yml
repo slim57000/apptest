@@ -1,0 +1,99 @@
+name: Android release build
+
+# Déclenchement manuel uniquement : publier une version est une action
+# délibérée (comme pour le build iOS), pas quelque chose qu'on veut voir
+# se déclencher à chaque push.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build-aab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # Au niveau du job (pas d'une step) : c'est la seule façon d'utiliser
+      # `secrets` dans un `if:` de step -- GitHub interdit `secrets`
+      # directement dans une condition `if:`.
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      # ---------------------------------------------------------------
+      # Signature : régénère android/key.properties + le fichier .jks à
+      # partir des secrets, sans jamais les commiter (voir README, section
+      # "Signer l'app pour publication").
+      # ---------------------------------------------------------------
+      - name: Configure la clé de signature release
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYSTORE_PATH="$RUNNER_TEMP/upload-keystore.jks"
+          echo -n "$ANDROID_KEYSTORE_BASE64" | base64 --decode -o "$KEYSTORE_PATH"
+
+          cat > android/key.properties << EOF
+          storePassword=${ANDROID_KEYSTORE_PASSWORD}
+          keyPassword=${ANDROID_KEY_PASSWORD}
+          keyAlias=${ANDROID_KEY_ALIAS}
+          storeFile=${KEYSTORE_PATH}
+          EOF
+
+      # Si les secrets de signature ne sont pas configurés, le build
+      # retombe sur les clés de debug (voir android/app/build.gradle.kts) :
+      # utile pour vérifier que le build passe, mais Play Console refusera
+      # cet .aab tel quel.
+      - name: Avertit si aucune clé de release n'est configurée
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 == '' }}
+        run: echo "##[warning]ANDROID_KEYSTORE_BASE64 absent : build signé avec la clé de debug, non publiable sur Play Console."
+
+      # ---------------------------------------------------------------
+      # Build release avec obfuscation Dart (AOT) + minification/obfuscation
+      # R8 côté Android (isMinifyEnabled/isShrinkResources déjà activés dans
+      # android/app/build.gradle.kts). Voir README, section "Protection du
+      # code / anti-piratage".
+      # ---------------------------------------------------------------
+      - name: flutter build appbundle
+        run: |
+          flutter build appbundle --release \
+            --obfuscate --split-debug-info=build/debug-info-android
+
+      - name: Archive l'.aab et les symboles de debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: habitude-plus-android
+          path: |
+            build/app/outputs/bundle/release/*.aab
+            build/debug-info-android/**
+          retention-days: 90
+
+      # ---------------------------------------------------------------
+      # Upload vers Google Play (piste interne). Ne s'exécute que si le
+      # compte de service est configuré -- sinon le job s'arrête après
+      # avoir produit l'.aab signé, à uploader manuellement sur Play
+      # Console.
+      # ---------------------------------------------------------------
+      - name: Upload vers Google Play (piste interne)
+        if: ${{ env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON != '' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.habitudeplus.habit_tracker
+          releaseFiles: build/app/outputs/bundle/release/*.aab
+          track: internal
+          status: draft
