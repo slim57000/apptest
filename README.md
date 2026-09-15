@@ -163,7 +163,9 @@ protège contre la perte de la clé de signature elle-même.
 ## Configurer l'abonnement Premium (Play Store / App Store)
 
 Le code est prêt pour 3 produits Premium, mais ils doivent être **créés
-côté store** avant de pouvoir tester un achat réel.
+côté store** avant de pouvoir tester un achat réel. Prix conseillés
+(fourchette basse du marché des habit trackers, à ajuster librement — le
+code affiche simplement `product.price` tel que configuré côté store) :
 
 | Produit | ID | Type | Prix (Play Store, référence) |
 |---|---|---|---|
