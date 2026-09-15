@@ -69,9 +69,12 @@ jobs:
       # code / anti-piratage".
       # ---------------------------------------------------------------
       - name: flutter build appbundle
+        env:
+          ADMOB_BANNER_UNIT_ID: ${{ secrets.ADMOB_BANNER_UNIT_ID_ANDROID }}
         run: |
           flutter build appbundle --release \
-            --obfuscate --split-debug-info=build/debug-info-android
+            --obfuscate --split-debug-info=build/debug-info-android \
+            --dart-define=ADMOB_BANNER_UNIT_ID="$ADMOB_BANNER_UNIT_ID"
 
       - name: Archive l'.aab et les symboles de debug
         uses: actions/upload-artifact@v4
