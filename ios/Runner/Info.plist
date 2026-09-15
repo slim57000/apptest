@@ -33,10 +33,11 @@
 	     voir "Missing purpose string in Info.plist" côté validation TestFlight. -->
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Habitude+ n'écrit aucune donnée dans l'app Santé ; cette autorisation est requise par Apple du fait de l'utilisation de HealthKit pour lire votre nombre de pas.</string>
-	<!-- Publicités (AdMob) : ID de TEST officiel Google (voir README,
-	     "Configurer les publicités"), à remplacer avant publication. -->
+	<!-- Publicités (AdMob) : App ID iOS réel (voir README, "Configurer les
+	     publicités" -- l'ID d'unité bannière est passé séparément au build
+	     via --dart-define=ADMOB_BANNER_UNIT_ID, voir ios-release.yml). -->
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-1101565530376274~1397098257</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
