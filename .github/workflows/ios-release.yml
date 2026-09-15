@@ -158,10 +158,13 @@ jobs:
       # de ce projet (voir README, section "Protection du code").
       # ---------------------------------------------------------------
       - name: flutter build ipa
+        env:
+          ADMOB_BANNER_UNIT_ID: ${{ secrets.ADMOB_BANNER_UNIT_ID_IOS }}
         run: |
           flutter build ipa --release \
             --obfuscate --split-debug-info=build/debug-info-ios \
-            --export-options-plist="$RUNNER_TEMP/ExportOptions.plist"
+            --export-options-plist="$RUNNER_TEMP/ExportOptions.plist" \
+            --dart-define=ADMOB_BANNER_UNIT_ID="$ADMOB_BANNER_UNIT_ID"
 
       - name: Archive le .ipa et les symboles de debug
         uses: actions/upload-artifact@v4
