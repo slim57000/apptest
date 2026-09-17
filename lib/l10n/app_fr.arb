@@ -246,6 +246,9 @@
   "restorePurchases": "Restaurer mes achats",
   "@restorePurchases": {},
 
+  "termsOfUseLabel": "Conditions d'utilisation",
+  "@termsOfUseLabel": {},
+
   "settingsTitle": "Réglages",
   "@settingsTitle": {},
 
@@ -727,9 +730,8 @@
   "legalAcceptanceDesc": "En utilisant Habitude+, vous acceptez ces CGU. Si vous n'êtes pas d'accord, n'utilisez pas l'app.",
   "@legalAcceptanceDesc": {},
   "legalServiceDescription": "Description du service",
-  "@legalServiceDescription": {},
-  "legalServiceDescriptionDesc": "Habitude+ est un suivi d'habitudes (gratuit / Premium) : création d'habitudes, séries, rappels, objectifs hebdo, journal, défis entre amis, sauvegarde cloud optionnelle.",
   "@legalServiceDescriptionDesc": {},
+  "legalServiceDescriptionDesc": "Habitude+ est un suivi d'habitudes (gratuit / Premium) : création d'habitudes, séries, rappels, objectifs hebdo, journal, défis entre amis, sauvegarde cloud optionnelle.",
   "legalUserAccount": "Compte utilisateur",
   "@legalUserAccount": {},
   "legalUserAccountDesc": "Aucun compte requis pour l'usage local. Un identifiant anonyme (UUID) est généré. Pour les défis/sauvegarde, une session anonyme Supabase est créée (pseudo optionnel).",
