@@ -159,10 +159,12 @@ class _HabitDetailScreenState extends State<HabitDetailScreen> {
                   Expanded(child: _JournalTile(habit: habit)),
                 ],
               ),
-              if (premium.isPremium) ...[
-                const SizedBox(height: 16),
-                _HealthTrackingTile(habit: habit),
-              ],
+              const SizedBox(height: 16),
+              // Toujours affichée (verrouillée si non Premium) : Apple exige
+              // que l'usage de HealthKit soit clairement identifiable dans
+              // l'UI (Guideline 2.5.1), pas seulement accessible une fois
+              // Premium débloqué.
+              _HealthTrackingTile(habit: habit, isPremium: premium.isPremium),
               const SizedBox(height: 32),
               _StatsSection(habit: habit, isPremium: premium.isPremium),
             ],
@@ -502,26 +504,29 @@ class _JournalTile extends StatelessWidget {
 
 class _HealthTrackingTile extends StatelessWidget {
   final Habit habit;
+  final bool isPremium;
 
-  const _HealthTrackingTile({required this.habit});
+  const _HealthTrackingTile({required this.habit, required this.isPremium});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Card(
       child: SwitchListTile(
-        secondary: const Icon(Icons.directions_walk),
+        secondary: Icon(isPremium ? Icons.favorite : Icons.lock_outline),
         title: Text(l10n.autoTrackStepsLabel, textAlign: TextAlign.center),
         subtitle: Text(l10n.autoTrackStepsHint(stepsGoalForAutoComplete), textAlign: TextAlign.center),
-        value: habit.autoTrackSteps,
-        onChanged: (value) async {
-          final ok = await context.read<HabitsProvider>().setAutoTrackSteps(habit.id, value);
-          if (!ok && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.autoTrackStepsPermissionDenied)),
-            );
-          }
-        },
+        value: isPremium && habit.autoTrackSteps,
+        onChanged: !isPremium
+            ? null
+            : (value) async {
+                final ok = await context.read<HabitsProvider>().setAutoTrackSteps(habit.id, value);
+                if (!ok && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.autoTrackStepsPermissionDenied)),
+                  );
+                }
+              },
       ),
     );
   }
