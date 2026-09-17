@@ -79,6 +79,7 @@
   "manageSubscriptionHint": "Manage or cancel your subscription from your phone's App Store / Google Play settings.",
   "storeUnavailable": "The app store is not available on this device (simulator, or app installed outside the Play Store / App Store). Test on a real device signed in with a test account.",
   "restorePurchases": "Restore purchases",
+  "termsOfUseLabel": "Terms of Use",
   "settingsTitle": "Settings",
   "premiumSubscriptionLabel": "Premium subscription",
   "statusActive": "Active",
