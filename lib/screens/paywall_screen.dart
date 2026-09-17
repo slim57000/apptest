@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/premium_provider.dart';
 import '../services/purchase_service.dart';
+import 'legal_screen.dart';
+
+/// Lien vers le CLUF standard Apple (aucun CLUF personnalisé configuré dans
+/// App Store Connect) -- requis dans le flux d'achat lui-même pour les
+/// abonnements avec renouvellement automatique (Guideline 3.1.2), en plus
+/// de la fiche App Store.
+const _termsOfUseUrl = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 /// Écran d'abonnement Premium : liste les offres récupérées depuis l'App
 /// Store / Play Store, lance l'achat et propose la restauration d'achat.
@@ -55,6 +63,30 @@ class PaywallScreen extends StatelessWidget {
                   child: TextButton(
                     onPressed: premium.purchasePending ? null : () => premium.restore(),
                     child: Text(l10n.restorePurchases),
+                  ),
+                ),
+                // Requis pour les abonnements avec renouvellement automatique
+                // (Guideline 3.1.2) : lien fonctionnel vers le CLUF et la
+                // politique de confidentialité, directement dans le flux
+                // d'achat (pas seulement sur la fiche App Store).
+                Center(
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () => launchUrl(
+                          Uri.parse(_termsOfUseUrl),
+                          mode: LaunchMode.externalApplication,
+                        ),
+                        child: Text(l10n.termsOfUseLabel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const LegalScreen(isPrivacyPolicy: true)),
+                        ),
+                        child: Text(l10n.privacyPolicyLabel),
+                      ),
+                    ],
                   ),
                 ),
               ],

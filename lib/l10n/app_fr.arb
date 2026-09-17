@@ -246,6 +246,9 @@
   "restorePurchases": "Restaurer mes achats",
   "@restorePurchases": {},
 
+  "termsOfUseLabel": "Conditions d'utilisation",
+  "@termsOfUseLabel": {},
+
   "settingsTitle": "Réglages",
   "@settingsTitle": {},
 
